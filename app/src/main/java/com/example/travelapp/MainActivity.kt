@@ -50,7 +50,11 @@ class MainActivity : ComponentActivity() {
                     modifier = Modifier.fillMaxSize(),
                     color = MaterialTheme.colors.background
                 ) {
-                    NavBar()
+                    testLogin()
+                    if(openApp.value){
+                        openApp()
+                    }
+                    //NavBar()
                 }
             }
         }
@@ -119,4 +123,10 @@ fun NavBar(){
             composable(Screen.Settings.route) { Profile("This is the Profile Page") }
         }
     }
+}
+
+@Composable
+fun openApp() {
+    testHome()
+    NavBar()
 }
