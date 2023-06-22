@@ -55,7 +55,7 @@ fun Social(){
             )
 
             IconButton(
-                onClick = { /*TODO*/ },
+                onClick = { /*TODO */ },
                 modifier = Modifier
                     .padding(start = 10.dp)
                     .weight(1f),
