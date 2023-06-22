@@ -4,37 +4,19 @@ import android.os.Bundle
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.annotation.StringRes
-import androidx.compose.foundation.*
 import androidx.compose.foundation.layout.*
-import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.material.*
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.*
 import androidx.compose.material.icons.outlined.Diversity1
-import androidx.compose.material.icons.outlined.Diversity3
-import androidx.compose.runtime.*
-import androidx.compose.runtime.snapshots.SnapshotStateList
-import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.draw.clip
-import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.res.stringResource
-import androidx.compose.ui.text.font.*
-import androidx.compose.ui.text.style.TextAlign
-import androidx.compose.ui.unit.dp
-import androidx.compose.ui.unit.sp
 import androidx.navigation.NavDestination.Companion.hierarchy
 import androidx.navigation.NavGraph.Companion.findStartDestination
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.currentBackStackEntryAsState
 import androidx.navigation.compose.rememberNavController
-import coil.compose.rememberAsyncImagePainter
-import kotlinx.coroutines.GlobalScope
-import kotlinx.coroutines.async
-import okhttp3.OkHttpClient
-import java.util.*
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import com.example.travelapp.ui.theme.TravelAppTheme
@@ -52,7 +34,7 @@ class MainActivity : ComponentActivity() {
                 ) {
                     Login()
                     if(openApp.value){
-                        openApp()
+                        OpenApp()
                     }
                     //NavBar()
                 }
@@ -120,13 +102,13 @@ fun NavBar(){
         NavHost(navController, startDestination = Screen.Home.route, Modifier.padding(innerPadding)) {
             composable(Screen.Friends.route) {Social()}
             composable(Screen.Home.route) {testHome()}
-            composable(Screen.Settings.route) { Profile("This is the Profile Page") }
+            composable(Screen.Settings.route) { Profile() }
         }
     }
 }
 
 @Composable
-fun openApp() {
+fun OpenApp() {
     testHome()
     NavBar()
 }
