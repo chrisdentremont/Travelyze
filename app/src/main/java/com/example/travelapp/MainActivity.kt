@@ -101,7 +101,7 @@ fun NavBar(){
             innerPadding ->
         NavHost(navController, startDestination = Screen.Home.route, Modifier.padding(innerPadding)) {
             composable(Screen.Friends.route) {Social()}
-            composable(Screen.Home.route) {testHome()}
+            composable(Screen.Home.route) {Home()}
             composable(Screen.Settings.route) { Profile() }
         }
     }
@@ -109,6 +109,6 @@ fun NavBar(){
 
 @Composable
 fun OpenApp() {
-    testHome()
+    Home()
     NavBar()
 }

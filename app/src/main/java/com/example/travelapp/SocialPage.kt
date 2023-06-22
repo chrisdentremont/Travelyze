@@ -99,15 +99,15 @@ fun Social(){
                                 .fillMaxWidth()
                                 .padding(5.dp)
                         ) {
-//                            Image(
-//                                painter = rememberAsyncImagePainter("https://images-wixmp-ed30a86b8c4ca887773594c2.wixmp.com/f/f19a8dbd-b9e4-4ce8-9726-5a1412453ce7/dabkw0g-5004586b-8f46-40df-ae0e-9baef2aa6929.png?token=eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJzdWIiOiJ1cm46YXBwOjdlMGQxODg5ODIyNjQzNzNhNWYwZDQxNWVhMGQyNmUwIiwiaXNzIjoidXJuOmFwcDo3ZTBkMTg4OTgyMjY0MzczYTVmMGQ0MTVlYTBkMjZlMCIsIm9iaiI6W1t7InBhdGgiOiJcL2ZcL2YxOWE4ZGJkLWI5ZTQtNGNlOC05NzI2LTVhMTQxMjQ1M2NlN1wvZGFia3cwZy01MDA0NTg2Yi04ZjQ2LTQwZGYtYWUwZS05YmFlZjJhYTY5MjkucG5nIn1dXSwiYXVkIjpbInVybjpzZXJ2aWNlOmZpbGUuZG93bmxvYWQiXX0.22JifnHYgz5tBl9jIweAjmPxLjujBdDl-rVYBjR1p14"),
-//                                contentDescription = null,
-//                                contentScale = ContentScale.Crop,
-//                                modifier = Modifier
-//                                    .size(75.dp)
-//                                    .clip(CircleShape)
-//                                    .border(5.dp, Color.White, CircleShape)
-//                            )
+                            Image(
+                                painter = rememberAsyncImagePainter("https://images-wixmp-ed30a86b8c4ca887773594c2.wixmp.com/f/be718605-eac9-40a7-bccd-dea055256f78/d5d27jb-f8843464-3ce2-4419-be3d-4b1210ca52a4.jpg/v1/fill/w_877,h_620,q_75,strp/mudkip_by_star_soul_d5d27jb-fullview.jpg?token=eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJzdWIiOiJ1cm46YXBwOjdlMGQxODg5ODIyNjQzNzNhNWYwZDQxNWVhMGQyNmUwIiwiaXNzIjoidXJuOmFwcDo3ZTBkMTg4OTgyMjY0MzczYTVmMGQ0MTVlYTBkMjZlMCIsIm9iaiI6W1t7ImhlaWdodCI6Ijw9NjIwIiwicGF0aCI6IlwvZlwvYmU3MTg2MDUtZWFjOS00MGE3LWJjY2QtZGVhMDU1MjU2Zjc4XC9kNWQyN2piLWY4ODQzNDY0LTNjZTItNDQxOS1iZTNkLTRiMTIxMGNhNTJhNC5qcGciLCJ3aWR0aCI6Ijw9ODc3In1dXSwiYXVkIjpbInVybjpzZXJ2aWNlOmltYWdlLm9wZXJhdGlvbnMiXX0.6U--8zmMblPQSkaSs_gy1ATKl6euB83wHSn--e_36os"),
+                                contentDescription = null,
+                                contentScale = ContentScale.Crop,
+                                modifier = Modifier
+                                    .size(75.dp)
+                                    .clip(CircleShape)
+                                    .border(5.dp, Color.White, CircleShape)
+                            )
 
                             Text(
                                 "Chris D'Entremont",
@@ -171,15 +171,15 @@ fun Social(){
                                 .fillMaxWidth()
                                 .padding(5.dp)
                         ) {
-//                            Image(
-//                                painter = rememberAsyncImagePainter("https://pm1.narvii.com/6345/ed3b88240fbbf8b1b89a2d29980a19d6f8834b1a_hq.jpg"),
-//                                contentDescription = null,
-//                                contentScale = ContentScale.Crop,
-//                                modifier = Modifier
-//                                    .size(75.dp)
-//                                    .clip(CircleShape)
-//                                    .border(5.dp, Color.White, CircleShape)
-//                            )
+                            Image(
+                                painter = rememberAsyncImagePainter("https://www.theshirtlist.com/wp-content/uploads/2018/12/Rowlet.jpg"),
+                                contentDescription = null,
+                                contentScale = ContentScale.Crop,
+                                modifier = Modifier
+                                    .size(75.dp)
+                                    .clip(CircleShape)
+                                    .border(5.dp, Color.White, CircleShape)
+                            )
                             Text(
                                 "Gabriel Madeira",
                                 fontSize = 20.sp,
@@ -242,15 +242,15 @@ fun Social(){
                                 .fillMaxWidth()
                                 .padding(5.dp)
                         ) {
-//                            Image(
-//                                painter = rememberAsyncImagePainter("https://images-wixmp-ed30a86b8c4ca887773594c2.wixmp.com/f/f19a8dbd-b9e4-4ce8-9726-5a1412453ce7/dabldy4-9446bc17-de1f-4429-bb33-8f2762c8e7ac.png?token=eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJzdWIiOiJ1cm46YXBwOjdlMGQxODg5ODIyNjQzNzNhNWYwZDQxNWVhMGQyNmUwIiwiaXNzIjoidXJuOmFwcDo3ZTBkMTg4OTgyMjY0MzczYTVmMGQ0MTVlYTBkMjZlMCIsIm9iaiI6W1t7InBhdGgiOiJcL2ZcL2YxOWE4ZGJkLWI5ZTQtNGNlOC05NzI2LTVhMTQxMjQ1M2NlN1wvZGFibGR5NC05NDQ2YmMxNy1kZTFmLTQ0MjktYmIzMy04ZjI3NjJjOGU3YWMucG5nIn1dXSwiYXVkIjpbInVybjpzZXJ2aWNlOmZpbGUuZG93bmxvYWQiXX0.wbNGcuCGuxmYCndImvx3gyEb4FZ9dE0Mv8IlBhzEy-4"),
-//                                contentDescription = null,
-//                                contentScale = ContentScale.Crop,
-//                                modifier = Modifier
-//                                    .size(75.dp)
-//                                    .clip(CircleShape)
-//                                    .border(5.dp, Color.White, CircleShape)
-//                            )
+                            Image(
+                                painter = rememberAsyncImagePainter("https://media.istockphoto.com/id/458297017/photo/hello-kitty-pattern.jpg?s=612x612&w=0&k=20&c=IvVb5qyDu9_E_M0LCDPGFcpSIzr016ZHm9ZrXANQhQs="),
+                                contentDescription = null,
+                                contentScale = ContentScale.Crop,
+                                modifier = Modifier
+                                    .size(75.dp)
+                                    .clip(CircleShape)
+                                    .border(5.dp, Color.White, CircleShape)
+                            )
                             Text(
                                 "Mo Merchant",
                                 fontSize = 20.sp,
@@ -313,15 +313,15 @@ fun Social(){
                                 .fillMaxWidth()
                                 .padding(5.dp)
                         ) {
-//                            Image(
-//                                painter = rememberAsyncImagePainter("https://images-wixmp-ed30a86b8c4ca887773594c2.wixmp.com/f/f19a8dbd-b9e4-4ce8-9726-5a1412453ce7/dabheg6-f7233d4d-8ef7-4611-bed8-b65ad9b93060.png?token=eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJzdWIiOiJ1cm46YXBwOjdlMGQxODg5ODIyNjQzNzNhNWYwZDQxNWVhMGQyNmUwIiwiaXNzIjoidXJuOmFwcDo3ZTBkMTg4OTgyMjY0MzczYTVmMGQ0MTVlYTBkMjZlMCIsIm9iaiI6W1t7InBhdGgiOiJcL2ZcL2YxOWE4ZGJkLWI5ZTQtNGNlOC05NzI2LTVhMTQxMjQ1M2NlN1wvZGFiaGVnNi1mNzIzM2Q0ZC04ZWY3LTQ2MTEtYmVkOC1iNjVhZDliOTMwNjAucG5nIn1dXSwiYXVkIjpbInVybjpzZXJ2aWNlOmZpbGUuZG93bmxvYWQiXX0.D_drECvO2Lur5t0MrGn5HpHHWSwaTmr5Ik_kbu9pmqY"),
-//                                contentDescription = null,
-//                                contentScale = ContentScale.Crop,
-//                                modifier = Modifier
-//                                    .size(75.dp)
-//                                    .clip(CircleShape)
-//                                    .border(5.dp, Color.White, CircleShape)
-//                            )
+                            Image(
+                                painter = rememberAsyncImagePainter("https://nintendosoup.com/wp-content/uploads/2022/03/Chloe_Eevee.jpg"),
+                                contentDescription = null,
+                                contentScale = ContentScale.Crop,
+                                modifier = Modifier
+                                    .size(75.dp)
+                                    .clip(CircleShape)
+                                    .border(5.dp, Color.White, CircleShape)
+                            )
                             Text(
                                 "Ayla Hebert",
                                 fontSize = 20.sp,
