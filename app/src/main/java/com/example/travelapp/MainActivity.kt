@@ -50,7 +50,7 @@ class MainActivity : ComponentActivity() {
                     modifier = Modifier.fillMaxSize(),
                     color = MaterialTheme.colors.background
                 ) {
-                    testLogin()
+                    Login()
                     if(openApp.value){
                         openApp()
                     }
@@ -118,7 +118,7 @@ fun NavBar(){
     ) {
             innerPadding ->
         NavHost(navController, startDestination = Screen.Home.route, Modifier.padding(innerPadding)) {
-            composable(Screen.Friends.route) {Social("This is the Social Page")}
+            composable(Screen.Friends.route) {Social()}
             composable(Screen.Home.route) {testHome()}
             composable(Screen.Settings.route) { Profile("This is the Profile Page") }
         }

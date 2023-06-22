@@ -42,7 +42,7 @@ import androidx.compose.ui.unit.sp
 public val openApp = mutableStateOf(false)
 
 @Composable
-fun Login(words: String){
+fun Login(){
     Column(Modifier.fillMaxWidth(), horizontalAlignment = Alignment.CenterHorizontally) {
         Row(Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.Center) {//App Title
             Text(
@@ -52,7 +52,7 @@ fun Login(words: String){
                 fontSize = 60.sp,
                 fontWeight = FontWeight.Normal,
                 textAlign = TextAlign.Center,
-                text = "$words")
+                text = "Welcome to TRAVELYZE")
         }
         Row(Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.Center) {// Login Fields
             Column(Modifier.fillMaxWidth(), horizontalAlignment = Alignment.CenterHorizontally) {
@@ -89,7 +89,6 @@ fun Login(words: String){
                                 Icons.Filled.Visibility
                             else Icons.Filled.VisibilityOff
 
-                            // Please provide localized description for accessibility services
                             val description = if (passwordVisible) "Hide password" else "Show password"
 
                             IconButton(onClick = {passwordVisible = !passwordVisible}){
@@ -117,10 +116,4 @@ fun Login(words: String){
             Text(text = "Forgot your password? Click here.", modifier = Modifier.padding(top = 20.dp))
         }
     }
-}
-
-@Preview
-@Composable
-fun testLogin(){
-    Login("Welcome to TRAVELYZE")
 }
