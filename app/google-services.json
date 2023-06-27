@@ -1,0 +1,40 @@
+{
+  "project_info": {
+    "project_number": "445988020076",
+    "firebase_url": "https://travelyze-36f87-default-rtdb.firebaseio.com",
+    "project_id": "travelyze-36f87",
+    "storage_bucket": "travelyze-36f87.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:445988020076:android:bf7a10e58c0bac4c4d1d49",
+        "android_client_info": {
+          "package_name": "com.example.travelapp"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "445988020076-2vb111qho50tmus1evl8r14jsolcuqco.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyBc42YA3pstvVr5-NkSvUsn9jNvLlA0voA"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "445988020076-2vb111qho50tmus1evl8r14jsolcuqco.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
