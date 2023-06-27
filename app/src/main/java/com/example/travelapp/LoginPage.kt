@@ -1,5 +1,6 @@
 package com.example.travelapp
 
+import androidx.compose.foundation.border
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
@@ -65,6 +66,7 @@ fun Login(){
                         placeholder = { Text("example@gmail.com") },
                         keyboardActions = KeyboardActions(onDone = { focusManager.clearFocus() }),
                         keyboardOptions = KeyboardOptions.Default.copy(imeAction = ImeAction.Done, keyboardType = KeyboardType.Password),
+                        modifier = Modifier.border(width = 1.dp, color = Color.Black)
                     )
                 }
                 Row(Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.Center) {//Password
@@ -80,7 +82,7 @@ fun Login(){
                         visualTransformation = if (passwordVisible) VisualTransformation.None else PasswordVisualTransformation(),
                         keyboardActions = KeyboardActions(onDone = { focusManager.clearFocus() }),
                         keyboardOptions = KeyboardOptions.Default.copy(imeAction = ImeAction.Done, keyboardType = KeyboardType.Password),
-                        modifier = Modifier.padding(top = 10.dp),
+                        modifier = Modifier.padding(top = 15.dp).border(width = 1.dp, color = Color.Black),
                         trailingIcon = {
                             val image = if (passwordVisible)
                                 Icons.Filled.Visibility
@@ -99,7 +101,7 @@ fun Login(){
                     Button(
                         onClick = { openApp.value = true; focusManager.clearFocus()},
                         modifier = Modifier
-                            .padding(start = 15.dp, top = 10.dp)
+                            .padding(start = 15.dp, top = 20.dp)
                             .size(width = 100.dp, height = 50.dp)
                         ) {
                         Text(text = "Login", color = Color.White)
@@ -110,6 +112,7 @@ fun Login(){
             }
         }
         Row(Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.Center) {//Forgot Password
+            /*TODO Make "Click Here" a link*/
             Text(text = "Forgot your password? Click here.", modifier = Modifier.padding(top = 20.dp))
         }
     }

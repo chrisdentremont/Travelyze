@@ -1,5 +1,6 @@
 package com.example.travelapp
 
+import androidx.compose.foundation.border
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
@@ -54,12 +55,14 @@ fun Home(){
             var text by rememberSaveable { mutableStateOf("") }
             val focusManager = LocalFocusManager.current
 
+            //TODO Create next page of home page once a search is conducted
             TextField(
                 value = text,
                 onValueChange = {text = it /*TODO Limit Characters*/},
                 modifier = Modifier
                     .heightIn(0.dp, 50.dp)
-                    .widthIn(0.dp, 280.dp),
+                    .widthIn(0.dp, 280.dp)
+                    .border(width = 1.dp, color = Color.Black),
                 placeholder = { Text("Find Somewhere new!") },
                 keyboardActions = KeyboardActions(onDone = { focusManager.clearFocus() }),
                 keyboardOptions = KeyboardOptions.Default.copy(imeAction = ImeAction.Done, keyboardType = KeyboardType.Password),

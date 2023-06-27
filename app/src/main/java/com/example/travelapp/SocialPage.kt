@@ -55,7 +55,7 @@ fun Social(){
             )
 
             IconButton(
-                onClick = { /*TODO */ },
+                onClick = { /*TODO Implement friend addition window*/ },
                 modifier = Modifier
                     .padding(start = 10.dp)
                     .weight(1f),
@@ -69,7 +69,7 @@ fun Social(){
             }
         }
 
-
+//TODO Improve the friend page UI and display information in a better way
         Row(
             horizontalArrangement = Arrangement.SpaceBetween,
             modifier = Modifier

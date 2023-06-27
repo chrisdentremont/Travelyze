@@ -47,6 +47,7 @@ fun Profile(){
                         .padding(10.dp)
 
                 ) {
+//TODO Create a method of editing the profile page
                     Image(
                         painter = rememberAsyncImagePainter("https://www.theshirtlist.com/wp-content/uploads/2018/12/Rowlet.jpg"),
                         contentDescription = null,
@@ -95,7 +96,7 @@ fun Profile(){
                     textAlign = TextAlign.Start,
                     modifier = Modifier.padding(start = 10.dp, top = 10.dp)
                 )
-
+//TODO Create buttons for these actions
                 Text(text = "\tChange email\n\n\tChange Password",
                     fontSize = 20.sp,
                     fontWeight = FontWeight.Normal,
