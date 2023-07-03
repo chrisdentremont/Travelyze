@@ -1,8 +1,12 @@
 package com.example.travelapp
 
 import android.os.Bundle
+import android.widget.Toast
 import androidx.activity.ComponentActivity
+import androidx.activity.compose.rememberLauncherForActivityResult
 import androidx.activity.compose.setContent
+import androidx.activity.result.IntentSenderRequest
+import androidx.activity.result.contract.ActivityResultContracts
 import androidx.annotation.StringRes
 import androidx.compose.foundation.layout.*
 import androidx.compose.material.*
@@ -18,10 +22,24 @@ import androidx.navigation.compose.composable
 import androidx.navigation.compose.currentBackStackEntryAsState
 import androidx.navigation.compose.rememberNavController
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
+import androidx.lifecycle.lifecycleScope
+import androidx.lifecycle.viewmodel.compose.viewModel
+import com.example.travelapp.sign_in.GoogleAuthUiClient
+import com.example.travelapp.sign_in.SignInViewModel
 import com.example.travelapp.ui.theme.TravelAppTheme
+import com.google.android.gms.auth.api.identity.Identity
+import kotlinx.coroutines.launch
 
 class MainActivity : ComponentActivity() {
+    private val googleAuthUiClient by lazy {
+        GoogleAuthUiClient(
+            context = applicationContext,
+            oneTapClient = Identity.getSignInClient(applicationContext)
+        )
+    }
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
 
@@ -32,10 +50,55 @@ class MainActivity : ComponentActivity() {
                     modifier = Modifier.fillMaxSize(),
                     color = MaterialTheme.colors.background
                 ) {
-                    Login()
-                    if(openApp.value){
-                        OpenApp()
+                    val navController = rememberNavController()
+                    NavHost(navController = navController, startDestination = Screen.Login.route){
+                        composable(route = Screen.Login.route){
+                            val viewModel = viewModel<SignInViewModel>()
+                            val state by viewModel.state.collectAsState()
+
+                            val launcher = rememberLauncherForActivityResult(
+                                contract = ActivityResultContracts.StartIntentSenderForResult(),
+                                onResult = { result ->
+                                    if(result.resultCode == RESULT_OK){
+                                        lifecycleScope.launch {
+                                            val signInResult = googleAuthUiClient.signInWithIntent(
+                                                intent = result.data ?: return@launch
+                                            )
+                                            viewModel.onSignInResult(signInResult)
+                                        }
+                                    }
+                                }
+                            )
+
+                            LaunchedEffect(key1 = state.isSignInSuccessful) {
+                                if(state.isSignInSuccessful){
+                                    Toast.makeText(
+                                        applicationContext,
+                                        "Sign-In successful",
+                                        Toast.LENGTH_LONG
+                                    ).show()
+                                }
+                            }
+
+                            SignInScreen(
+                                state = state,
+                                onSignInClick = {
+                                    lifecycleScope.launch {
+                                        val signInIntentSender = googleAuthUiClient.signIn()
+                                        launcher.launch(
+                                            IntentSenderRequest.Builder(
+                                                signInIntentSender ?: return@launch
+                                            ).build()
+                                        )
+                                    }
+                                }
+                            )
+                        }
                     }
+
+                    //if(openApp.value){
+                    //    OpenApp()
+                    //}
                     //NavBar()
                 }
             }
@@ -51,7 +114,8 @@ class MainActivity : ComponentActivity() {
 sealed class Screen(val route: String, @StringRes val resourceId: Int) {
     object Home : Screen("home", R.string.home_name)
     object Friends : Screen("friends", R.string.friends_name)
-    object Settings : Screen("profile", R.string.profile_name)
+    object Profile : Screen("profile", R.string.profile_name)
+    object Login : Screen("login", R.string.login_name)
 }
 
 /**
@@ -63,7 +127,7 @@ fun NavBar(){
     val routeMap = mapOf(
         Screen.Friends to Icons.Outlined.Diversity1,
         Screen.Home to Icons.Filled.Search,
-        Screen.Settings to Icons.Filled.Person
+        Screen.Profile to Icons.Filled.Person
     )
 
     val navController = rememberNavController()
@@ -102,7 +166,7 @@ fun NavBar(){
         NavHost(navController, startDestination = Screen.Home.route, Modifier.padding(innerPadding)) {
             composable(Screen.Friends.route) {Social()}
             composable(Screen.Home.route) {Home()}
-            composable(Screen.Settings.route) { Profile() }
+            composable(Screen.Profile.route) { Profile() }
         }
     }
 }
