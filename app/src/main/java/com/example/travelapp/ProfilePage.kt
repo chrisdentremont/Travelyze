@@ -25,6 +25,8 @@ import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import coil.compose.rememberAsyncImagePainter
+import com.example.travelapp.ui.theme.Alabaster
+import com.example.travelapp.ui.theme.DimGray
 
 @Composable
 fun Profile(){
@@ -38,7 +40,7 @@ fun Profile(){
                     .fillMaxWidth()
                     .padding(30.dp)
                     .clip(shape = RoundedCornerShape(20.dp))
-                    .background(color = Color.LightGray)
+                    .background(color = Alabaster)
                     .border(2.dp, SolidColor(Color.Black), shape = RoundedCornerShape(20.dp))
             ) {
                 Row(

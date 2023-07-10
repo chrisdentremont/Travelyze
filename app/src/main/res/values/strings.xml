@@ -4,5 +4,6 @@
     <string name="friends_name">Friends</string>
     <string name="profile_name">Profile</string>
     <string name="login_name">Login</string>
+    <string name="register_name">Register</string>
     <string name="web_client_id">445988020076-2vb111qho50tmus1evl8r14jsolcuqco.apps.googleusercontent.com</string>
 </resources>

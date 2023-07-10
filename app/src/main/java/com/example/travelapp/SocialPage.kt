@@ -31,6 +31,7 @@ import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import coil.compose.rememberAsyncImagePainter
+import com.example.travelapp.ui.theme.Alabaster
 
 @Composable
 fun Social(){
@@ -82,6 +83,7 @@ fun Social(){
                         .fillMaxWidth()
                         .padding(15.dp),
                     elevation = 10.dp,
+                    backgroundColor = Alabaster
                 ){
                     Column(
                         modifier = Modifier.padding(15.dp)
@@ -154,6 +156,7 @@ fun Social(){
                         .fillMaxWidth()
                         .padding(15.dp),
                     elevation = 10.dp,
+                    backgroundColor = Alabaster
                 ){
                     Column(
                         modifier = Modifier.padding(15.dp)
@@ -225,6 +228,7 @@ fun Social(){
                         .fillMaxWidth()
                         .padding(15.dp),
                     elevation = 10.dp,
+                    backgroundColor = Alabaster
                 ){
                     Column(
                         modifier = Modifier.padding(15.dp)
@@ -296,6 +300,7 @@ fun Social(){
                         .fillMaxWidth()
                         .padding(15.dp),
                     elevation = 10.dp,
+                    backgroundColor = Alabaster
                 ){
                     Column(
                         modifier = Modifier.padding(15.dp)

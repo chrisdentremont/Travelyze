@@ -1,5 +1,6 @@
 package com.example.travelapp
 
+import androidx.compose.foundation.background
 import androidx.compose.foundation.border
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
@@ -33,6 +34,7 @@ import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import com.example.travelapp.ui.theme.Aero
 
 @Composable
 fun Home(){
@@ -79,7 +81,8 @@ fun Home(){
                 onClick = { /*TODO*/},
                 modifier = Modifier
                     .padding(start = 15.dp, top = 15.dp)
-                    .size(width = 150.dp, height = 50.dp)
+                    .size(width = 150.dp, height = 50.dp),
+                colors = ButtonDefaults.buttonColors(backgroundColor = Aero)
             ) {
                 Text(text = "Search", color = Color.White, fontSize = 20.sp)
             }
