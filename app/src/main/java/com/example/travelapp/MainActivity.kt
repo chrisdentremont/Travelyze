@@ -22,12 +22,15 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.ui.tooling.preview.Preview
+import androidx.navigation.NavGraph
+import androidx.navigation.NavHostController
 import com.example.travelapp.ui.theme.Aero
 import com.example.travelapp.ui.theme.TravelAppTheme
 import com.google.firebase.auth.ktx.auth
 import com.google.firebase.ktx.Firebase
 
 class MainActivity : ComponentActivity() {
+    private lateinit var navController: NavHostController
     companion object {
         val TAG:String = MainActivity::class.java.simpleName
     }
@@ -35,6 +38,7 @@ class MainActivity : ComponentActivity() {
     private val auth by lazy {
         Firebase.auth
     }
+
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -46,6 +50,10 @@ class MainActivity : ComponentActivity() {
                     modifier = Modifier.fillMaxSize(),
                     color = MaterialTheme.colors.background
                 ) {
+                    navController = rememberNavController()
+
+
+
                     Home()
                     NavBar()
                 }
@@ -115,11 +123,15 @@ class MainActivity : ComponentActivity() {
                         RegisterForm()
                     }
                 }
+                composable(Screen.Register.route){
+                    if(isLoggedIn.value){
+                        Login(auth)
+                    }
+                }
             }
         }
     }
 }
-
 
 /**
  * The class that contains information about every existing page

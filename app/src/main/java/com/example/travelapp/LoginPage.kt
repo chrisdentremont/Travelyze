@@ -41,12 +41,10 @@ import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.text.input.PasswordVisualTransformation
 import androidx.compose.ui.text.input.VisualTransformation
 import androidx.compose.ui.text.style.TextAlign
-import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.example.travelapp.MainActivity.Companion.TAG
 import com.example.travelapp.ui.theme.Aero
-import com.example.travelapp.ui.theme.TravelAppTheme
 import com.google.firebase.auth.FirebaseAuth
 
 val isLoggedIn = mutableStateOf(false)
@@ -55,6 +53,7 @@ val isRegistering = mutableStateOf(false)
 @Composable
 fun Login(auth: FirebaseAuth){
     val focusManager = LocalFocusManager.current
+
 
     var email by remember {
         mutableStateOf("")

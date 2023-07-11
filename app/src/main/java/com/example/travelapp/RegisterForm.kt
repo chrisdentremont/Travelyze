@@ -37,13 +37,23 @@ import androidx.compose.ui.text.input.ImeAction
 import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import androidx.navigation.compose.rememberNavController
 import com.example.travelapp.composable.CustomOutlinedTextField
 import com.example.travelapp.ui.theme.Aero
+import com.google.firebase.auth.ktx.auth
+import com.google.firebase.ktx.Firebase
+import com.example.travelapp.MainActivity
 
 val showNavBar = mutableStateOf(true)
 
 @Composable
 fun RegisterForm(){
+    var navController = rememberNavController()
+
+    val auth by lazy {
+        Firebase.auth
+    }
+
     /*TODO Figure out how to hide the nav bar??*/
     showNavBar.value = false
 
@@ -98,9 +108,9 @@ fun RegisterForm(){
         confirmPassword: String
     ){
         if(validateData(firstName, lastName, email, userName, password, confirmPassword)){
-            Log.d(MainActivity::class.java.simpleName, "First Name: $firstName, Last Name: $lastName, Username: $userName, Password: $password")
-            /*TODO Create a profile with the email and password in firebase*/
-            /*TODO Display that account creation was successful*/
+            auth.createUserWithEmailAndPassword(email,password)
+            isRegistering.value = false
+            /*TODO Display that account creation was successful and to login or verify email*/
         } else {
             Toast.makeText(context, "Please review fields", Toast.LENGTH_SHORT).show()
         }
