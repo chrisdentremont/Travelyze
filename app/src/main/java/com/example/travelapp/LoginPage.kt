@@ -47,7 +47,8 @@ import com.example.travelapp.MainActivity.Companion.TAG
 import com.example.travelapp.ui.theme.Aero
 import com.google.firebase.auth.FirebaseAuth
 
-val isLoggedIn = mutableStateOf(false)
+/*TODO Set isLoggedIn to false after testing*/
+val isLoggedIn = mutableStateOf(true)
 val isRegistering = mutableStateOf(false)
 
 @Composable

@@ -1,10 +1,13 @@
 package com.example.travelapp.composable
 
+import androidx.compose.foundation.Image
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.offset
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.text.KeyboardActions
 import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.material.Icon
@@ -12,6 +15,7 @@ import androidx.compose.material.IconButton
 import androidx.compose.material.MaterialTheme
 import androidx.compose.material.OutlinedTextField
 import androidx.compose.material.Text
+import androidx.compose.material.TopAppBar
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Error
 import androidx.compose.material.icons.filled.Visibility
@@ -19,10 +23,15 @@ import androidx.compose.material.icons.filled.VisibilityOff
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.vector.ImageVector
+import androidx.compose.ui.res.painterResource
+import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.input.PasswordVisualTransformation
 import androidx.compose.ui.text.input.VisualTransformation
 import androidx.compose.ui.unit.dp
+import androidx.compose.ui.unit.sp
+import com.example.travelapp.ui.theme.Aero
 
 @Composable
 fun CustomOutlinedTextField(
@@ -91,5 +100,46 @@ fun CustomOutlinedTextField(
                     .fillMaxWidth(0.9f)
             )
         }
+    }
+}
+
+@Composable
+fun TopBar(title: String = "", buttonIcon: ImageVector, onButtonClicked: () -> Unit) {
+    TopAppBar(
+        title = {
+            Text(
+                text = title,
+                fontSize = 30.sp,
+                fontWeight = FontWeight.Normal,
+                modifier = Modifier
+                    .padding(bottom = 20.dp)
+            )
+        },
+        actions = {
+            IconButton(
+                onClick = { onButtonClicked() },
+            ) {
+                Icon(
+                    buttonIcon,
+                    contentDescription = "",
+                    modifier = Modifier.size(size = 40.dp)
+                )
+            }
+        },
+        backgroundColor = Aero
+    )
+}
+
+@Composable
+fun Drawer(
+    modifier: Modifier = Modifier,
+    onDestinationClicked: (route: String) -> Unit
+) {
+    Column(
+        modifier
+            .fillMaxSize()
+            .padding(start = 24.dp, top = 48.dp)
+    ) {
+        Text(text = "Test Drawer")
     }
 }

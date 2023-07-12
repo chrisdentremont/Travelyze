@@ -21,6 +21,7 @@ import androidx.navigation.compose.rememberNavController
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
+import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.navigation.NavGraph
 import androidx.navigation.NavHostController
@@ -109,7 +110,14 @@ class MainActivity : ComponentActivity() {
         ) {
                 innerPadding ->
             NavHost(navController, startDestination = Screen.Home.route, Modifier.padding(innerPadding)) {
-                composable(Screen.Friends.route) {Social()}
+                composable(Screen.Friends.route) {
+                    if(isLoggedIn.value){
+                        Social_LoggedIn()
+                    }
+                    else{
+                        Social_Default()
+                    }
+                }
                 composable(Screen.Home.route) {Home()}
                 composable(Screen.Profile.route) {
                     if (isLoggedIn.value) {

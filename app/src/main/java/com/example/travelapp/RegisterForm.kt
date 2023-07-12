@@ -4,23 +4,32 @@ import android.util.Log
 import android.util.Patterns
 import android.widget.Toast
 import androidx.compose.foundation.background
+import androidx.compose.foundation.gestures.detectTapGestures
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.text.KeyboardActions
 import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.Button
 import androidx.compose.material.ButtonDefaults
+import androidx.compose.material.Icon
+import androidx.compose.material.IconButton
 import androidx.compose.material.Text
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.AlternateEmail
 import androidx.compose.material.icons.filled.Password
 import androidx.compose.material.icons.filled.PermIdentity
 import androidx.compose.material.icons.filled.Person
+import androidx.compose.material.icons.outlined.AddCircle
+import androidx.compose.material.icons.outlined.Cancel
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
@@ -31,10 +40,12 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.focus.FocusDirection
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.input.pointer.pointerInput
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.LocalFocusManager
 import androidx.compose.ui.text.input.ImeAction
 import androidx.compose.ui.text.input.KeyboardType
+import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.navigation.compose.rememberNavController
@@ -48,8 +59,6 @@ val showNavBar = mutableStateOf(true)
 
 @Composable
 fun RegisterForm(){
-    var navController = rememberNavController()
-
     val auth by lazy {
         Firebase.auth
     }
@@ -91,7 +100,7 @@ fun RegisterForm(){
         validateFirstName = firstname.isNotBlank()
         validateLastName = lastname.isNotBlank()
         validateEmail = Patterns.EMAIL_ADDRESS.matcher(email).matches()
-        /*validateUserName = TODO*/
+        validateUserName = username.isNotBlank()
         validatePassword = passwordRegex.matches(password)
         validateConfirmPassword = passwordRegex.matches(confirmPassword)
         validateArePasswordsEqual = password == confirmPassword
@@ -120,35 +129,42 @@ fun RegisterForm(){
         modifier = Modifier
             .fillMaxSize()
             .verticalScroll(scrollState)
-            .background(Color.White),
+            .background(Color.White)
+            .pointerInput(Unit) {
+                detectTapGestures(onTap = {
+                    focusManager.clearFocus()
+                })}
+            .padding(20.dp),
         horizontalAlignment = Alignment.CenterHorizontally,
         verticalArrangement = Arrangement.Top
     ){
         Text(
             text = "Register an account on Travelyze",
             style = MaterialTheme.typography.headlineLarge,
-            modifier = Modifier.padding(vertical = 20.dp),
-            color = Color.Black
+            modifier = Modifier.padding(bottom = 20.dp),
+            color = Color.Black,
+            textAlign = TextAlign.Center
         )
 
         //
         // First Name
         //
-         CustomOutlinedTextField(
-             value = firstname,
-             onValueChange = { firstname = it },
-             label = "First Name",
-             showError = !validateFirstName,
-             errorMessage = validateFirstNameError,
-             leadingIconImageVector = Icons.Default.PermIdentity,
-             keyboardOptions = KeyboardOptions(
-                 keyboardType = KeyboardType.Text,
-                 imeAction = ImeAction.Next
-             ),
-             keyboardActions = KeyboardActions(
-                 onNext = {focusManager.moveFocus(FocusDirection.Down)}
-             )
-         )
+        CustomOutlinedTextField(
+            value = firstname,
+            onValueChange = { firstname = it },
+            label = "First Name",
+            showError = !validateFirstName,
+            errorMessage = validateFirstNameError,
+            leadingIconImageVector = Icons.Default.PermIdentity,
+            keyboardOptions = KeyboardOptions(
+                keyboardType = KeyboardType.Text,
+                imeAction = ImeAction.Next
+            ),
+            keyboardActions = KeyboardActions(
+                onNext = {focusManager.moveFocus(FocusDirection.Down)
+                }
+            )
+        )
 
         //
         // Last Name
@@ -251,16 +267,37 @@ fun RegisterForm(){
             )
         )
 
-        Button(
-            onClick = {
-                      register(firstname, lastname, email, username, password, confirmPassword)
-            },
-            modifier = Modifier
-                .padding(20.dp)
-                .fillMaxWidth(0.9f),
-            colors = ButtonDefaults.buttonColors(backgroundColor = Aero, contentColor = Color.White)
+        Row(
+            modifier = Modifier.fillMaxWidth(),
+            horizontalArrangement = Arrangement.Center
+        ){
+            Button(
+                onClick = {
+                    register(firstname, lastname, email, username, password, confirmPassword)
+                },
+                modifier = Modifier
+                    .padding(top = 10.dp, start = 20.dp, end = 10.dp, bottom = 30.dp)
+                    .fillMaxWidth(0.5f)
+                    .fillMaxHeight(0.3f),
+                colors = ButtonDefaults.buttonColors(backgroundColor = Aero, contentColor = Color.White)
             ){
                 Text(text = "Register", fontSize = 20.sp)
             }
+
+            Button(
+                onClick = {
+                    isRegistering.value = false
+                },
+                modifier = Modifier
+                    .padding(top = 10.dp, start = 10.dp, end = 20.dp, bottom = 30.dp)
+                    .fillMaxWidth(1f)
+                    .fillMaxHeight(0.3f),
+                colors = ButtonDefaults.buttonColors(backgroundColor = Aero, contentColor = Color.White),
+
+            ){
+                Text(text = "Cancel", fontSize = 20.sp)
+            }
+        }
+
     }
 }
