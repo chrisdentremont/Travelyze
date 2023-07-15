@@ -1,12 +1,12 @@
 package com.example.travelapp
 
-import android.widget.Space
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
-import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
@@ -14,13 +14,9 @@ import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.verticalScroll
-import androidx.compose.material.Button
 import androidx.compose.material.Divider
 import androidx.compose.material.DrawerValue
-import androidx.compose.material.Icon
-import androidx.compose.material.IconButton
 import androidx.compose.material.ModalDrawer
-import androidx.compose.material.Surface
 import androidx.compose.material.Text
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Settings
@@ -44,58 +40,50 @@ import coil.compose.rememberAsyncImagePainter
 import com.example.travelapp.composable.Drawer
 import com.example.travelapp.composable.TopBar
 import com.example.travelapp.ui.theme.Alabaster
+import com.google.firebase.auth.ktx.auth
+import com.google.firebase.ktx.Firebase
 import kotlinx.coroutines.launch
 
 val isDrawerOpen = mutableStateOf(false)
+val auth by lazy {
+    Firebase.auth
+}
 
 @Composable
 fun Profile(){
-    Surface(color = Color.White){
-        val drawerState = rememberDrawerState(DrawerValue.Closed)
-        val scope = rememberCoroutineScope()
-        fun openDrawer()  {
-            scope.launch {
-                drawerState.open()
+    val drawerState = rememberDrawerState(DrawerValue.Closed)
+    val scope = rememberCoroutineScope()
+    fun openDrawer()  {
+        scope.launch {
+            drawerState.open()
+        }
+    }
+    fun closeDrawer(){
+        scope.launch {
+            drawerState.close()
+        }
+    }
+
+    if(isDrawerOpen.value){
+        openDrawer()
+    } else {
+        closeDrawer()
+    }
+
+    Column(
+        Modifier
+            .fillMaxWidth()
+            .verticalScroll(rememberScrollState())
+    ) {
+        TopBar(
+            title = "Profile Page",
+            buttonIcon = Icons.Filled.Settings,
+            onButtonClicked = {
+                isDrawerOpen.value = !isDrawerOpen.value
             }
-        }
+        )
 
-        if(isDrawerOpen.value){
-            openDrawer()
-        } else {
-
-        }
-        CompositionLocalProvider(LocalLayoutDirection provides LayoutDirection.Rtl ) {
-            ModalDrawer(
-                drawerState = drawerState,
-                gesturesEnabled = drawerState.isOpen,
-                drawerContent = {
-                    //TODO Drawer Shows up behind everything??
-                    Drawer(
-                        onDestinationClicked = { route ->
-                            scope.launch {
-                                drawerState.close()
-                            }
-                        }
-                    )
-                }
-            ){
-                //ModalDrawerSample()
-            }
-        }
-
-        Column(
-            Modifier
-                .fillMaxWidth()
-                .verticalScroll(rememberScrollState())
-        ) {
-            TopBar(
-                title = "",
-                buttonIcon = Icons.Filled.Settings,
-                onButtonClicked = {
-                    isDrawerOpen.value = !isDrawerOpen.value
-                }
-            )
-
+        Box(Modifier.fillMaxSize()){
             //
             // Profile Box
             //
@@ -156,68 +144,23 @@ fun Profile(){
                 }
             }
 
-
-//        Row(Modifier.fillMaxWidth()){
-//            Column(Modifier.fillMaxWidth()) {
-//                Text(text = "Settings",
-//                    fontSize = 30.sp,
-//                    fontWeight = FontWeight.Normal,
-//                    textAlign = TextAlign.Start,
-//                    modifier = Modifier.padding(start = 10.dp, top = 10.dp)
-//                )
-////TODO Create buttons for these actions
-//                Text(text = "\tChange email\n\n\tChange Password",
-//                    fontSize = 20.sp,
-//                    fontWeight = FontWeight.Normal,
-//                    textAlign = TextAlign.Start,
-//                    modifier = Modifier.padding(10.dp))
-//
-//                Text(text = "\n\tDelete Account",
-//                    fontSize = 20.sp,
-//                    fontWeight = FontWeight.Normal,
-//                    textAlign = TextAlign.Start,
-//                    modifier = Modifier.padding(10.dp),
-//                    color = Color.Red
-//                )
-//            }
-//        }
+            CompositionLocalProvider(LocalLayoutDirection provides LayoutDirection.Rtl, ) {
+                ModalDrawer(
+                    drawerState = drawerState,
+                    gesturesEnabled = drawerState.isOpen,
+                    drawerContent = {
+                        Drawer(
+                            modifier = Modifier.background(color = Alabaster),
+                            fireBaseAuth = auth
+                        )
+                    }
+                ){}
+            }
         }
     }
 }
 
 @Composable
 fun ModalDrawerSample() {
-    val drawerState = rememberDrawerState(DrawerValue.Closed)
-    val scope = rememberCoroutineScope()
-    CompositionLocalProvider(LocalLayoutDirection provides LayoutDirection.Rtl ) {
-        ModalDrawer(
-            drawerState = drawerState,
-            drawerContent = {
-                Column {
-                    Text("Text in Drawer")
-                    Button(onClick = {
-                        scope.launch {
-                            drawerState.close()
-                        }
-                    }) {
-                        Text("Close Drawer")
-                    }
-                }
-            },
-            content = {
-                Column {
-                    Text("Text in Bodycontext")
-                    Button(onClick = {
 
-                        scope.launch {
-                            drawerState.open()
-                        }
-
-                    }) {
-                        Text("Click to open")
-                    }
-                }
-            }
-        )
-    }
 }

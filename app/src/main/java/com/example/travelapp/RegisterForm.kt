@@ -1,6 +1,6 @@
 package com.example.travelapp
 
-import android.util.Log
+
 import android.util.Patterns
 import android.widget.Toast
 import androidx.compose.foundation.background
@@ -11,9 +11,7 @@ import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
-import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.text.KeyboardActions
 import androidx.compose.foundation.text.KeyboardOptions
@@ -28,8 +26,6 @@ import androidx.compose.material.icons.filled.AlternateEmail
 import androidx.compose.material.icons.filled.Password
 import androidx.compose.material.icons.filled.PermIdentity
 import androidx.compose.material.icons.filled.Person
-import androidx.compose.material.icons.outlined.AddCircle
-import androidx.compose.material.icons.outlined.Cancel
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
@@ -48,12 +44,10 @@ import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
-import androidx.navigation.compose.rememberNavController
 import com.example.travelapp.composable.CustomOutlinedTextField
 import com.example.travelapp.ui.theme.Aero
 import com.google.firebase.auth.ktx.auth
 import com.google.firebase.ktx.Firebase
-import com.example.travelapp.MainActivity
 
 val showNavBar = mutableStateOf(true)
 

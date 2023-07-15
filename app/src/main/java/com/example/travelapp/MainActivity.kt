@@ -19,6 +19,7 @@ import androidx.navigation.compose.composable
 import androidx.navigation.compose.currentBackStackEntryAsState
 import androidx.navigation.compose.rememberNavController
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.CompositionLocalProvider
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.ui.graphics.vector.ImageVector
@@ -113,22 +114,29 @@ class MainActivity : ComponentActivity() {
                 composable(Screen.Friends.route) {
                     if(isLoggedIn.value){
                         Social_LoggedIn()
+                        isDrawerOpen.value = false
                     }
                     else{
                         Social_Default()
+                        isDrawerOpen.value = false
                     }
                 }
-                composable(Screen.Home.route) {Home()}
+                composable(Screen.Home.route) {
+                    Home()
+                    isDrawerOpen.value = false
+                }
                 composable(Screen.Profile.route) {
                     if (isLoggedIn.value) {
                         Profile()
                     }
                     else{
                         Login(auth)
+                        isDrawerOpen.value = false
                     }
 
                     if(isRegistering.value){
                         RegisterForm()
+                        isDrawerOpen.value = false
                     }
                 }
                 composable(Screen.Register.route){
@@ -138,6 +146,8 @@ class MainActivity : ComponentActivity() {
                 }
             }
         }
+
+
     }
 }
 
