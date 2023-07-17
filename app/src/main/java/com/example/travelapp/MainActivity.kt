@@ -19,12 +19,7 @@ import androidx.navigation.compose.composable
 import androidx.navigation.compose.currentBackStackEntryAsState
 import androidx.navigation.compose.rememberNavController
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.CompositionLocalProvider
 import androidx.compose.runtime.getValue
-import androidx.compose.runtime.mutableStateOf
-import androidx.compose.ui.graphics.vector.ImageVector
-import androidx.compose.ui.tooling.preview.Preview
-import androidx.navigation.NavGraph
 import androidx.navigation.NavHostController
 import com.example.travelapp.ui.theme.Aero
 import com.example.travelapp.ui.theme.TravelAppTheme
@@ -58,6 +53,14 @@ class MainActivity : ComponentActivity() {
 
                     Home()
                     NavBar()
+
+                    if (openSignoutDialog.value){
+                        signOutDialog(auth)
+                    }
+                    
+                    if(openDeleteDialog.value){
+                        deleteAccountDialog(auth)
+                    }
                 }
             }
         }

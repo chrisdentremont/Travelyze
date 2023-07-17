@@ -1,49 +1,81 @@
 package com.example.travelapp
 
+import android.widget.Toast
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
+import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.foundation.text.KeyboardActions
+import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.foundation.verticalScroll
+import androidx.compose.material.Button
+import androidx.compose.material.ButtonDefaults
 import androidx.compose.material.Divider
 import androidx.compose.material.DrawerValue
+import androidx.compose.material.Icon
+import androidx.compose.material.IconButton
 import androidx.compose.material.ModalDrawer
+import androidx.compose.material.OutlinedTextField
+import androidx.compose.material.Surface
 import androidx.compose.material.Text
+import androidx.compose.material.TextField
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Settings
+import androidx.compose.material.icons.filled.Visibility
+import androidx.compose.material.icons.filled.VisibilityOff
 import androidx.compose.material.rememberDrawerState
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.CompositionLocalProvider
+import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberCoroutineScope
+import androidx.compose.runtime.saveable.rememberSaveable
+import androidx.compose.runtime.setValue
+import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
+import androidx.compose.ui.focus.FocusDirection
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.SolidColor
 import androidx.compose.ui.layout.ContentScale
+import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.platform.LocalFocusManager
 import androidx.compose.ui.platform.LocalLayoutDirection
 import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.text.input.ImeAction
+import androidx.compose.ui.text.input.KeyboardType
+import androidx.compose.ui.text.input.PasswordVisualTransformation
+import androidx.compose.ui.text.input.VisualTransformation
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.LayoutDirection
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import androidx.compose.ui.window.Dialog
 import coil.compose.rememberAsyncImagePainter
 import com.example.travelapp.composable.Drawer
 import com.example.travelapp.composable.TopBar
+import com.example.travelapp.ui.theme.Aero
 import com.example.travelapp.ui.theme.Alabaster
+import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.auth.ktx.auth
 import com.google.firebase.ktx.Firebase
 import kotlinx.coroutines.launch
 
+var openSignoutDialog = mutableStateOf(false)
+var openDeleteDialog = mutableStateOf(false)
 val isDrawerOpen = mutableStateOf(false)
 val auth by lazy {
     Firebase.auth
@@ -154,13 +186,219 @@ fun Profile(){
                             fireBaseAuth = auth
                         )
                     }
-                ){}
+                ){
+                    //Do nothing
+                }
             }
         }
     }
 }
 
 @Composable
-fun ModalDrawerSample() {
+fun signOutDialog(fireBaseAuth: FirebaseAuth){
+    val contextForToast = LocalContext.current.applicationContext
 
+    Dialog(
+        onDismissRequest = {
+            openDeleteDialog.value = false
+        }
+    ){
+        Surface(
+            modifier = Modifier
+                .fillMaxWidth()
+                .clip(shape = RoundedCornerShape(20.dp)),
+            elevation = 4.dp
+        ){
+            Column(
+                verticalArrangement = Arrangement.Center,
+            ){
+                Box(
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .height(175.dp)
+                        .clip(shape = RoundedCornerShape(20.dp))
+                        .background(color = Color.White)
+                        .border(2.dp, SolidColor(Color.Black), shape = RoundedCornerShape(20.dp)),
+                    contentAlignment = Alignment.Center,
+                ){
+                    Text(
+                        modifier = Modifier.padding(bottom = 65.dp),
+                        text = "Sign out of your account?",
+                        textAlign = TextAlign.Center,
+                        color = Color.Black,
+                        fontSize = 19.sp
+                    )
+
+                    Row(
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .padding(start = 15.dp, top = 65.dp, end = 15.dp)
+                    ){
+                        Button(
+                            modifier = Modifier
+                                .width(150.dp)
+                                .padding(end = 10.dp),
+                            colors = ButtonDefaults.buttonColors(backgroundColor = Aero),
+                            onClick = {
+                                fireBaseAuth.signOut()
+                                openSignoutDialog.value = false
+                                isLoggedIn.value = false
+                                Toast.makeText(
+                                    contextForToast,
+                                    "You are now logged out",
+                                    Toast.LENGTH_SHORT
+                                ).show()
+                            }) {
+                            Text(
+                                text = "Confirm",
+                                color = Color.White,
+                            )
+                        }
+
+                        Button(
+                            modifier = Modifier
+                                .width(150.dp)
+                                .padding(start = 10.dp),
+                            colors = ButtonDefaults.buttonColors(backgroundColor = Aero),
+                            onClick = {
+                                openSignoutDialog.value = false
+                            }) {
+                            Text(
+                                text = "Cancel",
+                                color = Color.White,
+                            )
+                        }
+                    }
+                }
+            }
+        }
+    }
 }
+
+@Composable
+fun deleteAccountDialog(fireBaseAuth: FirebaseAuth){
+    val contextForToast = LocalContext.current.applicationContext
+    val focusManager = LocalFocusManager.current
+
+    var password by remember {
+        mutableStateOf("")
+    }
+
+    var isPasswordVisible by rememberSaveable { mutableStateOf(false)}
+
+    Dialog(
+        onDismissRequest = {
+            openSignoutDialog.value = false
+        }
+    ){
+        Surface(
+            modifier = Modifier
+                .fillMaxWidth()
+                .clip(shape = RoundedCornerShape(20.dp)),
+            elevation = 4.dp
+        ){
+            Column(
+                verticalArrangement = Arrangement.Center,
+            ){
+                Box(
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .height(250.dp)
+                        .clip(shape = RoundedCornerShape(20.dp))
+                        .background(color = Color.White)
+                        .border(2.dp, SolidColor(Color.Black), shape = RoundedCornerShape(20.dp)),
+                    contentAlignment = Alignment.Center,
+                ){
+                    Text(
+                        modifier = Modifier.padding(bottom = 120.dp, start = 10.dp, end = 10.dp),
+                        text = "Are you sure you wish to DELETE your account permanently?",
+                        textAlign = TextAlign.Center,
+                        color = Color.Black,
+                        fontSize = 18.sp,
+                        fontWeight = FontWeight.Bold
+                    )
+
+                    OutlinedTextField(
+                        value = password,
+                        onValueChange = { password = it },
+                        label = { Text("Enter Password to confirm") },
+                        singleLine = true,
+                        modifier = Modifier
+                            .padding(top = 15.dp),
+                        keyboardOptions = KeyboardOptions(
+                            keyboardType =  KeyboardType.Password,
+                            imeAction = ImeAction.Done
+                        ),
+                        keyboardActions = KeyboardActions(
+                            onNext = { focusManager.clearFocus() }
+                        ),
+                        //isError = !isPasswordValid,
+                        //visualTransformation = if (isPasswordVisible) VisualTransformation.None else PasswordVisualTransformation(),
+
+                        trailingIcon = {
+                            val image = if (isPasswordVisible)
+                                Icons.Filled.Visibility
+                            else Icons.Filled.VisibilityOff
+
+                            val description = if (isPasswordVisible) "Hide password" else "Show password"
+
+                            IconButton(onClick = {isPasswordVisible = !isPasswordVisible}){
+                                Icon(imageVector  = image, description)
+                            }
+                        }
+                    )
+
+                    Row(
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .padding(start = 15.dp, top = 165.dp, end = 15.dp)
+                    ){
+                        Button(
+                            modifier = Modifier
+                                .width(150.dp)
+                                .padding(end = 10.dp),
+                            colors = ButtonDefaults.buttonColors(backgroundColor = Aero),
+                            onClick = {
+                                if(
+                                    //TODO ensure entered password matches saved password
+                                    password == "Gm@123456"
+                                ){
+                                    fireBaseAuth.currentUser?.delete()
+                                } else{
+                                    //TODO Inform that password was entered incorrectly
+                                }
+
+                                openDeleteDialog.value = false
+                                isLoggedIn.value = false
+                                Toast.makeText(
+                                    contextForToast,
+                                    "Account successfully deleted.",
+                                    Toast.LENGTH_SHORT
+                                ).show()
+                            }) {
+                            Text(
+                                text = "Confirm",
+                                color = Color.White,
+                            )
+                        }
+
+                        Button(
+                            modifier = Modifier
+                                .width(150.dp)
+                                .padding(start = 10.dp),
+                            colors = ButtonDefaults.buttonColors(backgroundColor = Aero),
+                            onClick = {
+                                openDeleteDialog.value = false
+                            }) {
+                            Text(
+                                text = "Cancel",
+                                color = Color.White,
+                            )
+                        }
+                    }
+                }
+            }
+        }
+    }
+}
+

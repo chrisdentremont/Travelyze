@@ -14,11 +14,8 @@ import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.Card
-import androidx.compose.material.Icon
-import androidx.compose.material.IconButton
 import androidx.compose.material.Text
 import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.Settings
 import androidx.compose.material.icons.outlined.AddCircle
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
@@ -53,28 +50,6 @@ fun Social_LoggedIn(){
                     /*TODO Implement friend addition window*/
                 }
             )
-//            Text(
-//                text = "Friends",
-//                fontSize = 30.sp,
-//                fontWeight = FontWeight.Normal,
-//                modifier = Modifier
-//                    .padding(bottom = 20.dp)
-//                    .weight(2f),
-//            )
-
-//            IconButton(
-//                onClick = { /*TODO Implement friend addition window*/ },
-//                modifier = Modifier
-//                    .padding(start = 10.dp)
-//                    .weight(1f),
-//
-//            ) {
-//                Icon(
-//                    imageVector = Icons.Outlined.AddCircle,
-//                    contentDescription = "",
-//                    modifier = Modifier.size(size = 40.dp)
-//                    )
-//            }
         }
 
         //TODO Improve the friend page UI and display information in a better way

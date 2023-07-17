@@ -1,21 +1,14 @@
 package com.example.travelapp.composable
 
-import android.util.Log
-import androidx.compose.foundation.Image
-import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
-import androidx.compose.foundation.indication
 import androidx.compose.foundation.interaction.MutableInteractionSource
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
-import androidx.compose.foundation.layout.fillMaxHeight
-import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.offset
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
-import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.text.KeyboardActions
 import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.material.Divider
@@ -36,19 +29,14 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.vector.ImageVector
-import androidx.compose.ui.res.painterResource
-import androidx.compose.ui.text.font.FontStyle
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.input.PasswordVisualTransformation
 import androidx.compose.ui.text.input.VisualTransformation
-import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
-import com.example.travelapp.MainActivity
-import com.example.travelapp.isLoggedIn
+import com.example.travelapp.openDeleteDialog
+import com.example.travelapp.openSignoutDialog
 import com.example.travelapp.ui.theme.Aero
-import com.example.travelapp.ui.theme.Alabaster
-import com.example.travelapp.ui.theme.Khaki
 import com.google.firebase.auth.FirebaseAuth
 
 @Composable
@@ -167,7 +155,7 @@ fun Drawer(
                 text = "Edit Username",
                 color = Color.Black,
                 modifier = Modifier.padding(start = 15.dp),
-                fontSize = 20.sp)
+                fontSize = 30.sp)
         }
 
         TextButton(
@@ -177,35 +165,35 @@ fun Drawer(
                 text = "Change password",
                 color = Color.Black,
                 modifier = Modifier.padding(start = 15.dp, top = 10.dp),
-                fontSize = 20.sp)
+                fontSize = 30.sp)
         }
 
         TextButton(
             onClick = {
                 //TODO Create a sign out confirmation window - "Do you wish to sign out?"
-                fireBaseAuth.signOut()
-                isLoggedIn.value = false
+                openSignoutDialog.value = true
             }
         ) {
             Text(
                 text = "Sign out",
                 color = Color.Blue,
                 modifier = Modifier.padding(start = 15.dp, top = 10.dp, bottom = 10.dp),
-                fontSize = 20.sp)
+                fontSize = 30.sp)
         }
 
         Divider(startIndent = 0.dp, thickness = 2.dp, color = Color.Black)
 
         TextButton(
-            onClick = { /*TODO Prompt delete account confirmation window*/ }
+            onClick = { openDeleteDialog.value = true }
         ) {
             Text(
                 text = "Delete Account",
                 color = Color.Red,
                 modifier = Modifier.padding(start = 15.dp, top = 10.dp),
-                fontSize = 20.sp)
+                fontSize = 30.sp)
         }
 
 
     }
 }
+
