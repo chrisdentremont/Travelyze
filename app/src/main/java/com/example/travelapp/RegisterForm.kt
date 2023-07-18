@@ -112,8 +112,15 @@ fun RegisterForm(){
     ){
         if(validateData(firstName, lastName, email, userName, password, confirmPassword)){
             auth.createUserWithEmailAndPassword(email,password)
-            isRegistering.value = false
-            /*TODO Display that account creation was successful and to login or verify email*/
+                .addOnCompleteListener(){ task ->
+                    if(task.isSuccessful){
+                        isRegistering.value = false
+                        Toast.makeText(context, "Account Successfully Created!", Toast.LENGTH_SHORT).show()
+                    }
+                    else {
+                        Toast.makeText(context, "Error creating account.", Toast.LENGTH_SHORT).show()
+                    }
+                }
         } else {
             Toast.makeText(context, "Please review fields", Toast.LENGTH_SHORT).show()
         }

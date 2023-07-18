@@ -50,7 +50,6 @@ class MainActivity : ComponentActivity() {
                     navController = rememberNavController()
 
 
-
                     Home()
                     NavBar()
 
@@ -61,6 +60,8 @@ class MainActivity : ComponentActivity() {
                     if(openDeleteDialog.value){
                         deleteAccountDialog(auth)
                     }
+                    
+
                 }
             }
         }

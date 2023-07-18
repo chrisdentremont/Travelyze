@@ -36,6 +36,8 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.example.travelapp.openDeleteDialog
 import com.example.travelapp.openSignoutDialog
+import com.example.travelapp.sendEmailToExistingUser
+import com.example.travelapp.sendPasswordChangeEmail
 import com.example.travelapp.ui.theme.Aero
 import com.google.firebase.auth.FirebaseAuth
 
@@ -159,7 +161,7 @@ fun Drawer(
         }
 
         TextButton(
-            onClick = { /*TODO Prompt password change window*/ }
+            onClick = { sendPasswordChangeEmail.value = true }
         ) {
             Text(
                 text = "Change password",
@@ -170,7 +172,6 @@ fun Drawer(
 
         TextButton(
             onClick = {
-                //TODO Create a sign out confirmation window - "Do you wish to sign out?"
                 openSignoutDialog.value = true
             }
         ) {
@@ -180,11 +181,12 @@ fun Drawer(
                 modifier = Modifier.padding(start = 15.dp, top = 10.dp, bottom = 10.dp),
                 fontSize = 30.sp)
         }
-
         Divider(startIndent = 0.dp, thickness = 2.dp, color = Color.Black)
 
         TextButton(
-            onClick = { openDeleteDialog.value = true }
+            onClick = {
+                openDeleteDialog.value = true
+            }
         ) {
             Text(
                 text = "Delete Account",

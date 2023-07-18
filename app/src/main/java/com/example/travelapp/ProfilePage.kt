@@ -30,7 +30,6 @@ import androidx.compose.material.ModalDrawer
 import androidx.compose.material.OutlinedTextField
 import androidx.compose.material.Surface
 import androidx.compose.material.Text
-import androidx.compose.material.TextField
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Settings
 import androidx.compose.material.icons.filled.Visibility
@@ -47,7 +46,6 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
-import androidx.compose.ui.focus.FocusDirection
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.SolidColor
 import androidx.compose.ui.layout.ContentScale
@@ -57,8 +55,6 @@ import androidx.compose.ui.platform.LocalLayoutDirection
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.input.ImeAction
 import androidx.compose.ui.text.input.KeyboardType
-import androidx.compose.ui.text.input.PasswordVisualTransformation
-import androidx.compose.ui.text.input.VisualTransformation
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.LayoutDirection
 import androidx.compose.ui.unit.dp
@@ -70,6 +66,8 @@ import com.example.travelapp.composable.TopBar
 import com.example.travelapp.ui.theme.Aero
 import com.example.travelapp.ui.theme.Alabaster
 import com.google.firebase.auth.FirebaseAuth
+import com.google.firebase.auth.FirebaseUser
+import com.google.firebase.auth.UserInfo
 import com.google.firebase.auth.ktx.auth
 import com.google.firebase.ktx.Firebase
 import kotlinx.coroutines.launch
@@ -77,6 +75,7 @@ import kotlinx.coroutines.launch
 var openSignoutDialog = mutableStateOf(false)
 var openDeleteDialog = mutableStateOf(false)
 val isDrawerOpen = mutableStateOf(false)
+val sendPasswordChangeEmail = mutableStateOf(false)
 val auth by lazy {
     Firebase.auth
 }
@@ -100,6 +99,10 @@ fun Profile(){
         openDrawer()
     } else {
         closeDrawer()
+    }
+
+    if(sendPasswordChangeEmail.value){
+        sendEmailToExistingUser(auth.currentUser)
     }
 
     Column(
@@ -288,7 +291,7 @@ fun deleteAccountDialog(fireBaseAuth: FirebaseAuth){
 
     Dialog(
         onDismissRequest = {
-            openSignoutDialog.value = false
+            openDeleteDialog.value = false
         }
     ){
         Surface(
@@ -398,6 +401,35 @@ fun deleteAccountDialog(fireBaseAuth: FirebaseAuth){
                     }
                 }
             }
+        }
+    }
+}
+
+@Composable
+fun sendEmailToExistingUser(user: FirebaseUser?){
+    val contextForToast = LocalContext.current.applicationContext
+    var isEmailPassword = false
+    var email = user?.email.toString()
+
+    if(user != null) {
+        for (profile:UserInfo in user.providerData) {
+            if(profile.providerId == "password"){
+                isEmailPassword = true
+            }
+        }
+    }
+
+    if(isEmailPassword){
+        auth.sendPasswordResetEmail(email).addOnCompleteListener{
+            if(it.isSuccessful) {
+                Toast.makeText(
+                    contextForToast,
+                    "Password change email sent.",
+                    Toast.LENGTH_SHORT
+                ).show()
+            }
+
+            sendPasswordChangeEmail.value = false
         }
     }
 }
