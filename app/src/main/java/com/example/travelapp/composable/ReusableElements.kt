@@ -1,5 +1,6 @@
 package com.example.travelapp.composable
 
+import android.util.Log
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.interaction.MutableInteractionSource
 import androidx.compose.foundation.layout.Arrangement
@@ -36,13 +37,11 @@ import androidx.compose.ui.text.input.PasswordVisualTransformation
 import androidx.compose.ui.text.input.VisualTransformation
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
-import com.example.travelapp.openDeleteDialog
-import com.example.travelapp.openSignoutDialog
-import com.example.travelapp.sendEmailToExistingUser
-import com.example.travelapp.sendPasswordChangeEmail
+import com.example.travelapp.*
 import com.example.travelapp.ui.theme.Aero
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.firestore.FirebaseFirestore
+import com.google.firebase.firestore.ktx.toObject
 
 @Composable
 fun CustomOutlinedTextField(
@@ -151,45 +150,24 @@ fun Drawer(
         TextButton(
             onClick = {
                 /*TODO Prompt username change window*/
-                //TODO Figure out how to read data once its in the database
+                //TODO Not working??
                 var fireStore = FirebaseFirestore.getInstance()
-                var users = mutableListOf<TravelyzeUser?>()
-
-                fireStore.collection("users").get()
-                    .addOnSuccessListener {
-                        queryDocumentSnapshots ->
-
-                        if(!queryDocumentSnapshots.isEmpty) {
-                            val list = queryDocumentSnapshots.documents
-                            for(d in list) {
-                                val u: TravelyzeUser? = d.toObject(TravelyzeUser::class.java)
-
-                                users.add(u)
-                            }
-                        }
-                    }
 
                 var userID = auth.currentUser?.uid.toString()
+
                 var documentReference = fireStore.collection("users").document(userID)
 
-//                var user = TravelyzeUser (
-//                    AccountInfo(
-//                        firstName,
-//                        lastName,
-//                        userName,
-//                        email
-//                    ),
-//
-//                    AccountData(
-//                        mutableListOf(),
-//                        mutableListOf()
-//                    )
-//                )
-//
-//                var userAccount = mutableMapOf<String, TravelyzeUser>()
-//                userAccount["UserAccount"] = user
-//
-//                documentReference.set(userAccount)
+                documentReference.get().addOnSuccessListener { documentSnapshot ->
+                    val user = documentSnapshot.toObject<TravelyzeUser>()
+
+                    Log.d(MainActivity.TAG, "user is $user")
+
+                    user?.info?.userName = "Puffy43357"
+
+                    var userAccount = mutableMapOf<String, TravelyzeUser?>()
+                    userAccount["UserAccount"] = user
+                    documentReference.set(userAccount)
+                }
             },
             Modifier.clickable(
                 indication = null,

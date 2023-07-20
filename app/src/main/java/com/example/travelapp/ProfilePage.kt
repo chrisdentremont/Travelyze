@@ -64,12 +64,15 @@ import androidx.compose.ui.window.Dialog
 import coil.compose.rememberAsyncImagePainter
 import com.example.travelapp.composable.Drawer
 import com.example.travelapp.composable.TopBar
+import com.example.travelapp.composable.TravelyzeUser
 import com.example.travelapp.ui.theme.Aero
 import com.example.travelapp.ui.theme.Alabaster
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.auth.FirebaseUser
 import com.google.firebase.auth.UserInfo
 import com.google.firebase.auth.ktx.auth
+import com.google.firebase.firestore.FirebaseFirestore
+import com.google.firebase.firestore.ktx.toObject
 import com.google.firebase.ktx.Firebase
 import kotlinx.coroutines.launch
 
@@ -102,6 +105,18 @@ fun Profile(){
     if(sendPasswordChangeEmail.value){
         sendEmailToExistingUser(Firebase.auth.currentUser)
     }
+
+    var fireStore = FirebaseFirestore.getInstance()
+
+    var userID = Firebase.auth.currentUser?.uid.toString()
+    var documentReference = fireStore.collection("users").document(userID)
+
+    documentReference.get().addOnSuccessListener { documentSnapshot ->
+
+        var user = documentSnapshot.toObject<TravelyzeUser>()
+
+    }
+
 
     Column(
         Modifier
@@ -435,4 +450,21 @@ fun sendEmailToExistingUser(user: FirebaseUser?){
         }
     }
 }
+
+//fun getUserAccount(): TravelyzeUser? {
+//    var fireStore = FirebaseFirestore.getInstance()
+//
+//    var userID = Firebase.auth.currentUser?.uid.toString()
+//    var documentReference = fireStore.collection("users").document(userID)
+//
+//    var user: TravelyzeUser?
+//
+//    documentReference.get().addOnSuccessListener { documentSnapshot ->
+//
+//        user = documentSnapshot.toObject<TravelyzeUser>()
+//
+//    }
+//
+//    return user
+//}
 
