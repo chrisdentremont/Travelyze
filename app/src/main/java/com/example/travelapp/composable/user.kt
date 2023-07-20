@@ -13,7 +13,9 @@ data class AccountData (
     var friendsList: MutableList<String>
 )
 
-data class TravelyzeUser (
-    var info: AccountInfo,
-    var data: AccountData
-)
+data class TravelyzeUser(
+    var info: AccountInfo?,
+    var data: AccountData?
+) {
+    constructor() : this(null, null)
+}

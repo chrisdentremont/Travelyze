@@ -48,11 +48,8 @@ import com.example.travelapp.composable.CustomOutlinedTextField
 import com.example.travelapp.composable.TravelyzeUser
 import com.example.travelapp.ui.theme.Aero
 import com.google.firebase.auth.ktx.auth
-import com.google.firebase.database.FirebaseDatabase
 import com.google.firebase.firestore.FirebaseFirestore
-import com.google.firebase.firestore.auth.User
 import com.google.firebase.ktx.Firebase
-import java.util.Objects
 
 val showNavBar = mutableStateOf(true)
 
