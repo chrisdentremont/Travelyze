@@ -8,6 +8,7 @@ import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
@@ -76,9 +77,6 @@ var openSignoutDialog = mutableStateOf(false)
 var openDeleteDialog = mutableStateOf(false)
 val isDrawerOpen = mutableStateOf(false)
 val sendPasswordChangeEmail = mutableStateOf(false)
-val auth by lazy {
-    Firebase.auth
-}
 
 @Composable
 fun Profile(){
@@ -102,7 +100,7 @@ fun Profile(){
     }
 
     if(sendPasswordChangeEmail.value){
-        sendEmailToExistingUser(auth.currentUser)
+        sendEmailToExistingUser(Firebase.auth.currentUser)
     }
 
     Column(
@@ -183,10 +181,11 @@ fun Profile(){
                 ModalDrawer(
                     drawerState = drawerState,
                     gesturesEnabled = drawerState.isOpen,
+                    modifier = Modifier.fillMaxHeight(),
                     drawerContent = {
                         Drawer(
                             modifier = Modifier.background(color = Alabaster),
-                            fireBaseAuth = auth
+                            Firebase.auth
                         )
                     }
                 ){
@@ -208,7 +207,7 @@ fun signOutDialog(fireBaseAuth: FirebaseAuth){
     ){
         Surface(
             modifier = Modifier
-                .fillMaxWidth()
+                .fillMaxWidth(.95f)
                 .clip(shape = RoundedCornerShape(20.dp)),
             elevation = 4.dp
         ){
@@ -235,7 +234,8 @@ fun signOutDialog(fireBaseAuth: FirebaseAuth){
                     Row(
                         modifier = Modifier
                             .fillMaxWidth()
-                            .padding(start = 15.dp, top = 65.dp, end = 15.dp)
+                            .padding(start = 15.dp, top = 65.dp, end = 15.dp),
+                        horizontalArrangement = Arrangement.Center
                     ){
                         Button(
                             modifier = Modifier
@@ -327,6 +327,7 @@ fun deleteAccountDialog(fireBaseAuth: FirebaseAuth){
                         label = { Text("Enter Password to confirm") },
                         singleLine = true,
                         modifier = Modifier
+                            .fillMaxWidth(.65f)
                             .padding(top = 15.dp),
                         keyboardOptions = KeyboardOptions(
                             keyboardType =  KeyboardType.Password,
@@ -354,7 +355,8 @@ fun deleteAccountDialog(fireBaseAuth: FirebaseAuth){
                     Row(
                         modifier = Modifier
                             .fillMaxWidth()
-                            .padding(start = 15.dp, top = 165.dp, end = 15.dp)
+                            .padding(start = 15.dp, top = 165.dp, end = 15.dp),
+                        horizontalArrangement = Arrangement.Center
                     ){
                         Button(
                             modifier = Modifier
@@ -420,7 +422,7 @@ fun sendEmailToExistingUser(user: FirebaseUser?){
     }
 
     if(isEmailPassword){
-        auth.sendPasswordResetEmail(email).addOnCompleteListener{
+        Firebase.auth.sendPasswordResetEmail(email).addOnCompleteListener{
             if(it.isSuccessful) {
                 Toast.makeText(
                     contextForToast,

@@ -18,8 +18,6 @@ import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.Button
 import androidx.compose.material.ButtonDefaults
-import androidx.compose.material.Icon
-import androidx.compose.material.IconButton
 import androidx.compose.material.Text
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.AlternateEmail
@@ -44,10 +42,17 @@ import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import com.example.travelapp.composable.AccountData
+import com.example.travelapp.composable.AccountInfo
 import com.example.travelapp.composable.CustomOutlinedTextField
+import com.example.travelapp.composable.TravelyzeUser
 import com.example.travelapp.ui.theme.Aero
 import com.google.firebase.auth.ktx.auth
+import com.google.firebase.database.FirebaseDatabase
+import com.google.firebase.firestore.FirebaseFirestore
+import com.google.firebase.firestore.auth.User
 import com.google.firebase.ktx.Firebase
+import java.util.Objects
 
 val showNavBar = mutableStateOf(true)
 
@@ -110,10 +115,36 @@ fun RegisterForm(){
         password: String,
         confirmPassword: String
     ){
+        val fireStore = FirebaseFirestore.getInstance()
+
         if(validateData(firstName, lastName, email, userName, password, confirmPassword)){
             auth.createUserWithEmailAndPassword(email,password)
                 .addOnCompleteListener(){ task ->
                     if(task.isSuccessful){
+                        //TODO Correctly add user data to firebase
+
+                        var user = TravelyzeUser (
+                            AccountInfo(
+                                firstName,
+                                lastName,
+                                userName,
+                                email
+                            ),
+
+                            AccountData(
+                                mutableListOf(),
+                                mutableListOf()
+                            )
+                        )
+
+                        var userID = auth.currentUser?.uid.toString()
+                        var documentReference = fireStore.collection("users").document(userID)
+
+                        var userAccount = mutableMapOf<String, TravelyzeUser>()
+                        userAccount["UserAccount"] = user
+
+                        documentReference.set(userAccount)
+
                         isRegistering.value = false
                         Toast.makeText(context, "Account Successfully Created!", Toast.LENGTH_SHORT).show()
                     }
@@ -134,7 +165,8 @@ fun RegisterForm(){
             .pointerInput(Unit) {
                 detectTapGestures(onTap = {
                     focusManager.clearFocus()
-                })}
+                })
+            }
             .padding(20.dp),
         horizontalAlignment = Alignment.CenterHorizontally,
         verticalArrangement = Arrangement.Top
@@ -164,7 +196,10 @@ fun RegisterForm(){
             keyboardActions = KeyboardActions(
                 onNext = {focusManager.moveFocus(FocusDirection.Down)
                 }
-            )
+            ),
+            modifier = Modifier
+                .fillMaxWidth(.95f)
+                .padding(bottom = 10.dp)
         )
 
         //
@@ -183,7 +218,10 @@ fun RegisterForm(){
             ),
             keyboardActions = KeyboardActions(
                 onNext = {focusManager.moveFocus(FocusDirection.Down)}
-            )
+            ),
+            modifier = Modifier
+                .fillMaxWidth(.95f)
+                .padding(bottom = 10.dp)
         )
 
         //
@@ -202,7 +240,10 @@ fun RegisterForm(){
             ),
             keyboardActions = KeyboardActions(
                 onNext = {focusManager.moveFocus(FocusDirection.Down)}
-            )
+            ),
+            modifier = Modifier
+                .fillMaxWidth(.95f)
+                .padding(bottom = 10.dp)
         )
 
         //
@@ -221,7 +262,10 @@ fun RegisterForm(){
             ),
             keyboardActions = KeyboardActions(
                 onNext = {focusManager.moveFocus(FocusDirection.Down)}
-            )
+            ),
+            modifier = Modifier
+                .fillMaxWidth(.95f)
+                .padding(bottom = 10.dp)
         )
 
         //
@@ -243,7 +287,10 @@ fun RegisterForm(){
             ),
             keyboardActions = KeyboardActions(
                 onNext = {focusManager.moveFocus(FocusDirection.Down)}
-            )
+            ),
+            modifier = Modifier
+                .fillMaxWidth(.95f)
+                .padding(bottom = 10.dp)
         )
 
         //
@@ -265,11 +312,16 @@ fun RegisterForm(){
             ),
             keyboardActions = KeyboardActions(
                 onDone = {focusManager.clearFocus()}
-            )
+            ),
+            modifier = Modifier
+                .fillMaxWidth(.95f)
+                .padding(bottom = 10.dp)
         )
 
         Row(
-            modifier = Modifier.fillMaxWidth(),
+            modifier = Modifier
+                .fillMaxWidth()
+                .padding(top = 15.dp),
             horizontalArrangement = Arrangement.Center
         ){
             Button(
@@ -277,7 +329,7 @@ fun RegisterForm(){
                     register(firstname, lastname, email, username, password, confirmPassword)
                 },
                 modifier = Modifier
-                    .padding(top = 10.dp, start = 20.dp, end = 10.dp, bottom = 30.dp)
+                    .padding(start = 20.dp, end = 10.dp, bottom = 30.dp)
                     .fillMaxWidth(0.5f)
                     .fillMaxHeight(0.3f),
                 colors = ButtonDefaults.buttonColors(backgroundColor = Aero, contentColor = Color.White)
@@ -290,7 +342,7 @@ fun RegisterForm(){
                     isRegistering.value = false
                 },
                 modifier = Modifier
-                    .padding(top = 10.dp, start = 10.dp, end = 20.dp, bottom = 30.dp)
+                    .padding(start = 10.dp, end = 20.dp, bottom = 30.dp)
                     .fillMaxWidth(1f)
                     .fillMaxHeight(0.3f),
                 colors = ButtonDefaults.buttonColors(backgroundColor = Aero, contentColor = Color.White),

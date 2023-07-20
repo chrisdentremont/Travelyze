@@ -4,6 +4,8 @@ import androidx.compose.foundation.clickable
 import androidx.compose.foundation.interaction.MutableInteractionSource
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.IntrinsicSize
+import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.offset
@@ -40,6 +42,7 @@ import com.example.travelapp.sendEmailToExistingUser
 import com.example.travelapp.sendPasswordChangeEmail
 import com.example.travelapp.ui.theme.Aero
 import com.google.firebase.auth.FirebaseAuth
+import com.google.firebase.firestore.FirebaseFirestore
 
 @Composable
 fun CustomOutlinedTextField(
@@ -54,7 +57,8 @@ fun CustomOutlinedTextField(
     keyboardOptions: KeyboardOptions = KeyboardOptions.Default,
     keyboardActions: KeyboardActions = KeyboardActions.Default,
     showError: Boolean = false,
-    errorMessage: String = ""
+    errorMessage: String = "",
+    modifier: Modifier
 ){
     Column(
         modifier = Modifier.fillMaxWidth(),
@@ -64,9 +68,7 @@ fun CustomOutlinedTextField(
         OutlinedTextField(
             value = value,
             onValueChange = { onValueChange(it)},
-            modifier = Modifier
-                .fillMaxWidth()
-                .padding(bottom = 10.dp),
+            modifier = modifier,
             label = {Text(label)},
             leadingIcon = {
                 Icon(
@@ -139,15 +141,56 @@ fun TopBar(title: String = "", buttonIcon: ImageVector, onButtonClicked: () -> U
 @Composable
 fun Drawer(
     modifier: Modifier = Modifier,
-    fireBaseAuth: FirebaseAuth
+    auth: FirebaseAuth
 ) {
     Column(
         modifier
-            .height(550.dp)
+            .height(1000.dp)
             .padding(top = 50.dp)
     ) {
         TextButton(
-            onClick = { /*TODO Prompt username change window*/ },
+            onClick = {
+                /*TODO Prompt username change window*/
+                //TODO Figure out how to read data once its in the database
+                var fireStore = FirebaseFirestore.getInstance()
+                var users = mutableListOf<TravelyzeUser?>()
+
+                fireStore.collection("users").get()
+                    .addOnSuccessListener {
+                        queryDocumentSnapshots ->
+
+                        if(!queryDocumentSnapshots.isEmpty) {
+                            val list = queryDocumentSnapshots.documents
+                            for(d in list) {
+                                val u: TravelyzeUser? = d.toObject(TravelyzeUser::class.java)
+
+                                users.add(u)
+                            }
+                        }
+                    }
+
+                var userID = auth.currentUser?.uid.toString()
+                var documentReference = fireStore.collection("users").document(userID)
+
+//                var user = TravelyzeUser (
+//                    AccountInfo(
+//                        firstName,
+//                        lastName,
+//                        userName,
+//                        email
+//                    ),
+//
+//                    AccountData(
+//                        mutableListOf(),
+//                        mutableListOf()
+//                    )
+//                )
+//
+//                var userAccount = mutableMapOf<String, TravelyzeUser>()
+//                userAccount["UserAccount"] = user
+//
+//                documentReference.set(userAccount)
+            },
             Modifier.clickable(
                 indication = null,
                 interactionSource = remember { MutableInteractionSource() }

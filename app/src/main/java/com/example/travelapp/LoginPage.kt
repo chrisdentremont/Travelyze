@@ -66,7 +66,7 @@ import com.google.firebase.auth.ktx.auth
 import com.google.firebase.ktx.Firebase
 
 /*TODO Set isLoggedIn to false after testing*/
-val isLoggedIn = mutableStateOf(false)
+val isLoggedIn = mutableStateOf(true)
 val isRegistering = mutableStateOf(false)
 val openPasswordResetDialog = mutableStateOf(false)
 
@@ -139,7 +139,10 @@ fun Login(auth: FirebaseAuth){
                     keyboardActions = KeyboardActions(
                         onNext = { focusManager.moveFocus(FocusDirection.Down) }
                     ),
-                    isError = !isEmailValid
+                    isError = !isEmailValid,
+                    modifier = Modifier
+                        .fillMaxWidth(.6f)
+                        .padding(bottom = 15.dp)
                 )
 
                 //
@@ -151,6 +154,7 @@ fun Login(auth: FirebaseAuth){
                     label = { Text("Password") },
                     singleLine = true,
                     modifier = Modifier
+                        .fillMaxWidth(.6f)
                         .padding(top = 15.dp),
                     keyboardOptions = KeyboardOptions(
                         keyboardType =  KeyboardType.Password,
@@ -321,13 +325,17 @@ fun resetPasswordDialog(auth: FirebaseAuth){
                         ),
                         keyboardActions = KeyboardActions(
                             onDone = { /*TODO focusmanager not working? */ }
-                        )
+                        ),
+                        modifier = Modifier
+                            .fillMaxWidth(.8f)
+                            .padding(bottom = 10.dp)
                     )
 
                     Row(
                         modifier = Modifier
                             .fillMaxWidth()
-                            .padding(start = 15.dp, top = 150.dp, end = 15.dp)
+                            .padding(start = 15.dp, top = 150.dp, end = 15.dp),
+                        horizontalArrangement = Arrangement.Center
                     ){
                         Button(
                             modifier = Modifier

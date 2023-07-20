@@ -17,6 +17,7 @@ import androidx.compose.material.Card
 import androidx.compose.material.Icon
 import androidx.compose.material.IconButton
 import androidx.compose.material.Text
+import androidx.compose.material.TopAppBar
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.outlined.AddCircle
 import androidx.compose.runtime.Composable
@@ -31,6 +32,7 @@ import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import coil.compose.rememberAsyncImagePainter
+import com.example.travelapp.ui.theme.Aero
 import com.example.travelapp.ui.theme.Alabaster
 
 @Composable
@@ -39,7 +41,6 @@ fun Social_Default(){
         modifier = Modifier
             .fillMaxHeight()
             .fillMaxWidth()
-            .padding(all = 20.dp)
             .verticalScroll(rememberScrollState())
     ){
         //
@@ -49,13 +50,18 @@ fun Social_Default(){
             Modifier.fillMaxWidth(),
             horizontalArrangement = Arrangement.Center
         ){
-            Text(
-                text = "Friends",
-                fontSize = 30.sp,
-                fontWeight = FontWeight.Normal,
-                modifier = Modifier
-                    .padding(bottom = 20.dp)
-                    .weight(2f),
+            TopAppBar(
+                title = {
+                    Text(
+                        text = "Friends",
+                        fontSize = 30.sp,
+                        fontWeight = FontWeight.Normal,
+                    )
+                },
+                actions = {
+
+                },
+                backgroundColor = Aero
             )
         }
 
@@ -64,7 +70,7 @@ fun Social_Default(){
             horizontalArrangement = Arrangement.Center
         ){
             Text(
-                text = "Create an account to add friends!\n\nYou fucking loser.",
+                text = "Create an account to add friends!",
                 fontSize = 40.sp,
                 fontWeight = FontWeight.Normal,
                 modifier = Modifier
