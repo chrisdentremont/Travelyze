@@ -1,6 +1,7 @@
 package com.example.travelapp
 
 
+import android.util.Log
 import android.util.Patterns
 import android.widget.Toast
 import androidx.compose.foundation.background
@@ -137,10 +138,13 @@ fun RegisterForm(){
                         var userID = auth.currentUser?.uid.toString()
                         var documentReference = fireStore.collection("users").document(userID)
 
-                        var userAccount = mutableMapOf<String, TravelyzeUser>()
-                        userAccount["UserAccount"] = user
+//                        var userAccount = mutableMapOf<String, TravelyzeUser>()
+//                        userAccount["UserAccount"] = user
+//
+//                        //TODO Remove Log
+//                        Log.d(MainActivity.TAG, "user is $userAccount")
 
-                        documentReference.set(userAccount)
+                        documentReference.set(user)
 
                         isRegistering.value = false
                         Toast.makeText(context, "Account Successfully Created!", Toast.LENGTH_SHORT).show()

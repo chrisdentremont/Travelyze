@@ -66,7 +66,7 @@ import com.google.firebase.auth.ktx.auth
 import com.google.firebase.ktx.Firebase
 
 /*TODO Set isLoggedIn to false after testing*/
-val isLoggedIn = mutableStateOf(true)
+val isLoggedIn = mutableStateOf(false)
 val isRegistering = mutableStateOf(false)
 val openPasswordResetDialog = mutableStateOf(false)
 

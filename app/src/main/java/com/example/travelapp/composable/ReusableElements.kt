@@ -155,18 +155,26 @@ fun Drawer(
 
                 var userID = auth.currentUser?.uid.toString()
 
+                Log.d(MainActivity.TAG, "userid = $userID")
                 var documentReference = fireStore.collection("users").document(userID)
 
                 documentReference.get().addOnSuccessListener { documentSnapshot ->
-                    val user = documentSnapshot.toObject<TravelyzeUser>()
+                    //TODO remove log
+                    Log.d(MainActivity.TAG, "docSnapshot is $documentSnapshot")
 
-                    Log.d(MainActivity.TAG, "user is $user")
+                    val documentData = documentSnapshot.data
+                    Log.d(MainActivity.TAG, "docData is $documentData")
 
-                    user?.info?.userName = "Puffy43357"
+                    val data = documentData?.get("data")
+                    val info = documentData?.get("info") as AccountInfo
+                    Log.d(MainActivity.TAG, "data is $data")
+                    Log.d(MainActivity.TAG, "info is $info")
 
-                    var userAccount = mutableMapOf<String, TravelyzeUser?>()
-                    userAccount["UserAccount"] = user
-                    documentReference.set(userAccount)
+                    //user?.info?.userName = "Puffy43357"
+
+                    //var userAccount = mutableMapOf<String, TravelyzeUser?>()
+                    //userAccount["UserAccount"] = user
+                    //documentReference.set(userAccount)
                 }
             },
             Modifier.clickable(
