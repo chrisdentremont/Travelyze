@@ -3,15 +3,7 @@ package com.example.travelapp.composable
 import android.util.Log
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.interaction.MutableInteractionSource
-import androidx.compose.foundation.layout.Arrangement
-import androidx.compose.foundation.layout.Column
-import androidx.compose.foundation.layout.IntrinsicSize
-import androidx.compose.foundation.layout.fillMaxHeight
-import androidx.compose.foundation.layout.fillMaxWidth
-import androidx.compose.foundation.layout.height
-import androidx.compose.foundation.layout.offset
-import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.text.KeyboardActions
 import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.material.Divider
@@ -26,6 +18,7 @@ import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Error
 import androidx.compose.material.icons.filled.Visibility
 import androidx.compose.material.icons.filled.VisibilityOff
+import androidx.compose.material.icons.outlined.Search
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
@@ -39,6 +32,8 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.example.travelapp.*
 import com.example.travelapp.ui.theme.Aero
+import com.example.travelapp.ui.theme.SoftWhite
+import com.example.travelapp.ui.theme.robotoFamily
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.firestore.FirebaseFirestore
 import com.google.firebase.firestore.ktx.toObject
@@ -118,7 +113,8 @@ fun TopBar(title: String = "", buttonIcon: ImageVector, onButtonClicked: () -> U
         title = {
             Text(
                 text = title,
-                fontSize = 30.sp,
+                fontSize = 25.sp,
+                fontFamily = robotoFamily,
                 fontWeight = FontWeight.Normal,
             )
         },
@@ -133,7 +129,7 @@ fun TopBar(title: String = "", buttonIcon: ImageVector, onButtonClicked: () -> U
                 )
             }
         },
-        backgroundColor = Aero
+        backgroundColor = SoftWhite
     )
 }
 
@@ -178,7 +174,11 @@ fun Drawer(
                 text = "Edit Username",
                 color = Color.Black,
                 modifier = Modifier.padding(start = 15.dp),
-                fontSize = 30.sp)
+                fontFamily = robotoFamily,
+                fontSize = 20.sp)
+            Icon(imageVector = Icons.Outlined.Search,
+                contentDescription = "",
+                modifier = Modifier.size(size = 25.dp))
         }
 
         TextButton(
@@ -188,7 +188,8 @@ fun Drawer(
                 text = "Change password",
                 color = Color.Black,
                 modifier = Modifier.padding(start = 15.dp, top = 10.dp),
-                fontSize = 30.sp)
+                fontFamily = robotoFamily,
+                fontSize = 20.sp)
         }
 
         TextButton(
@@ -200,9 +201,10 @@ fun Drawer(
                 text = "Sign out",
                 color = Color.Blue,
                 modifier = Modifier.padding(start = 15.dp, top = 10.dp, bottom = 10.dp),
-                fontSize = 30.sp)
+                fontFamily = robotoFamily,
+                fontSize = 20.sp)
         }
-        Divider(startIndent = 0.dp, thickness = 2.dp, color = Color.Black)
+        Divider(modifier = Modifier.padding(start = 30.dp, end = 30.dp), thickness = 2.dp, color = Color.Gray)
 
         TextButton(
             onClick = {
@@ -213,7 +215,8 @@ fun Drawer(
                 text = "Delete Account",
                 color = Color.Red,
                 modifier = Modifier.padding(start = 15.dp, top = 10.dp),
-                fontSize = 30.sp)
+                fontFamily = robotoFamily,
+                fontSize = 20.sp)
         }
 
 
