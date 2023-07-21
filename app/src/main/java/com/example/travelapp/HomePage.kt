@@ -1,16 +1,9 @@
 package com.example.travelapp
 
+import android.util.Log
+import androidx.compose.foundation.background
 import androidx.compose.foundation.border
-import androidx.compose.foundation.layout.Arrangement
-import androidx.compose.foundation.layout.Column
-import androidx.compose.foundation.layout.Row
-import androidx.compose.foundation.layout.fillMaxHeight
-import androidx.compose.foundation.layout.fillMaxWidth
-import androidx.compose.foundation.layout.heightIn
-import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.layout.size
-import androidx.compose.foundation.layout.width
-import androidx.compose.foundation.layout.widthIn
+import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.text.KeyboardActions
 import androidx.compose.foundation.text.KeyboardOptions
@@ -33,20 +26,29 @@ import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import coil.compose.AsyncImage
 import com.example.travelapp.ui.theme.Aero
+import com.example.travelapp.ui.theme.SoftWhite
+import com.example.travelapp.ui.theme.marsFamily
+import com.example.travelapp.ui.theme.robotoFamily
 
 @Composable
 fun Home(){
-    Column(Modifier.fillMaxWidth()){
-        Row(Modifier.fillMaxWidth()) {
+    Column(
+        Modifier
+            .fillMaxWidth()
+            .background(color = SoftWhite)){
+        Row(Modifier.fillMaxWidth(),
+            horizontalArrangement = Arrangement.Center) {
             Text(
                 modifier = Modifier
-                    .padding(30.dp)
-                    .width(500.dp),
-                fontSize = 60.sp,
+                    .padding(top = 30.dp, bottom = 30.dp)
+                    .width(200.dp),
+                fontSize = 30.sp,
                 fontWeight = FontWeight.Normal,
                 textAlign = TextAlign.Center,
-                text = "TRAVELYZE")
+                fontFamily = marsFamily,
+                text = "Travelyze")
         }
 
         Row(
@@ -62,43 +64,41 @@ fun Home(){
                 onValueChange = {text = it /*TODO Limit Characters*/},
                 modifier = Modifier
                     .heightIn(0.dp, 50.dp)
-                    .widthIn(0.dp, 280.dp)
-                    .border(width = 1.dp, color = Color.Black),
-                placeholder = { Text("Find Somewhere new!") },
-                keyboardActions = KeyboardActions(onDone = { focusManager.clearFocus() }),
-                keyboardOptions = KeyboardOptions.Default.copy(imeAction = ImeAction.Done, keyboardType = KeyboardType.Password),
+                    .widthIn(0.dp, 280.dp),
+                placeholder = { Text("Search for a place") },
+                keyboardActions = KeyboardActions(onSearch = {
+                    /*TODO Search for countries*/
+                    Log.d("Search","Searched")
+                    focusManager.clearFocus()
+                }),
+                keyboardOptions = KeyboardOptions.Default.copy(imeAction = ImeAction.Search, keyboardType = KeyboardType.Text),
                 trailingIcon = {
                     Icon(imageVector = Icons.Outlined.Search,
                         contentDescription = "",
-                        modifier = Modifier.size(size = 40.dp))
-                }
+                        modifier = Modifier.size(size = 25.dp))
+                },
+                colors = TextFieldDefaults.textFieldColors(
+                    leadingIconColor = Color.Black,
+                    focusedIndicatorColor = Color.Black
+                )
             )
         }
 
-        Row(Modifier.fillMaxWidth(),horizontalArrangement = Arrangement.Center) {
-            Button(
-                onClick = { /*TODO*/},
-                modifier = Modifier
-                    .padding(start = 15.dp, top = 15.dp)
-                    .size(width = 150.dp, height = 50.dp),
-                colors = ButtonDefaults.buttonColors(backgroundColor = Aero)
-            ) {
-                Text(text = "Search", color = Color.White, fontSize = 20.sp)
-            }
-        }
-
-        Row(Modifier.fillMaxWidth()) {
+        Row(Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.Center) {
             Text(
-                text = "Recommended Places: ",
-                fontSize = 30.sp,
-                modifier = Modifier.padding(start =30.dp, top = 80.dp))
+                text = "Recommended Places ",
+                fontFamily = robotoFamily,
+                fontWeight = FontWeight.Light,
+                fontSize = 20.sp,
+                textAlign = TextAlign.Center,
+                modifier = Modifier.padding(top = 80.dp))
         }
 
         Row(Modifier.fillMaxWidth()) {
             Column(modifier = Modifier
                 .fillMaxHeight()
                 .fillMaxWidth()
-                .padding(all = 20.dp)
+                .padding(start = 20.dp, end = 20.dp, bottom = 20.dp, top = 10.dp)
                 .verticalScroll(rememberScrollState())) {
 
                 Card(
@@ -107,15 +107,25 @@ fun Home(){
                         .padding(15.dp),
                     elevation = 10.dp,
                 ){
-                    Column(
-                        modifier = Modifier.padding(15.dp)
-                    ) {
+                    Column() {
                         Row(
                             verticalAlignment = Alignment.CenterVertically,
                             horizontalArrangement = Arrangement.Start,
                             modifier = Modifier
                                 .fillMaxWidth()
-                                .padding(5.dp)
+                        ) {
+                            AsyncImage(
+                                model = "https://res.klook.com/image/upload/Mobile/City/swox6wjsl5ndvkv5jvum.jpg",
+                                contentDescription = "",
+                                modifier = Modifier.fillMaxSize()
+                            )
+                        }
+                        Row(
+                            verticalAlignment = Alignment.CenterVertically,
+                            horizontalArrangement = Arrangement.Start,
+                            modifier = Modifier
+                                .fillMaxWidth()
+                                .padding(15.dp)
                         ) {
                             Text(text = "Paris, France")
                         }
@@ -128,17 +138,27 @@ fun Home(){
                         .padding(15.dp),
                     elevation = 10.dp,
                 ){
-                    Column(
-                        modifier = Modifier.padding(15.dp)
-                    ) {
+                    Column() {
                         Row(
                             verticalAlignment = Alignment.CenterVertically,
                             horizontalArrangement = Arrangement.Start,
                             modifier = Modifier
                                 .fillMaxWidth()
-                                .padding(5.dp)
                         ) {
-                            Text(text = "Las Vegas, California")
+                            AsyncImage(
+                                model = "https://vegasexperience.com/wp-content/uploads/2023/01/Photo-of-Las-Vegas-Downtown-1920x1280.jpg",
+                                contentDescription = "",
+                                modifier = Modifier.fillMaxSize()
+                            )
+                        }
+                        Row(
+                            verticalAlignment = Alignment.CenterVertically,
+                            horizontalArrangement = Arrangement.Start,
+                            modifier = Modifier
+                                .fillMaxWidth()
+                                .padding(15.dp)
+                        ) {
+                            Text(text = "Las Vegas, Nevada")
                         }
                     }
                 }

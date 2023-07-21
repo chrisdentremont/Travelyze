@@ -35,7 +35,9 @@ import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Settings
 import androidx.compose.material.icons.filled.Visibility
 import androidx.compose.material.icons.filled.VisibilityOff
+import androidx.compose.material.icons.outlined.Menu
 import androidx.compose.material.rememberDrawerState
+import androidx.compose.material3.Shapes
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.CompositionLocalProvider
 import androidx.compose.runtime.getValue
@@ -48,6 +50,7 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.graphics.Shape
 import androidx.compose.ui.graphics.SolidColor
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.platform.LocalContext
@@ -67,6 +70,7 @@ import com.example.travelapp.composable.TopBar
 import com.example.travelapp.composable.TravelyzeUser
 import com.example.travelapp.ui.theme.Aero
 import com.example.travelapp.ui.theme.Alabaster
+import com.example.travelapp.ui.theme.SoftWhite
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.auth.FirebaseUser
 import com.google.firebase.auth.UserInfo
@@ -122,10 +126,11 @@ fun Profile(){
         Modifier
             .fillMaxWidth()
             .verticalScroll(rememberScrollState())
+            .background(color = SoftWhite)
     ) {
         TopBar(
-            title = "Profile Page",
-            buttonIcon = Icons.Filled.Settings,
+            title = "Profile",
+            buttonIcon = Icons.Outlined.Menu,
             onButtonClicked = {
                 isDrawerOpen.value = !isDrawerOpen.value
             }

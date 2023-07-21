@@ -20,12 +20,13 @@ import androidx.navigation.compose.currentBackStackEntryAsState
 import androidx.navigation.compose.rememberNavController
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
+import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.navigation.NavHostController
 import com.example.travelapp.composable.TravelyzeUser
-import com.example.travelapp.ui.theme.Aero
-import com.example.travelapp.ui.theme.TravelAppTheme
+import com.example.travelapp.ui.theme.*
 import com.google.firebase.auth.ktx.auth
 import com.google.firebase.firestore.FirebaseFirestore
 import com.google.firebase.firestore.ktx.toObject
@@ -93,8 +94,10 @@ class MainActivity : ComponentActivity() {
                     val currentDestination = navBackStackEntry?.destination
                     routeMap.forEach { (key, value) ->
                         BottomNavigationItem(
-                            icon = {Icon(value, contentDescription = null)},
-                            label = { Text(stringResource(key.resourceId)) },
+                            icon = {Icon(value, contentDescription = null, tint = Color.Black)},
+                            label = { Text(stringResource(key.resourceId),
+                                color = Color.Black,
+                                fontFamily = robotoFamily,) },
                             selected = currentDestination?.hierarchy?.any { it.route == key.route } == true,
                             onClick = {
                                 navController.navigate(key.route) {
@@ -111,7 +114,7 @@ class MainActivity : ComponentActivity() {
                                     restoreState = true
                                 }
                             },
-                            modifier = Modifier.background(color = Aero)
+                            modifier = Modifier.background(color = SoftWhite)
                         )
                     }
 

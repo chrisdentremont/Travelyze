@@ -60,6 +60,7 @@ import com.example.travelapp.MainActivity.Companion.TAG
 import com.example.travelapp.composable.CustomOutlinedTextField
 import com.example.travelapp.ui.theme.Aero
 import com.example.travelapp.ui.theme.Khaki
+import com.example.travelapp.ui.theme.SoftWhite
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.auth.FirebaseUser
 import com.google.firebase.auth.ktx.auth
@@ -102,7 +103,7 @@ fun Login(auth: FirebaseAuth){
         resetPasswordDialog(auth)
     }
 
-    Column(Modifier.fillMaxSize(), horizontalAlignment = Alignment.CenterHorizontally) {
+    Column(Modifier.fillMaxSize().background(color = SoftWhite), horizontalAlignment = Alignment.CenterHorizontally) {
 
         //
         // Welcome Message

@@ -29,6 +29,7 @@ import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.AlternateEmail
 import androidx.compose.material.icons.filled.Person
 import androidx.compose.material.icons.filled.Person2
+import androidx.compose.material.icons.outlined.Add
 import androidx.compose.material.icons.outlined.AddCircle
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
@@ -56,6 +57,7 @@ import com.example.travelapp.composable.CustomOutlinedTextField
 import com.example.travelapp.composable.TopBar
 import com.example.travelapp.ui.theme.Aero
 import com.example.travelapp.ui.theme.Alabaster
+import com.example.travelapp.ui.theme.SoftWhite
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.auth.ktx.auth
 import com.google.firebase.ktx.Firebase
@@ -71,6 +73,7 @@ fun Social_LoggedIn(){
         modifier = Modifier
             .fillMaxHeight()
             .fillMaxWidth()
+            .background(color = SoftWhite)
     ){
         Row(
             Modifier.fillMaxWidth(),
@@ -78,7 +81,7 @@ fun Social_LoggedIn(){
         ){
             TopBar(
                 title = "Friends",
-                buttonIcon = Icons.Outlined.AddCircle,
+                buttonIcon = Icons.Outlined.Add,
                 onButtonClicked = {
                     /*TODO Implement friend addition window*/
                     openAddFriendDialog.value = true
