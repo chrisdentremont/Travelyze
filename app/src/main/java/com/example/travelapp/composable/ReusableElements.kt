@@ -180,9 +180,6 @@ fun Drawer(
                 modifier = Modifier.padding(start = 15.dp),
                 fontFamily = robotoFamily,
                 fontSize = 20.sp)
-            Icon(imageVector = Icons.Outlined.Search,
-                contentDescription = "",
-                modifier = Modifier.size(size = 25.dp))
         }
 
         TextButton(

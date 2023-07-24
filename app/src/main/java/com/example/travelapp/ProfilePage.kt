@@ -22,22 +22,12 @@ import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.text.KeyboardActions
 import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.foundation.verticalScroll
-import androidx.compose.material.Button
-import androidx.compose.material.ButtonDefaults
-import androidx.compose.material.Divider
-import androidx.compose.material.DrawerValue
-import androidx.compose.material.Icon
-import androidx.compose.material.IconButton
-import androidx.compose.material.ModalDrawer
-import androidx.compose.material.OutlinedTextField
-import androidx.compose.material.Surface
-import androidx.compose.material.Text
+import androidx.compose.material.*
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Settings
 import androidx.compose.material.icons.filled.Visibility
 import androidx.compose.material.icons.filled.VisibilityOff
 import androidx.compose.material.icons.outlined.Menu
-import androidx.compose.material.rememberDrawerState
 import androidx.compose.material3.Shapes
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.CompositionLocalProvider
@@ -72,6 +62,7 @@ import com.example.travelapp.composable.TravelyzeUser
 import com.example.travelapp.ui.theme.Aero
 import com.example.travelapp.ui.theme.Alabaster
 import com.example.travelapp.ui.theme.SoftWhite
+import com.example.travelapp.ui.theme.robotoFamily
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.auth.FirebaseUser
 import com.google.firebase.auth.UserInfo
@@ -224,82 +215,54 @@ fun Profile(){
 fun signOutDialog(fireBaseAuth: FirebaseAuth){
     val contextForToast = LocalContext.current.applicationContext
 
-    Dialog(
+    AlertDialog(
         onDismissRequest = {
             openDeleteDialog.value = false
-        }
-    ){
-        Surface(
-            modifier = Modifier
-                .fillMaxWidth(.95f)
-                .clip(shape = RoundedCornerShape(20.dp)),
-            elevation = 4.dp
-        ){
-            Column(
-                verticalArrangement = Arrangement.Center,
-            ){
-                Box(
-                    modifier = Modifier
-                        .fillMaxWidth()
-                        .height(175.dp)
-                        .clip(shape = RoundedCornerShape(20.dp))
-                        .background(color = Color.White)
-                        .border(2.dp, SolidColor(Color.Black), shape = RoundedCornerShape(20.dp)),
-                    contentAlignment = Alignment.Center,
-                ){
-                    Text(
-                        modifier = Modifier.padding(bottom = 65.dp),
-                        text = "Sign out of your account?",
-                        textAlign = TextAlign.Center,
-                        color = Color.Black,
-                        fontSize = 19.sp
-                    )
-
-                    Row(
-                        modifier = Modifier
-                            .fillMaxWidth()
-                            .padding(start = 15.dp, top = 65.dp, end = 15.dp),
-                        horizontalArrangement = Arrangement.Center
-                    ){
-                        Button(
-                            modifier = Modifier
-                                .width(150.dp)
-                                .padding(end = 10.dp),
-                            colors = ButtonDefaults.buttonColors(backgroundColor = Aero),
-                            onClick = {
-                                fireBaseAuth.signOut()
-                                openSignoutDialog.value = false
-                                isLoggedIn.value = false
-                                Toast.makeText(
-                                    contextForToast,
-                                    "You are now logged out",
-                                    Toast.LENGTH_SHORT
-                                ).show()
-                            }) {
-                            Text(
-                                text = "Confirm",
-                                color = Color.White,
-                            )
-                        }
-
-                        Button(
-                            modifier = Modifier
-                                .width(150.dp)
-                                .padding(start = 10.dp),
-                            colors = ButtonDefaults.buttonColors(backgroundColor = Aero),
-                            onClick = {
-                                openSignoutDialog.value = false
-                            }) {
-                            Text(
-                                text = "Cancel",
-                                color = Color.White,
-                            )
-                        }
-                    }
-                }
+        },
+        title = {
+            Text(
+                text = "Are you sure you want to sign out?",
+                fontFamily = robotoFamily,
+                color = Color.Black
+            )
+        },
+        text = {
+            Text(
+                text = "You will have to log back in to use some features.",
+                fontFamily = robotoFamily,
+                color = Color.Black
+            )
+        },
+        confirmButton = {
+            TextButton(onClick = {
+                fireBaseAuth.signOut()
+                isLoggedIn.value = Firebase.auth.currentUser != null
+                openSignoutDialog.value = false
+                Toast.makeText(
+                    contextForToast,
+                    "You are now logged out",
+                    Toast.LENGTH_SHORT
+                ).show()
+            }){
+                Text(
+                    text = "SIGN OUT",
+                    fontFamily = robotoFamily,
+                    color = Color.Red,
+                )
+            }
+        },
+        dismissButton = {
+            TextButton(onClick = {
+                openSignoutDialog.value = false
+            }){
+                Text(
+                    text = "CANCEL",
+                    fontFamily = robotoFamily,
+                    color = Aero,
+                )
             }
         }
-    }
+    )
 }
 
 @Composable
@@ -398,7 +361,6 @@ fun deleteAccountDialog(fireBaseAuth: FirebaseAuth){
                                 }
 
                                 openDeleteDialog.value = false
-                                isLoggedIn.value = false
                                 Toast.makeText(
                                     contextForToast,
                                     "Account successfully deleted.",

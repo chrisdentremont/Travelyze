@@ -31,6 +31,11 @@ import com.google.firebase.firestore.FirebaseFirestore
 import com.google.firebase.firestore.ktx.toObject
 import com.google.firebase.ktx.Firebase
 
+val isLoggedIn = mutableStateOf(Firebase.auth.currentUser != null)
+
+var locationList = mutableListOf<LocationObject>()
+var locationNames = mutableListOf<String?>()
+
 class MainActivity : ComponentActivity() {
     private lateinit var navController: NavHostController
     companion object {
@@ -44,6 +49,20 @@ class MainActivity : ComponentActivity() {
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
+
+        var fireStore = FirebaseFirestore.getInstance()
+        var locationCollection = fireStore.collection("countries")
+        locationCollection.get().addOnSuccessListener { documents ->
+            for(document in documents){
+                var current = document.toObject<LocationObject>()
+                locationList.add(current)
+                locationNames.add(current.Name)
+            }
+            Log.w("done", "$locationNames")
+        }
+            .addOnFailureListener {exception ->
+                Log.w("Exception", exception)
+            }
 
         setContent {
             TravelAppTheme {
@@ -107,9 +126,9 @@ class MainActivity : ComponentActivity() {
                                         saveState = true
                                     }
                                     // Avoid multiple copies of the same destination when
-                                    // reselecting the same item
+                                    // re-selecting the same item
                                     launchSingleTop = true
-                                    // Restore state when reselecting a previously selected item
+                                    // Restore state when re-selecting a previously selected item
                                     restoreState = true
                                 }
                             },
@@ -128,7 +147,7 @@ class MainActivity : ComponentActivity() {
                         isDrawerOpen.value = false
                     }
                     else{
-                        Social_Default()
+                        Login(auth)
                         isDrawerOpen.value = false
                     }
                 }

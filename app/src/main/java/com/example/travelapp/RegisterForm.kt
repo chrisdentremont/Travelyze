@@ -48,6 +48,7 @@ import com.example.travelapp.composable.AccountInfo
 import com.example.travelapp.composable.CustomOutlinedTextField
 import com.example.travelapp.composable.TravelyzeUser
 import com.example.travelapp.ui.theme.Aero
+import com.example.travelapp.ui.theme.SoftWhite
 import com.google.firebase.auth.ktx.auth
 import com.google.firebase.firestore.FirebaseFirestore
 import com.google.firebase.ktx.Firebase
@@ -162,7 +163,7 @@ fun RegisterForm(){
         modifier = Modifier
             .fillMaxSize()
             .verticalScroll(scrollState)
-            .background(Color.White)
+            .background(SoftWhite)
             .pointerInput(Unit) {
                 detectTapGestures(onTap = {
                     focusManager.clearFocus()

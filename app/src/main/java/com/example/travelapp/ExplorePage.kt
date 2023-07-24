@@ -35,28 +35,8 @@ import kotlinx.coroutines.coroutineScope
 import kotlinx.coroutines.launch
 import okhttp3.internal.wait
 
-var locationList = mutableListOf<LocationObject>()
-var locationNames = mutableListOf<String?>()
-
 @Composable
 fun Home(){
-
-    var fireStore = FirebaseFirestore.getInstance()
-    var locationCollection = fireStore.collection("countries")
-    locationCollection.get().addOnSuccessListener { documents ->
-        for(document in documents){
-            var current = document.toObject<LocationObject>()
-            locationList.add(current)
-            locationNames.add(current.Name)
-        }
-        Log.w("done", "done")
-    }
-        .addOnFailureListener {exception ->
-            Log.w("Exception", exception)
-        }
-
-    Log.w("names", "$locationNames")
-
     Column(
         Modifier
             .fillMaxWidth()
@@ -82,7 +62,7 @@ fun Home(){
             val focusManager = LocalFocusManager.current
 
             //TODO Create next page of home page once a search is conducted
-            TextField(
+            OutlinedTextField(
                 value = text,
                 onValueChange = {text = it /*TODO Limit Characters*/},
                 modifier = Modifier
@@ -90,7 +70,7 @@ fun Home(){
                     .widthIn(0.dp, 280.dp),
                 placeholder = { Text("Search for a place") },
                 keyboardActions = KeyboardActions(onSearch = {
-                    /*TODO Search for countries*/
+                    /*TODO Search for locations*/
                     Log.d("Search","Searched")
                     focusManager.clearFocus()
                 }),
@@ -102,7 +82,9 @@ fun Home(){
                 },
                 colors = TextFieldDefaults.textFieldColors(
                     leadingIconColor = Color.Black,
-                    focusedIndicatorColor = Color.Black
+                    focusedIndicatorColor = Color.Black,
+                    backgroundColor = Color.White,
+                    cursorColor = Color.Black
                 )
             )
         }
