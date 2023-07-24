@@ -84,8 +84,10 @@ class MainActivity : ComponentActivity() {
                     if(openDeleteDialog.value){
                         deleteAccountDialog(auth)
                     }
-                    
 
+                    if(openEditDialog.value){
+                        editUsernameDialog()
+                    }
                 }
             }
         }

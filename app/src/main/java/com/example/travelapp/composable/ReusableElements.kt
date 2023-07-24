@@ -145,29 +145,7 @@ fun Drawer(
     ) {
         TextButton(
             onClick = {
-                /*TODO Prompt username change window*/
-                //TODO Not working??
-                var fireStore = FirebaseFirestore.getInstance()
-
-                var userID = auth.currentUser?.uid.toString()
-
-                Log.d(MainActivity.TAG, "userid = $userID")
-                var documentReference = fireStore.collection("users").document(userID)
-
-                documentReference.get().addOnSuccessListener { documentSnapshot ->
-                    //TODO remove log
-
-                    val documentData = documentSnapshot.data
-
-                    val data = documentData?.get("data")
-                    val info = documentData?.get("info") as AccountInfo
-
-                    //user?.info?.userName = "Puffy43357"
-
-                    //var userAccount = mutableMapOf<String, TravelyzeUser?>()
-                    //userAccount["UserAccount"] = user
-                    //documentReference.set(userAccount)
-                }
+                openEditDialog.value = true
             },
             Modifier.clickable(
                 indication = null,
