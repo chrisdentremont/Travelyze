@@ -2,20 +2,16 @@ package com.example.travelapp
 
 import android.util.Log
 import androidx.compose.foundation.background
-import androidx.compose.foundation.border
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.text.KeyboardActions
 import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.foundation.verticalScroll
-import androidx.compose.runtime.Composable
 import androidx.compose.material.*
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.outlined.Search
-import androidx.compose.runtime.getValue
-import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.*
 import androidx.compose.runtime.saveable.rememberSaveable
-import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
@@ -27,13 +23,40 @@ import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import coil.compose.AsyncImage
-import com.example.travelapp.ui.theme.Aero
+import com.example.travelapp.composable.LocationObject
+import com.example.travelapp.composable.TravelyzeUser
 import com.example.travelapp.ui.theme.SoftWhite
 import com.example.travelapp.ui.theme.marsFamily
 import com.example.travelapp.ui.theme.robotoFamily
+import com.google.firebase.firestore.FirebaseFirestore
+import com.google.firebase.firestore.ktx.toObject
+import kotlinx.coroutines.async
+import kotlinx.coroutines.coroutineScope
+import kotlinx.coroutines.launch
+import okhttp3.internal.wait
+
+var locationList = mutableListOf<LocationObject>()
+var locationNames = mutableListOf<String?>()
 
 @Composable
 fun Home(){
+
+    var fireStore = FirebaseFirestore.getInstance()
+    var locationCollection = fireStore.collection("countries")
+    locationCollection.get().addOnSuccessListener { documents ->
+        for(document in documents){
+            var current = document.toObject<LocationObject>()
+            locationList.add(current)
+            locationNames.add(current.Name)
+        }
+        Log.w("done", "done")
+    }
+        .addOnFailureListener {exception ->
+            Log.w("Exception", exception)
+        }
+
+    Log.w("names", "$locationNames")
+
     Column(
         Modifier
             .fillMaxWidth()

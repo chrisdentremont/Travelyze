@@ -156,15 +156,11 @@ fun Drawer(
 
                 documentReference.get().addOnSuccessListener { documentSnapshot ->
                     //TODO remove log
-                    Log.d(MainActivity.TAG, "docSnapshot is $documentSnapshot")
 
                     val documentData = documentSnapshot.data
-                    Log.d(MainActivity.TAG, "docData is $documentData")
 
                     val data = documentData?.get("data")
                     val info = documentData?.get("info") as AccountInfo
-                    Log.d(MainActivity.TAG, "data is $data")
-                    Log.d(MainActivity.TAG, "info is $info")
 
                     //user?.info?.userName = "Puffy43357"
 

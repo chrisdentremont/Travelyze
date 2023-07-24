@@ -1,5 +1,6 @@
 package com.example.travelapp
 
+import android.util.Log
 import android.widget.Toast
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
@@ -113,11 +114,14 @@ fun Profile(){
     var fireStore = FirebaseFirestore.getInstance()
 
     var userID = Firebase.auth.currentUser?.uid.toString()
+    Log.d("userID", "$userID")
     var documentReference = fireStore.collection("users").document(userID)
 
     documentReference.get().addOnSuccessListener { documentSnapshot ->
 
+        Log.d("documentSnapshot", "$documentSnapshot")
         var user = documentSnapshot.toObject<TravelyzeUser>()
+        Log.d("user", "$user")
 
     }
 

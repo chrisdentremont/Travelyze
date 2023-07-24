@@ -1,6 +1,7 @@
 package com.example.travelapp
 
 import android.os.Bundle
+import android.util.Log
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.annotation.StringRes
@@ -20,12 +21,10 @@ import androidx.navigation.compose.currentBackStackEntryAsState
 import androidx.navigation.compose.rememberNavController
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
 import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.text.font.FontWeight
-import androidx.compose.ui.unit.dp
-import androidx.compose.ui.unit.sp
 import androidx.navigation.NavHostController
-import com.example.travelapp.composable.TravelyzeUser
+import com.example.travelapp.composable.LocationObject
 import com.example.travelapp.ui.theme.*
 import com.google.firebase.auth.ktx.auth
 import com.google.firebase.firestore.FirebaseFirestore
@@ -81,7 +80,7 @@ class MainActivity : ComponentActivity() {
     fun NavBar(){
         val routeMap = mapOf(
             Screen.Friends to Icons.Outlined.Diversity1,
-            Screen.Home to Icons.Filled.Search,
+            Screen.Explore to Icons.Filled.Search,
             Screen.Profile to Icons.Filled.Person
         )
 
@@ -122,7 +121,7 @@ class MainActivity : ComponentActivity() {
             }
         ) {
                 innerPadding ->
-            NavHost(navController, startDestination = Screen.Home.route, Modifier.padding(innerPadding)) {
+            NavHost(navController, startDestination = Screen.Explore.route, Modifier.padding(innerPadding)) {
                 composable(Screen.Friends.route) {
                     if(isLoggedIn.value){
                         Social_LoggedIn()
@@ -133,7 +132,7 @@ class MainActivity : ComponentActivity() {
                         isDrawerOpen.value = false
                     }
                 }
-                composable(Screen.Home.route) {
+                composable(Screen.Explore.route) {
                     Home()
                     isDrawerOpen.value = false
                 }
@@ -168,7 +167,7 @@ class MainActivity : ComponentActivity() {
  * within the application.
  */
 sealed class Screen(val route: String, @StringRes val resourceId: Int) {
-    object Home : Screen("home", R.string.home_name)
+    object Explore : Screen("explore", R.string.explore_name)
     object Friends : Screen("friends", R.string.friends_name)
     object Profile : Screen("profile", R.string.profile_name)
     object Login : Screen("login", R.string.login_name)
