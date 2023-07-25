@@ -1,7 +1,6 @@
 package com.example.travelapp
 
 
-import android.util.Log
 import android.util.Patterns
 import android.widget.Toast
 import androidx.compose.foundation.background
@@ -26,11 +25,8 @@ import androidx.compose.material.icons.filled.Password
 import androidx.compose.material.icons.filled.PermIdentity
 import androidx.compose.material.icons.filled.Person
 import androidx.compose.material3.MaterialTheme
-import androidx.compose.runtime.Composable
-import androidx.compose.runtime.getValue
-import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.*
 import androidx.compose.runtime.saveable.rememberSaveable
-import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.focus.FocusDirection
@@ -38,6 +34,7 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.input.pointer.pointerInput
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.LocalFocusManager
+import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.input.ImeAction
 import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.text.style.TextAlign
@@ -49,6 +46,7 @@ import com.example.travelapp.composable.CustomOutlinedTextField
 import com.example.travelapp.composable.TravelyzeUser
 import com.example.travelapp.ui.theme.Aero
 import com.example.travelapp.ui.theme.SoftWhite
+import com.example.travelapp.ui.theme.robotoFamily
 import com.google.firebase.auth.ktx.auth
 import com.google.firebase.firestore.FirebaseFirestore
 import com.google.firebase.ktx.Firebase
@@ -68,12 +66,12 @@ fun RegisterForm(){
     val focusManager = LocalFocusManager.current
     val scrollState = rememberScrollState()
 
-    var firstname by rememberSaveable {mutableStateOf("")}
-    var lastname by rememberSaveable {mutableStateOf("")}
-    var email by rememberSaveable {mutableStateOf("")}
-    var username by rememberSaveable {mutableStateOf("")}
-    var password by rememberSaveable {mutableStateOf("")}
-    var confirmPassword by rememberSaveable {mutableStateOf("")}
+    var firstname by remember {mutableStateOf("")}
+    var lastname by remember {mutableStateOf("")}
+    var email by remember {mutableStateOf("")}
+    var username by remember {mutableStateOf("")}
+    var password by remember {mutableStateOf("")}
+    var confirmPassword by remember {mutableStateOf("")}
 
     var validateFirstName by rememberSaveable { mutableStateOf(true) }
     var validateLastName by rememberSaveable { mutableStateOf(true) }
@@ -174,10 +172,12 @@ fun RegisterForm(){
         verticalArrangement = Arrangement.Top
     ){
         Text(
-            text = "Register an account on Travelyze",
-            style = MaterialTheme.typography.headlineLarge,
+            text = "Create account",
             modifier = Modifier.padding(bottom = 20.dp),
             color = Color.Black,
+            fontFamily = robotoFamily,
+            fontWeight = FontWeight.Light,
+            fontSize = 30.sp,
             textAlign = TextAlign.Center
         )
 
@@ -337,20 +337,6 @@ fun RegisterForm(){
                 colors = ButtonDefaults.buttonColors(backgroundColor = Aero, contentColor = Color.White)
             ){
                 Text(text = "Register", fontSize = 20.sp)
-            }
-
-            Button(
-                onClick = {
-                    isRegistering.value = false
-                },
-                modifier = Modifier
-                    .padding(start = 10.dp, end = 20.dp, bottom = 30.dp)
-                    .fillMaxWidth(1f)
-                    .fillMaxHeight(0.3f),
-                colors = ButtonDefaults.buttonColors(backgroundColor = Aero, contentColor = Color.White),
-
-            ){
-                Text(text = "Cancel", fontSize = 20.sp)
             }
         }
 

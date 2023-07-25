@@ -7,4 +7,5 @@
     <color name="aero">#5DB7DE</color>
     <color name="black">#FF000000</color>
     <color name="white">#FFFFFFFF</color>
+    <color name="soft_white">#FBFAF5</color>
 </resources>

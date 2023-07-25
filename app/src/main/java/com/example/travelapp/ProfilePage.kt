@@ -55,6 +55,7 @@ import androidx.compose.ui.unit.LayoutDirection
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.compose.ui.window.Dialog
+import androidx.navigation.NavController
 import coil.compose.rememberAsyncImagePainter
 import com.example.travelapp.composable.Drawer
 import com.example.travelapp.composable.TopBar
@@ -79,6 +80,7 @@ val sendPasswordChangeEmail = mutableStateOf(false)
 
 @Composable
 fun Profile(){
+
     val drawerState = rememberDrawerState(DrawerValue.Closed)
     val scope = rememberCoroutineScope()
     fun openDrawer()  {

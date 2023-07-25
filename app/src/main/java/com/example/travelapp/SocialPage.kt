@@ -48,6 +48,7 @@ import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.compose.ui.window.Dialog
+import androidx.navigation.NavController
 import coil.compose.rememberAsyncImagePainter
 import com.example.travelapp.composable.CustomOutlinedTextField
 import com.example.travelapp.composable.TopBar
@@ -57,7 +58,8 @@ import com.example.travelapp.ui.theme.SoftWhite
 
 val openAddFriendDialog = mutableStateOf(false)
 @Composable
-fun Social_LoggedIn(){
+fun Social(){
+
     if(openAddFriendDialog.value){
         addFriendDialog()
     }

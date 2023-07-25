@@ -24,15 +24,15 @@ private val DarkColorScheme = darkColorScheme(
     primary = Aero,
     secondary = TuftsBlue,
     tertiary = Khaki,
-    background = Alabaster
+    background = SoftWhite
 )
 
 private val LightColorScheme = lightColorScheme(
     primary = Aero,
     secondary = TuftsBlue,
     tertiary = Khaki,
-    background = Alabaster,
-    onBackground = Alabaster
+    background = SoftWhite,
+    onBackground = SoftWhite
 
     /* Other default colors to override
     surface = Color(0xFFFFFBFE),

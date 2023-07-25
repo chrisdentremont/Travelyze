@@ -34,6 +34,9 @@ import androidx.compose.ui.text.input.VisualTransformation
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import androidx.navigation.NavController
+import androidx.navigation.NavGraph.Companion.findStartDestination
+import androidx.navigation.compose.rememberNavController
 import com.example.travelapp.MainActivity.Companion.TAG
 import com.example.travelapp.composable.CustomOutlinedTextField
 import com.example.travelapp.ui.theme.Aero
@@ -47,7 +50,8 @@ val isRegistering = mutableStateOf(false)
 val openPasswordResetDialog = mutableStateOf(false)
 
 @Composable
-fun Login(auth: FirebaseAuth){
+fun Login(auth: FirebaseAuth, nav: NavController){
+
     var focusManager= LocalFocusManager.current
 
 
@@ -163,7 +167,7 @@ fun Login(auth: FirebaseAuth){
                             if(it.isSuccessful){
                                 Log.d(TAG ,"The user has successfully logged in")
                                 /*TODO populate app with info from user data*/
-                                isLoggedIn.value = Firebase.auth.currentUser != null
+                                isLoggedIn.value = true
                             }
                             else {
                                 Log.w(TAG ,"The user has FAILED to login", it.exception)
@@ -184,7 +188,12 @@ fun Login(auth: FirebaseAuth){
 
             Button(
                 onClick = {
-                    isRegistering.value = true
+                    nav.navigate(Screen.Register.route) {
+                        // Avoid multiple copies of the same destination when
+                        // re-selecting the same item
+                        launchSingleTop = true
+                        restoreState = false
+                    }
                 },
                 enabled = true,
                 modifier = Modifier.size(width = 150.dp, height = 50.dp).padding(horizontal = 10.dp),

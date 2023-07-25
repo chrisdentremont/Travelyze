@@ -1,5 +1,7 @@
 package com.example.travelapp
 
+import android.graphics.drawable.BitmapDrawable
+import android.graphics.drawable.ColorDrawable
 import android.os.Bundle
 import android.util.Log
 import androidx.activity.ComponentActivity
@@ -20,6 +22,7 @@ import androidx.navigation.compose.composable
 import androidx.navigation.compose.currentBackStackEntryAsState
 import androidx.navigation.compose.rememberNavController
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.ui.graphics.Color
@@ -37,6 +40,9 @@ var locationList = mutableListOf<LocationObject>()
 var locationNames = mutableListOf<String?>()
 
 class MainActivity : ComponentActivity() {
+
+
+
     private lateinit var navController: NavHostController
     companion object {
         val TAG:String = MainActivity::class.java.simpleName
@@ -100,7 +106,7 @@ class MainActivity : ComponentActivity() {
         val routeMap = mapOf(
             Screen.Friends to Icons.Outlined.Diversity1,
             Screen.Explore to Icons.Filled.Search,
-            Screen.Profile to Icons.Filled.Person
+            Screen.Profile to Icons.Filled.Person,
         )
 
         val navController = rememberNavController()
@@ -129,7 +135,7 @@ class MainActivity : ComponentActivity() {
                                     // re-selecting the same item
                                     launchSingleTop = true
                                     // Restore state when re-selecting a previously selected item
-                                    restoreState = true
+                                    restoreState = (navController.graph.findNode(Screen.Register.route) == null)
                                 }
                             },
                             modifier = Modifier.background(color = SoftWhite)
@@ -143,11 +149,11 @@ class MainActivity : ComponentActivity() {
             NavHost(navController, startDestination = Screen.Explore.route, Modifier.padding(innerPadding)) {
                 composable(Screen.Friends.route) {
                     if(isLoggedIn.value){
-                        Social_LoggedIn()
+                        Social()
                         isDrawerOpen.value = false
                     }
                     else{
-                        Login(auth)
+                        Login(auth, navController)
                         isDrawerOpen.value = false
                     }
                 }
@@ -160,19 +166,17 @@ class MainActivity : ComponentActivity() {
                         Profile()
                     }
                     else{
-                        Login(auth)
-                        isDrawerOpen.value = false
-                    }
-
-                    if(isRegistering.value){
-                        RegisterForm()
+                        Login(auth, navController)
                         isDrawerOpen.value = false
                     }
                 }
+                composable(Screen.Login.route){
+                    Login(auth, navController)
+                    isDrawerOpen.value = false
+                }
                 composable(Screen.Register.route){
-                    if(isLoggedIn.value){
-                        Login(auth)
-                    }
+                    RegisterForm()
+                    isDrawerOpen.value = false
                 }
             }
         }
