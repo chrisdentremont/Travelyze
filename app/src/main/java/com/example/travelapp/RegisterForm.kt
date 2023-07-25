@@ -24,7 +24,6 @@ import androidx.compose.material.icons.filled.AlternateEmail
 import androidx.compose.material.icons.filled.Password
 import androidx.compose.material.icons.filled.PermIdentity
 import androidx.compose.material.icons.filled.Person
-import androidx.compose.material3.MaterialTheme
 import androidx.compose.runtime.*
 import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.ui.Alignment
@@ -44,8 +43,8 @@ import com.example.travelapp.composable.AccountData
 import com.example.travelapp.composable.AccountInfo
 import com.example.travelapp.composable.CustomOutlinedTextField
 import com.example.travelapp.composable.TravelyzeUser
-import com.example.travelapp.ui.theme.Aero
-import com.example.travelapp.ui.theme.SoftWhite
+import com.example.travelapp.ui.theme.TextButtonColor
+import com.example.travelapp.ui.theme.BackgroundColor
 import com.example.travelapp.ui.theme.robotoFamily
 import com.google.firebase.auth.ktx.auth
 import com.google.firebase.firestore.FirebaseFirestore
@@ -153,7 +152,7 @@ fun RegisterForm(){
         modifier = Modifier
             .fillMaxSize()
             .verticalScroll(scrollState)
-            .background(SoftWhite)
+            .background(BackgroundColor)
             .pointerInput(Unit) {
                 detectTapGestures(onTap = {
                     focusManager.clearFocus()
@@ -326,7 +325,7 @@ fun RegisterForm(){
                     .padding(start = 20.dp, end = 10.dp, bottom = 30.dp)
                     .fillMaxWidth(0.5f)
                     .fillMaxHeight(0.3f),
-                colors = ButtonDefaults.buttonColors(backgroundColor = Aero, contentColor = Color.White)
+                colors = ButtonDefaults.buttonColors(backgroundColor = TextButtonColor, contentColor = Color.White)
             ){
                 Text(text = "Register", fontSize = 20.sp)
             }

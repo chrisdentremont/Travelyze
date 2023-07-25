@@ -10,6 +10,7 @@ import androidx.compose.material3.dynamicLightColorScheme
 import androidx.compose.material3.lightColorScheme
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.SideEffect
+import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.toArgb
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.LocalView
@@ -21,18 +22,18 @@ import androidx.core.view.ViewCompat
 import com.example.travelapp.R
 
 private val DarkColorScheme = darkColorScheme(
-    primary = Aero,
+    primary = TextButtonColor,
     secondary = TuftsBlue,
     tertiary = Khaki,
-    background = SoftWhite
+    background = BackgroundColor
 )
 
 private val LightColorScheme = lightColorScheme(
-    primary = Aero,
+    primary = Color.Transparent,
     secondary = TuftsBlue,
     tertiary = Khaki,
-    background = SoftWhite,
-    onBackground = SoftWhite
+    background = BackgroundColor,
+    onBackground = BackgroundColor
 
     /* Other default colors to override
     surface = Color(0xFFFFFBFE),

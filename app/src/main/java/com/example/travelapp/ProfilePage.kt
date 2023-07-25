@@ -2,48 +2,21 @@ package com.example.travelapp
 
 import android.util.Log
 import android.widget.Toast
-import androidx.compose.foundation.Image
-import androidx.compose.foundation.background
-import androidx.compose.foundation.border
-import androidx.compose.foundation.layout.Arrangement
-import androidx.compose.foundation.layout.Box
-import androidx.compose.foundation.layout.Column
-import androidx.compose.foundation.layout.Row
-import androidx.compose.foundation.layout.fillMaxHeight
-import androidx.compose.foundation.layout.fillMaxSize
-import androidx.compose.foundation.layout.fillMaxWidth
-import androidx.compose.foundation.layout.height
-import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.layout.size
-import androidx.compose.foundation.layout.width
-import androidx.compose.foundation.rememberScrollState
+import androidx.compose.foundation.*
+import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.text.KeyboardActions
 import androidx.compose.foundation.text.KeyboardOptions
-import androidx.compose.foundation.verticalScroll
-import androidx.compose.material.*
 import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.AlternateEmail
-import androidx.compose.material.icons.filled.ManageAccounts
-import androidx.compose.material.icons.filled.Settings
-import androidx.compose.material.icons.filled.Visibility
-import androidx.compose.material.icons.filled.VisibilityOff
-import androidx.compose.material.icons.outlined.Menu
-import androidx.compose.material3.Shapes
-import androidx.compose.runtime.Composable
-import androidx.compose.runtime.CompositionLocalProvider
-import androidx.compose.runtime.getValue
-import androidx.compose.runtime.mutableStateOf
-import androidx.compose.runtime.remember
-import androidx.compose.runtime.rememberCoroutineScope
+import androidx.compose.material.icons.filled.*
+import androidx.compose.material3.*
+import androidx.compose.runtime.*
 import androidx.compose.runtime.saveable.rememberSaveable
-import androidx.compose.runtime.setValue
-import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.graphics.Shape
+import androidx.compose.ui.graphics.RectangleShape
 import androidx.compose.ui.graphics.SolidColor
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.platform.LocalContext
@@ -56,17 +29,11 @@ import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.LayoutDirection
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
-import androidx.compose.ui.window.Dialog
-import androidx.navigation.NavController
 import coil.compose.rememberAsyncImagePainter
 import com.example.travelapp.composable.CustomOutlinedTextField
-import com.example.travelapp.composable.Drawer
 import com.example.travelapp.composable.TopBar
 import com.example.travelapp.composable.TravelyzeUser
-import com.example.travelapp.ui.theme.Aero
-import com.example.travelapp.ui.theme.Alabaster
-import com.example.travelapp.ui.theme.SoftWhite
-import com.example.travelapp.ui.theme.robotoFamily
+import com.example.travelapp.ui.theme.*
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.auth.FirebaseUser
 import com.google.firebase.auth.UserInfo
@@ -88,7 +55,9 @@ fun Profile(){
 
     val drawerState = rememberDrawerState(DrawerValue.Closed)
     val scope = rememberCoroutineScope()
+
     fun openDrawer()  {
+        Log.w("open", "opened")
         scope.launch {
             drawerState.open()
         }
@@ -120,94 +89,160 @@ fun Profile(){
         var user = documentSnapshot.toObject<TravelyzeUser>()
     }
 
-
-    Column(
-        Modifier
-            .fillMaxWidth()
-            .verticalScroll(rememberScrollState())
-            .background(color = SoftWhite)
-    ) {
-        TopBar(
-            title = "Profile",
-            buttonIcon = Icons.Outlined.Menu,
-            onButtonClicked = {
-                isDrawerOpen.value = !isDrawerOpen.value
+    CompositionLocalProvider(LocalLayoutDirection provides LayoutDirection.Rtl, ) {
+        ModalNavigationDrawer(
+            drawerState = drawerState,
+            modifier = Modifier.fillMaxHeight(),
+            drawerContent = {
+                ModalDrawerSheet(
+                    modifier = Modifier.width(300.dp),
+                    drawerShape = RectangleShape
+                ){
+                    Text(
+                        modifier = Modifier
+                            .padding(top = 30.dp, bottom = 30.dp)
+                            .width(200.dp),
+                        fontSize = 30.sp,
+                        fontWeight = FontWeight.Normal,
+                        textAlign = TextAlign.Center,
+                        fontFamily = marsFamily,
+                        text = "Settings"
+                    )
+                    Spacer(Modifier.height(30.dp))
+                    NavigationDrawerItem(
+                        label = {Text(
+                            text = "Edit Username",
+                            fontFamily = robotoFamily,
+                            fontSize = 20.sp)},
+                        onClick = {
+                            openEditDialog.value = true
+                        },
+                        icon = { Icon(Icons.Filled.Badge, null) },
+                        selected = false,
+                        modifier = Modifier.padding(NavigationDrawerItemDefaults.ItemPadding)
+                    )
+                    NavigationDrawerItem(
+                        label = {Text(
+                            text = "Change Password",
+                            fontFamily = robotoFamily,
+                            fontSize = 20.sp)},
+                        onClick = {
+                            sendPasswordChangeEmail.value = true
+                        },
+                        icon = { Icon(Icons.Filled.Password, null) },
+                        selected = false,
+                        modifier = Modifier.padding(NavigationDrawerItemDefaults.ItemPadding)
+                    )
+                    NavigationDrawerItem(
+                        label = {Text(
+                            text = "Sign Out",
+                            fontFamily = robotoFamily,
+                            fontSize = 20.sp)},
+                        onClick = {
+                            openSignoutDialog.value = true
+                        },
+                        icon = { Icon(Icons.Filled.DoorFront, null) },
+                        selected = false,
+                        modifier = Modifier.padding(NavigationDrawerItemDefaults.ItemPadding)
+                    )
+                    Divider(
+                        modifier = Modifier.padding(vertical = 50.dp, horizontal = 20.dp),
+                        color = Color.Gray,
+                        thickness = 1.dp)
+                    NavigationDrawerItem(
+                        label = {Text(
+                            text = "Delete Account",
+                            fontFamily = robotoFamily,
+                            fontSize = 20.sp)},
+                        onClick = {
+                            openDeleteDialog.value = true
+                        },
+                        icon = { Icon(Icons.Filled.Delete, null) },
+                        selected = false,
+                        modifier = Modifier.padding(NavigationDrawerItemDefaults.ItemPadding)
+                    )
+                }
             }
-        )
-
-        Box(Modifier.fillMaxSize()){
-            //
-            // Profile Box
-            //
-            Row(Modifier.fillMaxWidth()){
+        ){
+            CompositionLocalProvider(LocalLayoutDirection provides LayoutDirection.Ltr, ){
                 Column(
                     Modifier
                         .fillMaxWidth()
-                        .padding(start = 30.dp, top = 10.dp, end = 30.dp, bottom = 30.dp)
-                        .clip(shape = RoundedCornerShape(20.dp))
-                        .background(color = Alabaster)
-                        .border(2.dp, SolidColor(Color.Black), shape = RoundedCornerShape(20.dp))
+                        .verticalScroll(rememberScrollState())
+                        .background(color = BackgroundColor)
                 ) {
-                    Row(
-                        Modifier
-                            .fillMaxWidth()
-                            .padding(10.dp)
+                    TopBar(
+                        title = "Profile",
+                        buttonIcon = Icons.Filled.Settings,
+                        onButtonClicked = {
+                            openDrawer()
+                        }
+                    )
+                    Box(Modifier.fillMaxSize()){
+                        //
+                        // Profile Box
+                        //
+                        Row(Modifier.fillMaxWidth()){
+                            Column(
+                                Modifier
+                                    .fillMaxWidth()
+                                    .padding(
+                                        start = 30.dp,
+                                        top = 10.dp,
+                                        end = 30.dp,
+                                        bottom = 30.dp
+                                    )
+                                    .clip(shape = RoundedCornerShape(20.dp))
+                                    .background(color = Alabaster)
+                                    .border(
+                                        2.dp,
+                                        SolidColor(Color.Black),
+                                        shape = RoundedCornerShape(20.dp)
+                                    )
+                            ) {
+                                Row(
+                                    Modifier
+                                        .fillMaxWidth()
+                                        .padding(10.dp)
 
-                    ) {
-                        Image(
-                            painter = rememberAsyncImagePainter("https://www.theshirtlist.com/wp-content/uploads/2018/12/Rowlet.jpg"),
-                            contentDescription = null,
-                            contentScale = ContentScale.Crop,
-                            modifier = Modifier
-                                .size(100.dp)
-                                .clip(CircleShape)
-                                .border(5.dp, Color.White, CircleShape)
-                        )
-                        Text(text = "Gabriel Madeira",
-                            fontSize = 40.sp,
-                            fontWeight = FontWeight.Normal,
-                            textAlign = TextAlign.Center,
-                        )
+                                ) {
+                                    Image(
+                                        painter = rememberAsyncImagePainter("https://www.theshirtlist.com/wp-content/uploads/2018/12/Rowlet.jpg"),
+                                        contentDescription = null,
+                                        contentScale = ContentScale.Crop,
+                                        modifier = Modifier
+                                            .size(100.dp)
+                                            .clip(CircleShape)
+                                            .border(5.dp, Color.White, CircleShape)
+                                    )
+                                    Text(text = "Gabriel Madeira",
+                                        fontSize = 40.sp,
+                                        fontWeight = FontWeight.Normal,
+                                        textAlign = TextAlign.Center,
+                                    )
 
 
+                                }
+
+                                Column( Modifier
+                                    .fillMaxWidth(),
+                                ) {
+                                    Text(text = "Favorites",
+                                        fontSize = 30.sp,
+                                        fontWeight = FontWeight.Normal,
+                                        textAlign = TextAlign.Start,
+                                        modifier = Modifier.padding(start = 10.dp, top = 10.dp)
+                                    )
+
+                                    Text(text = "\tPortland, OR, USA\n\n\tHartford, CT, USA\n\n\tStockholm, SE\n\n\tEncino, CA, USA\n\n\tSão Paulo, Brazil",
+                                        fontSize = 20.sp,
+                                        fontWeight = FontWeight.Normal,
+                                        textAlign = TextAlign.Start,
+                                        modifier = Modifier.padding(10.dp))
+                                }
+                            }
+                        }
                     }
-
-                    Row(Modifier.fillMaxWidth()) {
-                        Divider(startIndent = 0.dp, thickness = 2.dp, color = Color.Black)
-                    }
-
-                    Column( Modifier
-                        .fillMaxWidth(),
-                    ) {
-                        Text(text = "Favorites",
-                            fontSize = 30.sp,
-                            fontWeight = FontWeight.Normal,
-                            textAlign = TextAlign.Start,
-                            modifier = Modifier.padding(start = 10.dp, top = 10.dp)
-                        )
-
-                        Text(text = "\tPortland, OR, USA\n\n\tHartford, CT, USA\n\n\tStockholm, SE\n\n\tEncino, CA, USA\n\n\tSão Paulo, Brazil",
-                            fontSize = 20.sp,
-                            fontWeight = FontWeight.Normal,
-                            textAlign = TextAlign.Start,
-                            modifier = Modifier.padding(10.dp))
-                    }
-                }
-            }
-
-            CompositionLocalProvider(LocalLayoutDirection provides LayoutDirection.Rtl, ) {
-                ModalDrawer(
-                    drawerState = drawerState,
-                    gesturesEnabled = drawerState.isOpen,
-                    modifier = Modifier.fillMaxHeight(),
-                    drawerContent = {
-                        Drawer(
-                            modifier = Modifier.background(color = Alabaster),
-                            Firebase.auth
-                        )
-                    }
-                ){
-                    //Do nothing
                 }
             }
         }
@@ -225,6 +260,7 @@ fun signOutDialog(fireBaseAuth: FirebaseAuth){
         title = {
             Text(
                 text = "Are you sure you want to sign out?",
+                style = MaterialTheme.typography.bodyLarge,
                 fontFamily = robotoFamily,
                 color = Color.Black
             )
@@ -232,6 +268,7 @@ fun signOutDialog(fireBaseAuth: FirebaseAuth){
         text = {
             Text(
                 text = "You will have to log back in to use some features.",
+                style = MaterialTheme.typography.bodyMedium,
                 fontFamily = robotoFamily,
                 color = Color.Black
             )
@@ -261,7 +298,7 @@ fun signOutDialog(fireBaseAuth: FirebaseAuth){
                 Text(
                     text = "CANCEL",
                     fontFamily = robotoFamily,
-                    color = Aero,
+                    color = TextButtonColor,
                 )
             }
         }
@@ -355,7 +392,7 @@ fun deleteAccountDialog(fireBaseAuth: FirebaseAuth){
                 Text(
                     text = "CONFIRM",
                     fontFamily = robotoFamily,
-                    color = Aero,
+                    color = Color.Red,
                 )
             }
         },
@@ -366,7 +403,7 @@ fun deleteAccountDialog(fireBaseAuth: FirebaseAuth){
                 Text(
                     text = "CANCEL",
                     fontFamily = robotoFamily,
-                    color = Aero,
+                    color = TextButtonColor,
                 )
             }
         }
@@ -388,8 +425,9 @@ fun editUsernameDialog() {
         },
         title = {
             Text(
-                text = "Please Enter your new username",
+                text = "Enter a new username:",
                 fontFamily = robotoFamily,
+                style = MaterialTheme.typography.bodyLarge,
                 color = Color.Black
             )
         },
@@ -450,12 +488,12 @@ fun editUsernameDialog() {
         },
         dismissButton = {
             TextButton(onClick = {
-                openSignoutDialog.value = false
+                openEditDialog.value = false
             }){
                 Text(
                     text = "CANCEL",
                     fontFamily = robotoFamily,
-                    color = Aero,
+                    color = TextButtonColor,
                 )
             }
         }

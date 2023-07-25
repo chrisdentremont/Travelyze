@@ -1,6 +1,5 @@
 package com.example.travelapp.composable
 
-import android.util.Log
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.interaction.MutableInteractionSource
 import androidx.compose.foundation.layout.*
@@ -18,7 +17,7 @@ import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Error
 import androidx.compose.material.icons.filled.Visibility
 import androidx.compose.material.icons.filled.VisibilityOff
-import androidx.compose.material.icons.outlined.Search
+import androidx.compose.material3.ModalNavigationDrawer
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
@@ -31,12 +30,9 @@ import androidx.compose.ui.text.input.VisualTransformation
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.example.travelapp.*
-import com.example.travelapp.ui.theme.Aero
-import com.example.travelapp.ui.theme.SoftWhite
+import com.example.travelapp.ui.theme.BackgroundColor
 import com.example.travelapp.ui.theme.robotoFamily
 import com.google.firebase.auth.FirebaseAuth
-import com.google.firebase.firestore.FirebaseFirestore
-import com.google.firebase.firestore.ktx.toObject
 
 @Composable
 fun CustomOutlinedTextField(
@@ -129,76 +125,6 @@ fun TopBar(title: String = "", buttonIcon: ImageVector, onButtonClicked: () -> U
                 )
             }
         },
-        backgroundColor = SoftWhite
+        backgroundColor = BackgroundColor
     )
 }
-
-@Composable
-fun Drawer(
-    modifier: Modifier = Modifier,
-    auth: FirebaseAuth
-) {
-    Column(
-        modifier
-            .height(1000.dp)
-            .padding(top = 50.dp)
-    ) {
-        TextButton(
-            onClick = {
-                openEditDialog.value = true
-            },
-            Modifier.clickable(
-                indication = null,
-                interactionSource = remember { MutableInteractionSource() }
-            ){  }
-        ) {
-            Text(
-                text = "Edit Username",
-                color = Color.Black,
-                modifier = Modifier.padding(start = 15.dp),
-                fontFamily = robotoFamily,
-                fontSize = 20.sp)
-        }
-
-        TextButton(
-            onClick = { sendPasswordChangeEmail.value = true }
-        ) {
-            Text(
-                text = "Change password",
-                color = Color.Black,
-                modifier = Modifier.padding(start = 15.dp, top = 10.dp),
-                fontFamily = robotoFamily,
-                fontSize = 20.sp)
-        }
-
-        TextButton(
-            onClick = {
-                openSignoutDialog.value = true
-            }
-        ) {
-            Text(
-                text = "Sign out",
-                color = Color.Blue,
-                modifier = Modifier.padding(start = 15.dp, top = 10.dp, bottom = 10.dp),
-                fontFamily = robotoFamily,
-                fontSize = 20.sp)
-        }
-        Divider(modifier = Modifier.padding(start = 30.dp, end = 30.dp), thickness = 2.dp, color = Color.Gray)
-
-        TextButton(
-            onClick = {
-                openDeleteDialog.value = true
-            }
-        ) {
-            Text(
-                text = "Delete Account",
-                color = Color.Red,
-                modifier = Modifier.padding(start = 15.dp, top = 10.dp),
-                fontFamily = robotoFamily,
-                fontSize = 20.sp)
-        }
-
-
-    }
-}
-

@@ -23,24 +23,19 @@ import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import coil.compose.AsyncImage
-import com.example.travelapp.composable.LocationObject
-import com.example.travelapp.composable.TravelyzeUser
-import com.example.travelapp.ui.theme.SoftWhite
+import com.example.travelapp.ui.theme.BackgroundColor
 import com.example.travelapp.ui.theme.marsFamily
 import com.example.travelapp.ui.theme.robotoFamily
-import com.google.firebase.firestore.FirebaseFirestore
-import com.google.firebase.firestore.ktx.toObject
-import kotlinx.coroutines.async
-import kotlinx.coroutines.coroutineScope
-import kotlinx.coroutines.launch
-import okhttp3.internal.wait
 
 @Composable
 fun Home(){
+
+    Log.w("done", "$locationNames")
+
     Column(
         Modifier
             .fillMaxWidth()
-            .background(color = SoftWhite)){
+            .background(color = BackgroundColor)){
         Row(Modifier.fillMaxWidth(),
             horizontalArrangement = Arrangement.Center) {
             Text(

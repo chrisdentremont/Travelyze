@@ -1,60 +1,49 @@
 package com.example.travelapp
 
+import android.util.Log
 import android.widget.Toast
-import androidx.compose.foundation.Image
-import androidx.compose.foundation.background
-import androidx.compose.foundation.border
-import androidx.compose.foundation.layout.Arrangement
-import androidx.compose.foundation.layout.Box
-import androidx.compose.foundation.layout.Column
-import androidx.compose.foundation.layout.Row
-import androidx.compose.foundation.layout.fillMaxHeight
-import androidx.compose.foundation.layout.fillMaxWidth
-import androidx.compose.foundation.layout.height
-import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.layout.size
-import androidx.compose.foundation.layout.width
-import androidx.compose.foundation.rememberScrollState
+import androidx.compose.foundation.*
+import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.text.KeyboardActions
 import androidx.compose.foundation.text.KeyboardOptions
-import androidx.compose.foundation.verticalScroll
-import androidx.compose.material.Button
-import androidx.compose.material.ButtonDefaults
-import androidx.compose.material.Card
-import androidx.compose.material.Surface
-import androidx.compose.material.Text
 import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.Person2
+import androidx.compose.material.icons.filled.*
 import androidx.compose.material.icons.outlined.Add
-import androidx.compose.runtime.Composable
-import androidx.compose.runtime.getValue
-import androidx.compose.runtime.mutableStateOf
-import androidx.compose.runtime.remember
-import androidx.compose.runtime.setValue
+import androidx.compose.material3.*
+import androidx.compose.runtime.*
+import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.graphics.RectangleShape
 import androidx.compose.ui.graphics.SolidColor
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.LocalFocusManager
+import androidx.compose.ui.platform.LocalLayoutDirection
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.input.ImeAction
 import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.text.style.TextAlign
+import androidx.compose.ui.unit.LayoutDirection
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
-import androidx.compose.ui.window.Dialog
-import androidx.navigation.NavController
 import coil.compose.rememberAsyncImagePainter
 import com.example.travelapp.composable.CustomOutlinedTextField
 import com.example.travelapp.composable.TopBar
-import com.example.travelapp.ui.theme.Aero
-import com.example.travelapp.ui.theme.Alabaster
-import com.example.travelapp.ui.theme.SoftWhite
+import com.example.travelapp.composable.TravelyzeUser
+import com.example.travelapp.ui.theme.*
+import com.google.firebase.auth.FirebaseAuth
+import com.google.firebase.auth.FirebaseUser
+import com.google.firebase.auth.UserInfo
+import com.google.firebase.auth.ktx.auth
+import com.google.firebase.firestore.FirebaseFirestore
+import com.google.firebase.firestore.ktx.toObject
+import com.google.firebase.ktx.Firebase
+import kotlinx.coroutines.launch
 
 val openAddFriendDialog = mutableStateOf(false)
 @Composable
@@ -68,7 +57,7 @@ fun Social(){
         modifier = Modifier
             .fillMaxHeight()
             .fillMaxWidth()
-            .background(color = SoftWhite)
+            .background(color = BackgroundColor)
     ){
         Row(
             Modifier.fillMaxWidth(),
@@ -104,8 +93,8 @@ fun Social(){
                             modifier = Modifier
                                 .fillMaxWidth()
                                 .padding(15.dp),
-                            elevation = 10.dp,
-                            backgroundColor = Alabaster
+                            elevation = CardDefaults.cardElevation(10.dp),
+                            colors = CardDefaults.cardColors(Alabaster)
                         ){
                             Column(
                                 modifier = Modifier.padding(15.dp)
@@ -182,8 +171,8 @@ fun Social(){
                             modifier = Modifier
                                 .fillMaxWidth()
                                 .padding(15.dp),
-                            elevation = 10.dp,
-                            backgroundColor = Alabaster
+                            elevation = CardDefaults.cardElevation(10.dp),
+                            colors = CardDefaults.cardColors(Alabaster)
                         ){
                             Column(
                                 modifier = Modifier.padding(15.dp)
@@ -259,8 +248,8 @@ fun Social(){
                             modifier = Modifier
                                 .fillMaxWidth()
                                 .padding(15.dp),
-                            elevation = 10.dp,
-                            backgroundColor = Alabaster
+                            elevation = CardDefaults.cardElevation(10.dp),
+                            colors = CardDefaults.cardColors(Alabaster)
                         ){
                             Column(
                                 modifier = Modifier.padding(15.dp)
@@ -336,8 +325,8 @@ fun Social(){
                             modifier = Modifier
                                 .fillMaxWidth()
                                 .padding(15.dp),
-                            elevation = 10.dp,
-                            backgroundColor = Alabaster
+                            elevation = CardDefaults.cardElevation(10.dp),
+                            colors = CardDefaults.cardColors(Alabaster)
                         ){
                             Column(
                                 modifier = Modifier.padding(15.dp)
@@ -415,37 +404,29 @@ fun addFriendDialog(){
         mutableStateOf("")
     }
 
-    Dialog(
+    AlertDialog(
         onDismissRequest = {
             openAddFriendDialog.value = false
-        }
-    ){
-        Surface(
-            modifier = Modifier
-                .fillMaxWidth()
-                .clip(shape = RoundedCornerShape(20.dp)),
-            elevation = 4.dp
-        ){
-            Column(
-                verticalArrangement = Arrangement.Center,
-            ){
-                Box(
-                    modifier = Modifier
-                        .fillMaxWidth()
-                        .height(230.dp)
-                        .clip(shape = RoundedCornerShape(20.dp))
-                        .background(color = Color.White)
-                        .border(2.dp, SolidColor(Color.Black), shape = RoundedCornerShape(20.dp)),
-                    contentAlignment = Alignment.Center,
-                ){
+        },
+        title = {
+            Text(
+                text = "Search for a user:",
+                fontFamily = robotoFamily,
+                style = MaterialTheme.typography.bodyLarge,
+                color = Color.Black
+            )
+        },
+        text = {
+            Column(){
+                Row(){
                     Text(
-                        modifier = Modifier.padding(bottom = 140.dp, start = 10.dp, end = 10.dp),
-                        text = "Enter your friend's username below:",
-                        textAlign = TextAlign.Center,
-                        color = Color.Black,
-                        fontSize = 18.sp,
+                        text = "Search for a user:",
+                        fontFamily = robotoFamily,
+                        style = MaterialTheme.typography.bodyMedium,
+                        color = Color.Black
                     )
-
+                }
+                Row(){
                     CustomOutlinedTextField(
                         value = username,
                         onValueChange = { username = it },
@@ -459,55 +440,43 @@ fun addFriendDialog(){
                             onDone = { focusManager.clearFocus() }
                         ),
                         modifier = Modifier
-                            .fillMaxWidth(0.8f)
-                            .padding(bottom = 10.dp, start = 10.dp, end = 10.dp)
-                    )
-
-                    Row(
-                        modifier = Modifier
                             .fillMaxWidth()
-                            .padding(start = 15.dp, top = 150.dp, end = 15.dp),
-                        horizontalArrangement = Arrangement.Center
-                    ){
-                        Button(
-                            modifier = Modifier
-                                .width(150.dp)
-                                .padding(end = 10.dp),
-                            colors = ButtonDefaults.buttonColors(backgroundColor = Aero),
-                            onClick = {
-                                if(username.isNotBlank()){
-                                    //TODO search for user with given username
-                                    //Send user a friend request
-                                } else {
-                                    Toast.makeText(
-                                        contextForToast,
-                                        "Please enter a valid username.",
-                                        Toast.LENGTH_SHORT
-                                    ).show()
-                                }
-                            }) {
-                            Text(
-                                text = "Confirm",
-                                color = Color.White,
-                            )
-                        }
-
-                        Button(
-                            modifier = Modifier
-                                .width(150.dp)
-                                .padding(start = 10.dp),
-                            colors = ButtonDefaults.buttonColors(backgroundColor = Aero),
-                            onClick = {
-                                openAddFriendDialog.value = false
-                            }) {
-                            Text(
-                                text = "Cancel",
-                                color = Color.White,
-                            )
-                        }
-                    }
+                    )
                 }
             }
+        },
+        confirmButton = {
+            TextButton(
+                onClick = {
+                    if(username.isNotBlank()){
+                        //TODO search for user with given username
+                        //Send user a friend request
+                    } else {
+                        Toast.makeText(
+                            contextForToast,
+                            "Please enter a valid username.",
+                            Toast.LENGTH_SHORT
+                        ).show()
+                    }
+                }
+            ){
+                Text(
+                    text = "SEARCH",
+                    color = TextButtonColor,
+                )
+            }
+        },
+        dismissButton = {
+            TextButton(
+                onClick = {
+                    openAddFriendDialog.value = false
+                }
+            ){
+                Text(
+                    text = "CANCEL",
+                    color = TextButtonColor,
+                )
+            }
         }
-    }
+    )
 }

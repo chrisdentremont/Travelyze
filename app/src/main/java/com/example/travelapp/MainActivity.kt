@@ -1,18 +1,16 @@
 package com.example.travelapp
 
-import android.graphics.drawable.BitmapDrawable
-import android.graphics.drawable.ColorDrawable
 import android.os.Bundle
 import android.util.Log
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.annotation.StringRes
 import androidx.compose.foundation.background
+import androidx.compose.foundation.isSystemInDarkTheme
 import androidx.compose.foundation.layout.*
 import androidx.compose.material.*
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.*
-import androidx.compose.material.icons.outlined.Diversity1
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.stringResource
 import androidx.navigation.NavDestination.Companion.hierarchy
@@ -22,17 +20,22 @@ import androidx.navigation.compose.composable
 import androidx.navigation.compose.currentBackStackEntryAsState
 import androidx.navigation.compose.rememberNavController
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.DisposableEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.ui.graphics.Color
 import androidx.navigation.NavHostController
 import com.example.travelapp.composable.LocationObject
 import com.example.travelapp.ui.theme.*
+import com.google.accompanist.systemuicontroller.rememberSystemUiController
 import com.google.firebase.auth.ktx.auth
 import com.google.firebase.firestore.FirebaseFirestore
 import com.google.firebase.firestore.ktx.toObject
 import com.google.firebase.ktx.Firebase
+import kotlinx.coroutines.GlobalScope
+import kotlinx.coroutines.async
+import kotlinx.coroutines.launch
+import kotlinx.coroutines.tasks.await
 
 val isLoggedIn = mutableStateOf(Firebase.auth.currentUser != null)
 
@@ -53,46 +56,61 @@ class MainActivity : ComponentActivity() {
     }
 
 
-    override fun onCreate(savedInstanceState: Bundle?) {
+    override fun onCreate(savedInstanceState: Bundle?){
         super.onCreate(savedInstanceState)
 
-        var fireStore = FirebaseFirestore.getInstance()
-        var locationCollection = fireStore.collection("countries")
-        locationCollection.get().addOnSuccessListener { documents ->
-            for(document in documents){
+        GlobalScope.launch {
+            var getLocationsFromDb = getLocationsAsync().await().await()
+
+            for(document in getLocationsFromDb.documents){
                 var current = document.toObject<LocationObject>()
-                locationList.add(current)
-                locationNames.add(current.Name)
+                if (current != null) {
+                    locationList.add(current)
+                    locationNames.add(current.Name)
+                }
             }
-            Log.w("done", "$locationNames")
         }
-            .addOnFailureListener {exception ->
-                Log.w("Exception", exception)
-            }
 
         setContent {
             TravelAppTheme {
-                // A surface container using the 'background' color from the theme
-                Surface(
-                    modifier = Modifier.fillMaxSize(),
-                    color = MaterialTheme.colors.background
-                ) {
-                    navController = rememberNavController()
 
+                val systemUiController = rememberSystemUiController()
+                val useDarkIcons = !isSystemInDarkTheme()
 
-                    Home()
-                    NavBar()
+                DisposableEffect(systemUiController, useDarkIcons) {
+                    // Update all of the system bar colors to be transparent, and use
+                    // dark icons if we're in light theme
+                    systemUiController.setSystemBarsColor(
+                        color = Color.Transparent,
+                        darkIcons = useDarkIcons
+                    )
 
-                    if (openSignoutDialog.value){
-                        signOutDialog(auth)
-                    }
-                    
-                    if(openDeleteDialog.value){
-                        deleteAccountDialog(auth)
-                    }
+                    // setStatusBarColor() and setNavigationBarColor() also exist
 
-                    if(openEditDialog.value){
-                        editUsernameDialog()
+                    onDispose {}
+                }
+
+                Box(
+                    modifier = Modifier.background(BackgroundColor)
+                ){
+                    Surface(
+                        modifier = Modifier.fillMaxSize(),
+                    ) {
+                        navController = rememberNavController()
+
+                        NavBar()
+
+                        if (openSignoutDialog.value){
+                            signOutDialog(auth)
+                        }
+
+                        if(openDeleteDialog.value){
+                            deleteAccountDialog(auth)
+                        }
+
+                        if(openEditDialog.value){
+                            editUsernameDialog()
+                        }
                     }
                 }
             }
@@ -106,7 +124,7 @@ class MainActivity : ComponentActivity() {
     @Composable
     fun NavBar(){
         val routeMap = mapOf(
-            Screen.Friends to Icons.Outlined.Diversity1,
+            Screen.Friends to Icons.Filled.Group,
             Screen.Explore to Icons.Filled.Search,
             Screen.Profile to Icons.Filled.Person,
         )
@@ -140,7 +158,7 @@ class MainActivity : ComponentActivity() {
                                     restoreState = (navController.graph.findNode(Screen.Register.route) == null)
                                 }
                             },
-                            modifier = Modifier.background(color = SoftWhite)
+                            modifier = Modifier.background(color = BackgroundColor)
                         )
                     }
 
@@ -184,6 +202,17 @@ class MainActivity : ComponentActivity() {
         }
 
 
+    }
+
+    private fun getLocationsAsync() = GlobalScope.async {
+        var fireStore = FirebaseFirestore.getInstance()
+        var locationCollection = fireStore.collection("countries")
+        locationCollection.get().addOnSuccessListener {
+            Log.w("success", "successful")
+        }
+            .addOnFailureListener {exception ->
+                Log.w("Exception", exception)
+            }
     }
 }
 

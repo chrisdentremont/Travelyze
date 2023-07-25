@@ -35,16 +35,12 @@ import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.navigation.NavController
-import androidx.navigation.NavGraph.Companion.findStartDestination
-import androidx.navigation.compose.rememberNavController
 import com.example.travelapp.MainActivity.Companion.TAG
 import com.example.travelapp.composable.CustomOutlinedTextField
-import com.example.travelapp.ui.theme.Aero
-import com.example.travelapp.ui.theme.SoftWhite
+import com.example.travelapp.ui.theme.TextButtonColor
+import com.example.travelapp.ui.theme.BackgroundColor
 import com.example.travelapp.ui.theme.robotoFamily
 import com.google.firebase.auth.FirebaseAuth
-import com.google.firebase.auth.ktx.auth
-import com.google.firebase.ktx.Firebase
 
 val isRegistering = mutableStateOf(false)
 val openPasswordResetDialog = mutableStateOf(false)
@@ -82,7 +78,7 @@ fun Login(auth: FirebaseAuth, nav: NavController){
         resetPasswordDialog(auth)
     }
 
-    Column(Modifier.fillMaxSize().background(color = SoftWhite), horizontalAlignment = Alignment.CenterHorizontally, verticalArrangement = Arrangement.Center) {
+    Column(Modifier.fillMaxSize().background(color = BackgroundColor), horizontalAlignment = Alignment.CenterHorizontally, verticalArrangement = Arrangement.Center) {
         //
         // Welcome Message
         //
@@ -175,7 +171,7 @@ fun Login(auth: FirebaseAuth, nav: NavController){
                         }
                 },
                 modifier = Modifier.size(width = 150.dp, height = 50.dp).padding(horizontal = 10.dp),
-                colors = ButtonDefaults.buttonColors(backgroundColor = Aero),
+                colors = ButtonDefaults.buttonColors(backgroundColor = TextButtonColor),
                 enabled = isEmailValid && isPasswordValid
             ) {
                 Text(
@@ -197,7 +193,7 @@ fun Login(auth: FirebaseAuth, nav: NavController){
                 },
                 enabled = true,
                 modifier = Modifier.size(width = 150.dp, height = 50.dp).padding(horizontal = 10.dp),
-                colors = ButtonDefaults.buttonColors(backgroundColor = Aero)
+                colors = ButtonDefaults.buttonColors(backgroundColor = TextButtonColor)
             ) {
                 Text(
                     text = "Register",
@@ -303,7 +299,7 @@ fun resetPasswordDialog(auth: FirebaseAuth){
                 Text(
                     text = "CONFIRM",
                     fontFamily = robotoFamily,
-                    color = Aero,
+                    color = TextButtonColor,
                 )
             }
         },
@@ -314,7 +310,7 @@ fun resetPasswordDialog(auth: FirebaseAuth){
                 Text(
                     text = "CANCEL",
                     fontFamily = robotoFamily,
-                    color = Aero,
+                    color = TextButtonColor,
                 )
             }
         }
