@@ -16,6 +16,7 @@ import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.graphics.ImageBitmap
 import androidx.compose.ui.graphics.RectangleShape
 import androidx.compose.ui.graphics.SolidColor
 import androidx.compose.ui.layout.ContentScale
@@ -178,68 +179,19 @@ fun Profile(){
                             openDrawer()
                         }
                     )
-                    Box(Modifier.fillMaxSize()){
-                        //
-                        // Profile Box
-                        //
-                        Row(Modifier.fillMaxWidth()){
-                            Column(
-                                Modifier
-                                    .fillMaxWidth()
-                                    .padding(
-                                        start = 30.dp,
-                                        top = 10.dp,
-                                        end = 30.dp,
-                                        bottom = 30.dp
-                                    )
-                                    .clip(shape = RoundedCornerShape(20.dp))
-                                    .background(color = Alabaster)
-                                    .border(
-                                        2.dp,
-                                        SolidColor(Color.Black),
-                                        shape = RoundedCornerShape(20.dp)
-                                    )
-                            ) {
-                                Row(
-                                    Modifier
-                                        .fillMaxWidth()
-                                        .padding(10.dp)
-
-                                ) {
-                                    Image(
-                                        painter = rememberAsyncImagePainter("https://www.theshirtlist.com/wp-content/uploads/2018/12/Rowlet.jpg"),
-                                        contentDescription = null,
-                                        contentScale = ContentScale.Crop,
-                                        modifier = Modifier
-                                            .size(100.dp)
-                                            .clip(CircleShape)
-                                            .border(5.dp, Color.White, CircleShape)
-                                    )
-                                    Text(text = "Gabriel Madeira",
-                                        fontSize = 40.sp,
-                                        fontWeight = FontWeight.Normal,
-                                        textAlign = TextAlign.Center,
-                                    )
-
-
-                                }
-
-                                Column( Modifier
-                                    .fillMaxWidth(),
-                                ) {
-                                    Text(text = "Favorites",
-                                        fontSize = 30.sp,
-                                        fontWeight = FontWeight.Normal,
-                                        textAlign = TextAlign.Start,
-                                        modifier = Modifier.padding(start = 10.dp, top = 10.dp)
-                                    )
-
-                                    Text(text = "\tPortland, OR, USA\n\n\tHartford, CT, USA\n\n\tStockholm, SE\n\n\tEncino, CA, USA\n\n\tSão Paulo, Brazil",
-                                        fontSize = 20.sp,
-                                        fontWeight = FontWeight.Normal,
-                                        textAlign = TextAlign.Start,
-                                        modifier = Modifier.padding(10.dp))
-                                }
+                    Column(){
+                        Row(){
+                            Image(
+                                painter = rememberAsyncImagePainter(model = Firebase.auth.currentUser?.photoUrl),
+                                contentDescription = null,
+                                contentScale = ContentScale.Crop,
+                                modifier = Modifier
+                                    .size(75.dp)
+                                    .clip(CircleShape)
+                                    .border(5.dp, Color.White, CircleShape)
+                            )
+                            Box(){
+                                Icon(Icons.Filled.Camera, contentDescription = "Check mark")
                             }
                         }
                     }

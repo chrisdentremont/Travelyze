@@ -65,10 +65,12 @@ fun Login(auth: FirebaseAuth, nav: NavController){
         }
     }
 
-    val isPasswordValid by remember {
-        derivedStateOf {
-            password.length > 7
-        }
+    var isPasswordValid by remember {
+        mutableStateOf(true)
+    }
+
+    var loginErrorMessage by remember {
+        mutableStateOf("")
     }
 
     var isPasswordVisible by rememberSaveable { mutableStateOf(false)}
@@ -110,7 +112,6 @@ fun Login(auth: FirebaseAuth, nav: NavController){
             keyboardActions = KeyboardActions(
                 onNext = { focusManager.moveFocus(FocusDirection.Down) }
             ),
-            isError = !isEmailValid,
             modifier = Modifier
                 .fillMaxWidth(.6f)
                 .padding(bottom = 15.dp)
@@ -119,11 +120,10 @@ fun Login(auth: FirebaseAuth, nav: NavController){
         //
         // Password TextField
         //
-        OutlinedTextField(
+        CustomOutlinedTextField(
             value = password,
             onValueChange = { password = it },
-            label = { Text("Password") },
-            singleLine = true,
+            label = "Password",
             modifier = Modifier
                 .fillMaxWidth(.6f)
                 .padding(top = 15.dp),
@@ -134,20 +134,14 @@ fun Login(auth: FirebaseAuth, nav: NavController){
             keyboardActions = KeyboardActions(
                 onNext = { focusManager.clearFocus() }
             ),
-            isError = !isPasswordValid,
-            visualTransformation = if (isPasswordVisible) VisualTransformation.None else PasswordVisualTransformation(),
+            showError = !isPasswordValid,
+            errorMessage = loginErrorMessage,
+            isPasswordField = true,
 
-            trailingIcon = {
-                val image = if (isPasswordVisible)
-                    Icons.Filled.Visibility
-                else Icons.Filled.VisibilityOff
-
-                val description = if (isPasswordVisible) "Hide password" else "Show password"
-
-                IconButton(onClick = {isPasswordVisible = !isPasswordVisible}){
-                    Icon(imageVector  = image, description)
-                }
-            }
+            leadingIconImageVector = if (isPasswordVisible)
+                Icons.Filled.Visibility
+                else Icons.Filled.VisibilityOff,
+            leadingIconDescription = if (isPasswordVisible) "Hide password" else "Show password"
         )
 
         Row(
@@ -161,18 +155,20 @@ fun Login(auth: FirebaseAuth, nav: NavController){
                     auth.signInWithEmailAndPassword(email, password)
                         .addOnCompleteListener{
                             if(it.isSuccessful){
-                                Log.d(TAG ,"The user has successfully logged in")
                                 /*TODO populate app with info from user data*/
                                 isLoggedIn.value = true
+                                isPasswordValid = true
+                                loginErrorMessage = ""
                             }
                             else {
-                                Log.w(TAG ,"The user has FAILED to login", it.exception)
+                                isPasswordValid = false
+                                loginErrorMessage = "Invalid login credentials."
                             }
                         }
                 },
                 modifier = Modifier.size(width = 150.dp, height = 50.dp).padding(horizontal = 10.dp),
                 colors = ButtonDefaults.buttonColors(backgroundColor = TextButtonColor),
-                enabled = isEmailValid && isPasswordValid
+                enabled = isEmailValid && password.isNotEmpty()
             ) {
                 Text(
                     text = "Login",

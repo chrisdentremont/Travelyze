@@ -24,9 +24,11 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.vector.ImageVector
+import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.input.PasswordVisualTransformation
 import androidx.compose.ui.text.input.VisualTransformation
+import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.example.travelapp.*
@@ -92,12 +94,12 @@ fun CustomOutlinedTextField(
         if(showError){
             Text(
                 text = errorMessage,
+                textAlign = TextAlign.Center,
                 color = MaterialTheme.colors.error,
                 style = MaterialTheme.typography.caption,
                 modifier = Modifier
-                    .padding(start = 8.dp)
-                    .offset(y = (-8).dp)
-                    .fillMaxWidth(0.9f)
+                    .padding(top = 10.dp)
+                    .fillMaxWidth()
             )
         }
     }
