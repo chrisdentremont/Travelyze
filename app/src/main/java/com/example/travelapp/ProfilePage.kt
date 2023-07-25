@@ -24,6 +24,8 @@ import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.*
 import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.AlternateEmail
+import androidx.compose.material.icons.filled.ManageAccounts
 import androidx.compose.material.icons.filled.Settings
 import androidx.compose.material.icons.filled.Visibility
 import androidx.compose.material.icons.filled.VisibilityOff
@@ -57,6 +59,7 @@ import androidx.compose.ui.unit.sp
 import androidx.compose.ui.window.Dialog
 import androidx.navigation.NavController
 import coil.compose.rememberAsyncImagePainter
+import com.example.travelapp.composable.CustomOutlinedTextField
 import com.example.travelapp.composable.Drawer
 import com.example.travelapp.composable.TopBar
 import com.example.travelapp.composable.TravelyzeUser
@@ -75,8 +78,10 @@ import kotlinx.coroutines.launch
 
 var openSignoutDialog = mutableStateOf(false)
 var openDeleteDialog = mutableStateOf(false)
+val openEditDialog = mutableStateOf(false)
 val isDrawerOpen = mutableStateOf(false)
 val sendPasswordChangeEmail = mutableStateOf(false)
+
 
 @Composable
 fun Profile(){
@@ -111,11 +116,8 @@ fun Profile(){
     var documentReference = fireStore.collection("users").document(userID)
 
     documentReference.get().addOnSuccessListener { documentSnapshot ->
-
-        Log.d("documentSnapshot", "$documentSnapshot")
+        //TODO Figure out how to use this variable outside this listener
         var user = documentSnapshot.toObject<TravelyzeUser>()
-        Log.d("user", "$user")
-
     }
 
 
@@ -152,7 +154,6 @@ fun Profile(){
                             .padding(10.dp)
 
                     ) {
-                        //TODO Create a method of editing the profile page
                         Image(
                             painter = rememberAsyncImagePainter("https://www.theshirtlist.com/wp-content/uploads/2018/12/Rowlet.jpg"),
                             contentDescription = null,
@@ -272,127 +273,193 @@ fun deleteAccountDialog(fireBaseAuth: FirebaseAuth){
     val contextForToast = LocalContext.current.applicationContext
     val focusManager = LocalFocusManager.current
 
-    var password by remember {
+    var username by remember {
         mutableStateOf("")
     }
 
-    var isPasswordVisible by rememberSaveable { mutableStateOf(false)}
+    var validateUsernameError by rememberSaveable { mutableStateOf(true) }
 
-    Dialog(
+    var usernameError = "This username does not match your current username."
+
+    AlertDialog(
         onDismissRequest = {
             openDeleteDialog.value = false
-        }
-    ){
-        Surface(
-            modifier = Modifier
-                .fillMaxWidth()
-                .clip(shape = RoundedCornerShape(20.dp)),
-            elevation = 4.dp
-        ){
-            Column(
-                verticalArrangement = Arrangement.Center,
-            ){
-                Box(
-                    modifier = Modifier
-                        .fillMaxWidth()
-                        .height(250.dp)
-                        .clip(shape = RoundedCornerShape(20.dp))
-                        .background(color = Color.White)
-                        .border(2.dp, SolidColor(Color.Black), shape = RoundedCornerShape(20.dp)),
-                    contentAlignment = Alignment.Center,
-                ){
+        },
+        title = {
+            Text(
+                text = "Delete Account",
+                fontFamily = robotoFamily,
+                color = Color.Black
+            )
+        },
+        text = {
+            Column(){
+                Row(){
                     Text(
-                        modifier = Modifier.padding(bottom = 120.dp, start = 10.dp, end = 10.dp),
-                        text = "Are you sure you wish to DELETE your account permanently?",
-                        textAlign = TextAlign.Center,
-                        color = Color.Black,
-                        fontSize = 18.sp,
-                        fontWeight = FontWeight.Bold
+                        text = "Are you sure you wish to PERMANENTLY delete your account? This cannot be undone.",
+                        fontFamily = robotoFamily,
+                        color = Color.Black
                     )
-
-                    OutlinedTextField(
-                        value = password,
-                        onValueChange = { password = it },
-                        label = { Text("Enter Password to confirm") },
-                        singleLine = true,
-                        modifier = Modifier
-                            .fillMaxWidth(.65f)
-                            .padding(top = 15.dp),
+                }
+                Row(){
+                    CustomOutlinedTextField(
+                        value = username,
+                        onValueChange = { username = it },
+                        label = "Please enter your username",
+                        showError = !validateUsernameError,
+                        errorMessage = usernameError,
+                        leadingIconImageVector = Icons.Default.ManageAccounts,
                         keyboardOptions = KeyboardOptions(
-                            keyboardType =  KeyboardType.Password,
+                            keyboardType = KeyboardType.Text,
                             imeAction = ImeAction.Done
                         ),
                         keyboardActions = KeyboardActions(
-                            onNext = { focusManager.clearFocus() }
+                            onDone = { focusManager.clearFocus() }
                         ),
-                        //isError = !isPasswordValid,
-                        //visualTransformation = if (isPasswordVisible) VisualTransformation.None else PasswordVisualTransformation(),
-
-                        trailingIcon = {
-                            val image = if (isPasswordVisible)
-                                Icons.Filled.Visibility
-                            else Icons.Filled.VisibilityOff
-
-                            val description = if (isPasswordVisible) "Hide password" else "Show password"
-
-                            IconButton(onClick = {isPasswordVisible = !isPasswordVisible}){
-                                Icon(imageVector  = image, description)
-                            }
-                        }
+                        modifier = Modifier.fillMaxWidth()
                     )
-
-                    Row(
-                        modifier = Modifier
-                            .fillMaxWidth()
-                            .padding(start = 15.dp, top = 165.dp, end = 15.dp),
-                        horizontalArrangement = Arrangement.Center
-                    ){
-                        Button(
-                            modifier = Modifier
-                                .width(150.dp)
-                                .padding(end = 10.dp),
-                            colors = ButtonDefaults.buttonColors(backgroundColor = Aero),
-                            onClick = {
-                                if(
-                                    //TODO ensure entered password matches saved password
-                                    password == "Gm@123456"
-                                ){
-                                    fireBaseAuth.currentUser?.delete()
-                                } else{
-                                    //TODO Inform that password was entered incorrectly
-                                }
-
-                                openDeleteDialog.value = false
-                                Toast.makeText(
-                                    contextForToast,
-                                    "Account successfully deleted.",
-                                    Toast.LENGTH_SHORT
-                                ).show()
-                            }) {
-                            Text(
-                                text = "Confirm",
-                                color = Color.White,
-                            )
-                        }
-
-                        Button(
-                            modifier = Modifier
-                                .width(150.dp)
-                                .padding(start = 10.dp),
-                            colors = ButtonDefaults.buttonColors(backgroundColor = Aero),
-                            onClick = {
-                                openDeleteDialog.value = false
-                            }) {
-                            Text(
-                                text = "Cancel",
-                                color = Color.White,
-                            )
-                        }
-                    }
                 }
             }
+        },
+        confirmButton = {
+            TextButton(onClick = {
+                var fireStore = FirebaseFirestore.getInstance()
+
+                var userID = Firebase.auth.currentUser?.uid.toString()
+
+                var documentReference = fireStore.collection("users").document(userID)
+
+                documentReference.get().addOnSuccessListener { documentSnapshot ->
+
+                    var user = documentSnapshot.toObject<TravelyzeUser>()
+
+                    if( username == user?.info?.userName )
+                    {
+                        fireBaseAuth.currentUser?.delete()
+                        documentReference.delete()
+
+                        openDeleteDialog.value = false
+                        isLoggedIn.value = false
+                        Toast.makeText(
+                            contextForToast,
+                            "Account successfully deleted.",
+                            Toast.LENGTH_SHORT
+                        ).show()
+                    } else{
+                        validateUsernameError = false
+                    }
+
+
+                }
+            }){
+                Text(
+                    text = "CONFIRM",
+                    fontFamily = robotoFamily,
+                    color = Aero,
+                )
+            }
+        },
+        dismissButton = {
+            TextButton(onClick = {
+                openDeleteDialog.value = false
+            }){
+                Text(
+                    text = "CANCEL",
+                    fontFamily = robotoFamily,
+                    color = Aero,
+                )
+            }
         }
+    )
+}
+
+@Composable
+fun editUsernameDialog() {
+    val contextForToast = LocalContext.current.applicationContext
+    val focusManager = LocalFocusManager.current
+
+    var username by remember {
+        mutableStateOf("")
     }
+
+    AlertDialog(
+        onDismissRequest = {
+            openEditDialog.value = false
+        },
+        title = {
+            Text(
+                text = "Please Enter your new username",
+                fontFamily = robotoFamily,
+                color = Color.Black
+            )
+        },
+        text = {
+            Column(){
+                Row(){
+                    CustomOutlinedTextField(
+                        value = username,
+                        onValueChange = { username = it },
+                        leadingIconImageVector = Icons.Default.ManageAccounts,
+                        keyboardOptions = KeyboardOptions(
+                            keyboardType = KeyboardType.Text,
+                            imeAction = ImeAction.Done
+                        ),
+                        keyboardActions = KeyboardActions(
+                            onDone = { focusManager.clearFocus() }
+                        ),
+                        modifier = Modifier.fillMaxWidth()
+                    )
+                }
+            }
+        },
+        confirmButton = {
+            TextButton(onClick = {
+                openEditDialog.value = false
+
+                var fireStore = FirebaseFirestore.getInstance()
+
+                var userID = Firebase.auth.currentUser?.uid.toString()
+
+                var documentReference = fireStore.collection("users").document(userID)
+
+
+                documentReference.get().addOnSuccessListener { documentSnapshot ->
+
+                    var user = documentSnapshot.toObject<TravelyzeUser>()
+
+                    user?.info?.userName = username
+
+                    if (user != null) {
+                        documentReference.set(user)
+                    }
+                }
+
+
+                Toast.makeText(
+                    contextForToast,
+                    "Username successfully changed.",
+                    Toast.LENGTH_SHORT
+                ).show()
+            }){
+                Text(
+                    text = "CONFIRM",
+                    fontFamily = robotoFamily,
+                    color = Color.Red,
+                )
+            }
+        },
+        dismissButton = {
+            TextButton(onClick = {
+                openSignoutDialog.value = false
+            }){
+                Text(
+                    text = "CANCEL",
+                    fontFamily = robotoFamily,
+                    color = Aero,
+                )
+            }
+        }
+    )
 }
 
 @Composable
@@ -424,20 +491,7 @@ fun sendEmailToExistingUser(user: FirebaseUser?){
     }
 }
 
-//fun getUserAccount(): TravelyzeUser? {
-//    var fireStore = FirebaseFirestore.getInstance()
-//
-//    var userID = Firebase.auth.currentUser?.uid.toString()
-//    var documentReference = fireStore.collection("users").document(userID)
-//
-//    var user: TravelyzeUser?
-//
-//    documentReference.get().addOnSuccessListener { documentSnapshot ->
-//
-//        user = documentSnapshot.toObject<TravelyzeUser>()
-//
-//    }
-//
-//    return user
-//}
+
+
+
 

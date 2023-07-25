@@ -59,7 +59,6 @@ fun RegisterForm(){
         Firebase.auth
     }
 
-    /*TODO Figure out how to hide the nav bar??*/
     showNavBar.value = false
 
     val context = LocalContext.current
@@ -118,7 +117,6 @@ fun RegisterForm(){
             auth.createUserWithEmailAndPassword(email,password)
                 .addOnCompleteListener(){ task ->
                     if(task.isSuccessful){
-                        //TODO Correctly add user data to firebase
 
                         var user = TravelyzeUser (
                             AccountInfo(
@@ -136,12 +134,6 @@ fun RegisterForm(){
 
                         var userID = auth.currentUser?.uid.toString()
                         var documentReference = fireStore.collection("users").document(userID)
-
-//                        var userAccount = mutableMapOf<String, TravelyzeUser>()
-//                        userAccount["UserAccount"] = user
-//
-//                        //TODO Remove Log
-//                        Log.d(MainActivity.TAG, "user is $userAccount")
 
                         documentReference.set(user)
 
