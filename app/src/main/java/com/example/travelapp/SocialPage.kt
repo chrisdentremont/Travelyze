@@ -40,7 +40,9 @@ import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.auth.FirebaseUser
 import com.google.firebase.auth.UserInfo
 import com.google.firebase.auth.ktx.auth
+import com.google.firebase.firestore.FieldPath
 import com.google.firebase.firestore.FirebaseFirestore
+import com.google.firebase.firestore.ktx.firestore
 import com.google.firebase.firestore.ktx.toObject
 import com.google.firebase.ktx.Firebase
 import kotlinx.coroutines.launch
@@ -159,237 +161,6 @@ fun Social(){
                         }
                     }
                 }
-
-                Row(
-                    horizontalArrangement = Arrangement.SpaceBetween,
-                    modifier = Modifier
-                        .fillMaxWidth()
-                        .padding(bottom = 10.dp)
-                ){
-                    Column(){
-                        Card(
-                            modifier = Modifier
-                                .fillMaxWidth()
-                                .padding(15.dp),
-                            elevation = CardDefaults.cardElevation(10.dp),
-                            colors = CardDefaults.cardColors(Alabaster)
-                        ){
-                            Column(
-                                modifier = Modifier.padding(15.dp)
-                            ){
-                                Row(
-                                    verticalAlignment = Alignment.CenterVertically,
-                                    horizontalArrangement = Arrangement.Start,
-                                    modifier = Modifier
-                                        .fillMaxWidth()
-                                        .padding(5.dp)
-                                ) {
-                                    Image(
-                                        painter = rememberAsyncImagePainter("https://www.theshirtlist.com/wp-content/uploads/2018/12/Rowlet.jpg"),
-                                        contentDescription = null,
-                                        contentScale = ContentScale.Crop,
-                                        modifier = Modifier
-                                            .size(75.dp)
-                                            .clip(CircleShape)
-                                            .border(5.dp, Color.White, CircleShape)
-                                    )
-                                    Text(
-                                        "Gabriel Madeira",
-                                        fontSize = 20.sp,
-                                        fontWeight = FontWeight.Normal,
-                                        textAlign = TextAlign.Center,
-                                        modifier = Modifier.padding(start = 10.dp)
-                                    )
-                                }
-
-                                Column(
-                                    Modifier
-                                        .border(
-                                            2.dp,
-                                            SolidColor(Color.Black),
-                                            shape = RoundedCornerShape(5.dp)
-                                        )
-                                        .padding(8.dp)
-                                ) {
-                                    Row(
-                                        Modifier.fillMaxWidth(),
-                                        horizontalArrangement = Arrangement.Start
-                                    ){
-                                        Text(
-                                            text = "I read about London, England!",
-                                            fontWeight = FontWeight.Bold,
-                                            fontSize = 16.sp,
-                                            modifier = Modifier.padding(start = 10.dp))
-                                    }
-                                    Row(
-                                        Modifier
-                                            .fillMaxWidth(),
-                                        horizontalArrangement = Arrangement.Start,
-                                    ){
-                                        Text(
-                                            text = "London is a European city located in England...",
-                                            modifier = Modifier.padding(start = 10.dp, bottom = 15.dp),
-                                        )
-                                    }
-                                }
-                            }
-                        }
-                    }
-                }
-
-                Row(
-                    horizontalArrangement = Arrangement.SpaceBetween,
-                    modifier = Modifier
-                        .fillMaxWidth()
-                        .padding(bottom = 10.dp)
-                ){
-                    Column(){
-                        Card(
-                            modifier = Modifier
-                                .fillMaxWidth()
-                                .padding(15.dp),
-                            elevation = CardDefaults.cardElevation(10.dp),
-                            colors = CardDefaults.cardColors(Alabaster)
-                        ){
-                            Column(
-                                modifier = Modifier.padding(15.dp)
-                            ){
-                                Row(
-                                    verticalAlignment = Alignment.CenterVertically,
-                                    horizontalArrangement = Arrangement.Start,
-                                    modifier = Modifier
-                                        .fillMaxWidth()
-                                        .padding(5.dp)
-                                ) {
-                                    Image(
-                                        painter = rememberAsyncImagePainter("https://media.istockphoto.com/id/458297017/photo/hello-kitty-pattern.jpg?s=612x612&w=0&k=20&c=IvVb5qyDu9_E_M0LCDPGFcpSIzr016ZHm9ZrXANQhQs="),
-                                        contentDescription = null,
-                                        contentScale = ContentScale.Crop,
-                                        modifier = Modifier
-                                            .size(75.dp)
-                                            .clip(CircleShape)
-                                            .border(5.dp, Color.White, CircleShape)
-                                    )
-                                    Text(
-                                        "Mo Merchant",
-                                        fontSize = 20.sp,
-                                        fontWeight = FontWeight.Normal,
-                                        textAlign = TextAlign.Center,
-                                        modifier = Modifier.padding(start = 10.dp)
-                                    )
-                                }
-
-                                Column(
-                                    Modifier
-                                        .border(
-                                            2.dp,
-                                            SolidColor(Color.Black),
-                                            shape = RoundedCornerShape(5.dp)
-                                        )
-                                        .padding(8.dp)
-                                ) {
-                                    Row(
-                                        Modifier.fillMaxWidth(),
-                                        horizontalArrangement = Arrangement.Start
-                                    ){
-                                        Text(
-                                            text = "I read about Las Vegas, Nevada!",
-                                            fontWeight = FontWeight.Bold,
-                                            fontSize = 16.sp,
-                                            modifier = Modifier.padding(start = 10.dp))
-                                    }
-                                    Row(
-                                        Modifier
-                                            .fillMaxWidth(),
-                                        horizontalArrangement = Arrangement.Start,
-                                    ){
-                                        Text(
-                                            text = "Las Vegas is an American city located in Nevada...",
-                                            modifier = Modifier.padding(start = 10.dp, bottom = 15.dp),
-                                        )
-                                    }
-                                }
-                            }
-                        }
-                    }
-                }
-
-                Row(
-                    horizontalArrangement = Arrangement.SpaceBetween,
-                    modifier = Modifier
-                        .fillMaxWidth()
-                        .padding(bottom = 10.dp)
-                ){
-                    Column(){
-                        Card(
-                            modifier = Modifier
-                                .fillMaxWidth()
-                                .padding(15.dp),
-                            elevation = CardDefaults.cardElevation(10.dp),
-                            colors = CardDefaults.cardColors(Alabaster)
-                        ){
-                            Column(
-                                modifier = Modifier.padding(15.dp)
-                            ){
-                                Row(
-                                    verticalAlignment = Alignment.CenterVertically,
-                                    horizontalArrangement = Arrangement.Start,
-                                    modifier = Modifier
-                                        .fillMaxWidth()
-                                        .padding(5.dp)
-                                ) {
-                                    Image(
-                                        painter = rememberAsyncImagePainter("https://nintendosoup.com/wp-content/uploads/2022/03/Chloe_Eevee.jpg"),
-                                        contentDescription = null,
-                                        contentScale = ContentScale.Crop,
-                                        modifier = Modifier
-                                            .size(75.dp)
-                                            .clip(CircleShape)
-                                            .border(5.dp, Color.White, CircleShape)
-                                    )
-                                    Text(
-                                        "Ayla Hebert",
-                                        fontSize = 20.sp,
-                                        fontWeight = FontWeight.Normal,
-                                        textAlign = TextAlign.Center,
-                                        modifier = Modifier.padding(start = 10.dp)
-                                    )
-                                }
-
-                                Column(
-                                    Modifier
-                                        .border(
-                                            2.dp,
-                                            SolidColor(Color.Black),
-                                            shape = RoundedCornerShape(5.dp)
-                                        )
-                                        .padding(8.dp)
-                                ) {
-                                    Row(
-                                        Modifier.fillMaxWidth(),
-                                        horizontalArrangement = Arrangement.Start
-                                    ){
-                                        Text(
-                                            text = "I read about São Paulo, Brazil!",
-                                            fontWeight = FontWeight.Bold,
-                                            fontSize = 16.sp,
-                                            modifier = Modifier.padding(start = 10.dp))
-                                    }
-                                    Row(
-                                        Modifier
-                                            .fillMaxWidth(),
-                                        horizontalArrangement = Arrangement.Start,
-                                    ){
-                                        Text(
-                                            text = "São Paulo is a South American city located in Brazil...",
-                                            modifier = Modifier.padding(start = 10.dp, bottom = 15.dp),
-                                        )
-                                    }
-                                }
-                            }
-                        }
-                    }
-                }
             }
         }
     }
@@ -449,8 +220,30 @@ fun addFriendDialog(){
             TextButton(
                 onClick = {
                     if(username.isNotBlank()){
-                        //TODO search for user with given username
                         //Send user a friend request
+
+                        val db = Firebase.firestore
+                        val docRef = db.collection("users")
+                            .whereEqualTo("info.userName", username)
+                            .get()
+                            .addOnSuccessListener { documents ->
+                                if(documents.size() > 0){
+                                    val friend = documents.elementAt(0)
+                                    //TODO Remove Logs
+                                    Log.d(MainActivity.TAG, "User Search - friend ${friend.id} is ${friend.data}")
+                                }else {
+                                    Log.d(MainActivity.TAG, "User Search - No user found")
+
+                                    Toast.makeText(
+                                        contextForToast,
+                                        "Please enter a valid username Make sure you enter it exactly!.",
+                                        Toast.LENGTH_SHORT
+                                    ).show()
+                                }
+                            }.addOnFailureListener{ exception ->
+                                Log.w(MainActivity.TAG, "User Search - Error getting documents: ", exception)
+                            }
+
                     } else {
                         Toast.makeText(
                             contextForToast,
