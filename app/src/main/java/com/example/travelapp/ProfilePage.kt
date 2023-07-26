@@ -1,7 +1,12 @@
 package com.example.travelapp
 
+import android.content.pm.PackageManager
+import android.net.Uri
 import android.util.Log
 import android.widget.Toast
+import androidx.activity.compose.rememberLauncherForActivityResult
+import androidx.activity.result.PickVisualMediaRequest
+import androidx.activity.result.contract.ActivityResultContracts
 import androidx.compose.foundation.*
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.shape.CircleShape
@@ -10,9 +15,13 @@ import androidx.compose.foundation.text.KeyboardActions
 import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.*
+import androidx.compose.material.icons.rounded.Edit
+import androidx.compose.material.icons.rounded.EditNote
 import androidx.compose.material3.*
+import androidx.compose.material3.AlertDialog
 import androidx.compose.runtime.*
 import androidx.compose.runtime.saveable.rememberSaveable
+import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
@@ -30,7 +39,12 @@ import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.LayoutDirection
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import androidx.compose.ui.window.DialogProperties
+import androidx.core.content.ContextCompat
+import androidx.core.content.FileProvider
 import coil.compose.rememberAsyncImagePainter
+import coil.compose.rememberImagePainter
+import coil.imageLoader
 import com.example.travelapp.composable.CustomOutlinedTextField
 import com.example.travelapp.composable.TopBar
 import com.example.travelapp.composable.TravelyzeUser
@@ -43,13 +57,16 @@ import com.google.firebase.firestore.FirebaseFirestore
 import com.google.firebase.firestore.ktx.toObject
 import com.google.firebase.ktx.Firebase
 import kotlinx.coroutines.launch
+import java.io.File
+import java.text.SimpleDateFormat
+import java.util.*
 
 var openSignoutDialog = mutableStateOf(false)
 var openDeleteDialog = mutableStateOf(false)
 val openEditDialog = mutableStateOf(false)
+val openPicDialog = mutableStateOf(false)
 val isDrawerOpen = mutableStateOf(false)
 val sendPasswordChangeEmail = mutableStateOf(false)
-
 
 @Composable
 fun Profile(){
@@ -58,7 +75,6 @@ fun Profile(){
     val scope = rememberCoroutineScope()
 
     fun openDrawer()  {
-        Log.w("open", "opened")
         scope.launch {
             drawerState.open()
         }
@@ -179,25 +195,138 @@ fun Profile(){
                             openDrawer()
                         }
                     )
-                    Column(){
+                    Column(
+                        Modifier.background(color = BackgroundColor)
+                    ){
                         Row(){
-                            Image(
-                                painter = rememberAsyncImagePainter(model = Firebase.auth.currentUser?.photoUrl),
-                                contentDescription = null,
-                                contentScale = ContentScale.Crop,
-                                modifier = Modifier
-                                    .size(75.dp)
-                                    .clip(CircleShape)
-                                    .border(5.dp, Color.White, CircleShape)
-                            )
                             Box(){
-                                Icon(Icons.Filled.Camera, contentDescription = "Check mark")
+                                Image(
+                                    painter = rememberAsyncImagePainter(model = Firebase.auth.currentUser?.photoUrl),
+                                    contentDescription = null,
+                                    contentScale = ContentScale.Crop,
+                                    modifier = Modifier
+                                        .size(75.dp)
+                                        .clip(CircleShape)
+                                )
+                                Icon(Icons.Rounded.Edit,
+                                    contentDescription = "Check mark",
+                                    modifier = Modifier.clickable {
+                                        openPicDialog.value = true
+                                    }.align(Alignment.BottomEnd))
                             }
                         }
                     }
                 }
             }
         }
+    }
+}
+
+@Composable
+fun profilePicturePicker(auth: FirebaseAuth){
+    val contextForToast = LocalContext.current.applicationContext
+
+    var profileImageUri by remember {
+        mutableStateOf<Uri?>(null)
+    }
+    var takenImageUri by remember {
+        mutableStateOf<Uri>(Uri.EMPTY)
+    }
+
+    val singlePhotoPickerLauncher = rememberLauncherForActivityResult(
+        contract = ActivityResultContracts.PickVisualMedia(),
+        onResult = { uri -> profileImageUri = uri }
+    )
+
+    val context = LocalContext.current
+    val file = File.createTempFile(
+        "JPEG_" + SimpleDateFormat("yyyyMMdd_HHmmss").format(Date()),
+        ".jpg",
+        context.externalCacheDir
+    )
+    val uri = FileProvider.getUriForFile(
+        Objects.requireNonNull(context),
+        BuildConfig.APPLICATION_ID + ".provider", file
+    )
+
+    val cameraLauncher =
+        rememberLauncherForActivityResult(ActivityResultContracts.TakePicture()) {
+            takenImageUri = uri
+        }
+
+    val permissionLauncher = rememberLauncherForActivityResult(
+        ActivityResultContracts.RequestPermission()
+    ) {
+        if (it) {
+            cameraLauncher.launch(uri)
+        }
+    }
+
+    AlertDialog(
+        onDismissRequest = {
+            openPicDialog.value = false
+        },
+        confirmButton = {
+            Column(){
+                Row(
+                    modifier = Modifier.fillMaxWidth()
+                ){
+                    Icon(imageVector = Icons.Filled.Folder,
+                        contentDescription = null,
+                        modifier = Modifier.size(size = 20.dp))
+                    TextButton(onClick = {
+                        singlePhotoPickerLauncher.launch(
+                            PickVisualMediaRequest(ActivityResultContracts.PickVisualMedia.ImageOnly)
+                        )
+                    }){
+                        Text(
+                            text = "Upload from camera roll",
+                            style = MaterialTheme.typography.bodyLarge,
+                            fontFamily = robotoFamily,
+                            fontWeight = FontWeight.Bold,
+                            color = TextButtonColor
+                        )
+                    }
+                }
+                Row(
+                    modifier = Modifier.fillMaxWidth()
+                ){
+                    Icon(imageVector = Icons.Filled.CameraFront,
+                        contentDescription = null,
+                        modifier = Modifier.size(size = 20.dp))
+                    TextButton(onClick = {
+                        val permissionCheckResult =
+                            ContextCompat.checkSelfPermission(context, android.Manifest.permission.CAMERA)
+                        if (permissionCheckResult == PackageManager.PERMISSION_GRANTED) {
+                            cameraLauncher.launch(uri)
+                        } else {
+                            // Request a permission
+                            permissionLauncher.launch(android.Manifest.permission.CAMERA)
+                        }
+                    }){
+                        Text(
+                            text = "Take a new picture",
+                            style = MaterialTheme.typography.bodyLarge,
+                            fontFamily = robotoFamily,
+                            fontWeight = FontWeight.Bold,
+                            color = TextButtonColor
+                        )
+                    }
+                }
+            }
+        },
+        properties = DialogProperties(
+            dismissOnClickOutside = true
+        )
+    )
+
+    if (takenImageUri.path?.isNotEmpty() == true) {
+        Image(
+            modifier = Modifier
+                .padding(16.dp, 8.dp),
+            painter = rememberAsyncImagePainter(takenImageUri),
+            contentDescription = null
+        )
     }
 }
 
@@ -253,7 +382,10 @@ fun signOutDialog(fireBaseAuth: FirebaseAuth){
                     color = TextButtonColor,
                 )
             }
-        }
+        },
+        properties = DialogProperties(
+            dismissOnClickOutside = true
+        )
     )
 }
 
@@ -358,7 +490,10 @@ fun deleteAccountDialog(fireBaseAuth: FirebaseAuth){
                     color = TextButtonColor,
                 )
             }
-        }
+        },
+        properties = DialogProperties(
+            dismissOnClickOutside = true
+        )
     )
 }
 
@@ -448,7 +583,10 @@ fun editUsernameDialog() {
                     color = TextButtonColor,
                 )
             }
-        }
+        },
+        properties = DialogProperties(
+            dismissOnClickOutside = true
+        )
     )
 }
 

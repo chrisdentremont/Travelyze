@@ -111,6 +111,10 @@ class MainActivity : ComponentActivity() {
                         if(openEditDialog.value){
                             editUsernameDialog()
                         }
+
+                        if(openPicDialog.value){
+                            profilePicturePicker(auth)
+                        }
                     }
                 }
             }

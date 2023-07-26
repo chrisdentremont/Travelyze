@@ -1,6 +1,7 @@
 package com.example.travelapp
 
 
+import android.net.Uri
 import android.util.Patterns
 import android.widget.Toast
 import androidx.compose.foundation.background
@@ -47,8 +48,10 @@ import com.example.travelapp.ui.theme.TextButtonColor
 import com.example.travelapp.ui.theme.BackgroundColor
 import com.example.travelapp.ui.theme.robotoFamily
 import com.google.firebase.auth.ktx.auth
+import com.google.firebase.auth.ktx.userProfileChangeRequest
 import com.google.firebase.firestore.FirebaseFirestore
 import com.google.firebase.ktx.Firebase
+import java.io.File
 
 val showNavBar = mutableStateOf(true)
 
@@ -116,6 +119,12 @@ fun RegisterForm(){
             auth.createUserWithEmailAndPassword(email,password)
                 .addOnCompleteListener(){ task ->
                     if(task.isSuccessful){
+
+                        var newUser = task.result.user
+                        newUser!!.updateProfile(userProfileChangeRequest {
+                            displayName = userName
+                            photoUri = Uri.parse("android.resource://com.example.travelapp/" + R.drawable.default_profile_picture)
+                        })
 
                         var user = TravelyzeUser (
                             AccountInfo(
