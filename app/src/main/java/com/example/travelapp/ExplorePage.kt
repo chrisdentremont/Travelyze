@@ -29,9 +29,6 @@ import com.example.travelapp.ui.theme.robotoFamily
 
 @Composable
 fun Home(){
-
-    Log.w("done", "$locationNames")
-
     Column(
         Modifier
             .fillMaxWidth()

@@ -127,6 +127,7 @@ fun TopBar(title: String = "", buttonIcon: ImageVector, onButtonClicked: () -> U
                 )
             }
         },
-        backgroundColor = BackgroundColor
+        backgroundColor = BackgroundColor,
+        modifier = Modifier.padding(bottom = 10.dp)
     )
 }

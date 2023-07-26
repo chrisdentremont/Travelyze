@@ -1,5 +1,6 @@
 package com.example.travelapp
 
+import android.annotation.SuppressLint
 import android.content.pm.PackageManager
 import android.net.Uri
 import android.util.Log
@@ -10,22 +11,19 @@ import androidx.activity.result.contract.ActivityResultContracts
 import androidx.compose.foundation.*
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.shape.CircleShape
-import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.text.KeyboardActions
 import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.*
 import androidx.compose.material.icons.rounded.Edit
-import androidx.compose.material.icons.rounded.EditNote
 import androidx.compose.material3.*
-import androidx.compose.material3.AlertDialog
 import androidx.compose.runtime.*
 import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
+import androidx.compose.ui.draw.shadow
 import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.graphics.ImageBitmap
 import androidx.compose.ui.graphics.RectangleShape
 import androidx.compose.ui.graphics.SolidColor
 import androidx.compose.ui.layout.ContentScale
@@ -36,6 +34,7 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.input.ImeAction
 import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.text.style.TextAlign
+import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.LayoutDirection
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
@@ -43,16 +42,18 @@ import androidx.compose.ui.window.DialogProperties
 import androidx.core.content.ContextCompat
 import androidx.core.content.FileProvider
 import coil.compose.rememberAsyncImagePainter
-import coil.compose.rememberImagePainter
-import coil.imageLoader
 import com.example.travelapp.composable.CustomOutlinedTextField
 import com.example.travelapp.composable.TopBar
 import com.example.travelapp.composable.TravelyzeUser
-import com.example.travelapp.ui.theme.*
+import com.example.travelapp.ui.theme.BackgroundColor
+import com.example.travelapp.ui.theme.TextButtonColor
+import com.example.travelapp.ui.theme.marsFamily
+import com.example.travelapp.ui.theme.robotoFamily
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.auth.FirebaseUser
 import com.google.firebase.auth.UserInfo
 import com.google.firebase.auth.ktx.auth
+import com.google.firebase.auth.ktx.userProfileChangeRequest
 import com.google.firebase.firestore.FirebaseFirestore
 import com.google.firebase.firestore.ktx.toObject
 import com.google.firebase.ktx.Firebase
@@ -65,11 +66,16 @@ var openSignoutDialog = mutableStateOf(false)
 var openDeleteDialog = mutableStateOf(false)
 val openEditDialog = mutableStateOf(false)
 val openPicDialog = mutableStateOf(false)
+val openPicSelectDialog = mutableStateOf(false)
+val openPicTakenDialog = mutableStateOf(false)
 val isDrawerOpen = mutableStateOf(false)
 val sendPasswordChangeEmail = mutableStateOf(false)
 
+var profileImageUri = mutableStateOf(Uri.EMPTY)
+var takenImageUri = mutableStateOf(Uri.EMPTY)
+
 @Composable
-fun Profile(){
+fun Profile(auth: FirebaseAuth){
 
     val drawerState = rememberDrawerState(DrawerValue.Closed)
     val scope = rememberCoroutineScope()
@@ -92,21 +98,30 @@ fun Profile(){
     }
 
     if(sendPasswordChangeEmail.value){
-        sendEmailToExistingUser(Firebase.auth.currentUser)
+        SendEmailToExistingUser(Firebase.auth.currentUser)
     }
 
-    var fireStore = FirebaseFirestore.getInstance()
+    if (profileImageUri.value.path?.isNotEmpty() == true) {
+        openPicDialog.value = false
+        openPicSelectDialog.value = true
+    }
 
-    var userID = Firebase.auth.currentUser?.uid.toString()
-    Log.d("userID", "$userID")
-    var documentReference = fireStore.collection("users").document(userID)
+    if (takenImageUri.value.path?.isNotEmpty() == true) {
+        openPicDialog.value = false
+        openPicTakenDialog.value = true
+    }
+
+    val fireStore = FirebaseFirestore.getInstance()
+
+    val userID = Firebase.auth.currentUser?.uid.toString()
+    val documentReference = fireStore.collection("users").document(userID)
 
     documentReference.get().addOnSuccessListener { documentSnapshot ->
         //TODO Figure out how to use this variable outside this listener
-        var user = documentSnapshot.toObject<TravelyzeUser>()
+        documentSnapshot.toObject<TravelyzeUser>()
     }
 
-    CompositionLocalProvider(LocalLayoutDirection provides LayoutDirection.Rtl, ) {
+    CompositionLocalProvider(LocalLayoutDirection provides LayoutDirection.Rtl) {
         ModalNavigationDrawer(
             drawerState = drawerState,
             modifier = Modifier.fillMaxHeight(),
@@ -181,10 +196,11 @@ fun Profile(){
                 }
             }
         ){
-            CompositionLocalProvider(LocalLayoutDirection provides LayoutDirection.Ltr, ){
+            CompositionLocalProvider(LocalLayoutDirection provides LayoutDirection.Ltr){
                 Column(
                     Modifier
                         .fillMaxWidth()
+                        .fillMaxHeight()
                         .verticalScroll(rememberScrollState())
                         .background(color = BackgroundColor)
                 ) {
@@ -198,21 +214,47 @@ fun Profile(){
                     Column(
                         Modifier.background(color = BackgroundColor)
                     ){
-                        Row(){
-                            Box(){
+                        Row(
+                            modifier = Modifier.padding(horizontal = 30.dp, vertical = 50.dp),
+                            verticalAlignment = Alignment.CenterVertically,
+                        ){
+                            Box {
+                                Log.d("pic", "${auth.currentUser?.photoUrl!!}")
                                 Image(
-                                    painter = rememberAsyncImagePainter(model = Firebase.auth.currentUser?.photoUrl),
+                                    painter = rememberAsyncImagePainter(model = auth.currentUser?.photoUrl!!),
                                     contentDescription = null,
                                     contentScale = ContentScale.Crop,
                                     modifier = Modifier
                                         .size(75.dp)
                                         .clip(CircleShape)
                                 )
-                                Icon(Icons.Rounded.Edit,
-                                    contentDescription = "Check mark",
-                                    modifier = Modifier.clickable {
-                                        openPicDialog.value = true
-                                    }.align(Alignment.BottomEnd))
+                                Icon(Icons.Filled.Edit,
+                                    contentDescription = null,
+                                    modifier = Modifier
+                                        .clickable {
+                                            openPicDialog.value = true
+                                        }
+                                        .align(Alignment.BottomEnd)
+                                        .size(25.dp)
+                                        .background(color = Color.White, shape = CircleShape))
+                            }
+                            Column(
+                                modifier = Modifier.padding(start = 20.dp)
+                            ){
+                                Text(
+                                    text = auth.currentUser?.displayName!!,
+                                    style = MaterialTheme.typography.headlineMedium,
+                                    fontFamily = robotoFamily,
+                                    fontWeight = FontWeight.Normal,
+                                    color = Color.Black
+                                )
+                                Text(
+                                    text = auth.currentUser?.email!!,
+                                    style = MaterialTheme.typography.bodyMedium,
+                                    fontFamily = robotoFamily,
+                                    fontWeight = FontWeight.Light,
+                                    color = Color.Black
+                                )
                             }
                         }
                     }
@@ -222,20 +264,14 @@ fun Profile(){
     }
 }
 
+@SuppressLint("SimpleDateFormat")
 @Composable
-fun profilePicturePicker(auth: FirebaseAuth){
-    val contextForToast = LocalContext.current.applicationContext
-
-    var profileImageUri by remember {
-        mutableStateOf<Uri?>(null)
-    }
-    var takenImageUri by remember {
-        mutableStateOf<Uri>(Uri.EMPTY)
-    }
+fun ProfilePicturePicker(auth: FirebaseAuth){
+    LocalContext.current.applicationContext
 
     val singlePhotoPickerLauncher = rememberLauncherForActivityResult(
         contract = ActivityResultContracts.PickVisualMedia(),
-        onResult = { uri -> profileImageUri = uri }
+        onResult = { uri -> if (uri != null) profileImageUri.value = uri }
     )
 
     val context = LocalContext.current
@@ -251,7 +287,7 @@ fun profilePicturePicker(auth: FirebaseAuth){
 
     val cameraLauncher =
         rememberLauncherForActivityResult(ActivityResultContracts.TakePicture()) {
-            takenImageUri = uri
+            if (it) takenImageUri.value = uri
         }
 
     val permissionLauncher = rememberLauncherForActivityResult(
@@ -266,34 +302,53 @@ fun profilePicturePicker(auth: FirebaseAuth){
         onDismissRequest = {
             openPicDialog.value = false
         },
+        title = {
+            Row(
+                modifier = Modifier.fillMaxWidth(),
+                horizontalArrangement = Arrangement.Center
+            ){
+                Text(
+                    text = "Change photo",
+                    style = MaterialTheme.typography.headlineSmall,
+                    fontFamily = robotoFamily,
+                    fontWeight = FontWeight.Normal,
+                    color = Color.Black,
+                    textAlign = TextAlign.Center
+                )
+            }
+        },
         confirmButton = {
-            Column(){
+            Column(
+                horizontalAlignment = Alignment.CenterHorizontally
+            ) {
+                Divider(thickness = 2.dp)
                 Row(
-                    modifier = Modifier.fillMaxWidth()
+                    modifier = Modifier.fillMaxWidth(),
+                    horizontalArrangement = Arrangement.Center
                 ){
-                    Icon(imageVector = Icons.Filled.Folder,
-                        contentDescription = null,
-                        modifier = Modifier.size(size = 20.dp))
                     TextButton(onClick = {
                         singlePhotoPickerLauncher.launch(
                             PickVisualMediaRequest(ActivityResultContracts.PickVisualMedia.ImageOnly)
                         )
                     }){
+                        Icon(imageVector = Icons.Filled.Folder,
+                            contentDescription = null,
+                            modifier = Modifier.size(size = 30.dp).padding(end = 10.dp),
+                            tint = Color.Black)
                         Text(
                             text = "Upload from camera roll",
                             style = MaterialTheme.typography.bodyLarge,
                             fontFamily = robotoFamily,
                             fontWeight = FontWeight.Bold,
-                            color = TextButtonColor
+                            color = Color.Black
                         )
                     }
                 }
+                Divider(thickness = 2.dp)
                 Row(
-                    modifier = Modifier.fillMaxWidth()
+                    modifier = Modifier.fillMaxWidth(),
+                    horizontalArrangement = Arrangement.Center
                 ){
-                    Icon(imageVector = Icons.Filled.CameraFront,
-                        contentDescription = null,
-                        modifier = Modifier.size(size = 20.dp))
                     TextButton(onClick = {
                         val permissionCheckResult =
                             ContextCompat.checkSelfPermission(context, android.Manifest.permission.CAMERA)
@@ -304,34 +359,194 @@ fun profilePicturePicker(auth: FirebaseAuth){
                             permissionLauncher.launch(android.Manifest.permission.CAMERA)
                         }
                     }){
+                        Icon(imageVector = Icons.Filled.PhotoCamera,
+                            contentDescription = null,
+                            modifier = Modifier.size(size = 30.dp).padding(end = 10.dp),
+                            tint = Color.Black)
                         Text(
                             text = "Take a new picture",
                             style = MaterialTheme.typography.bodyLarge,
                             fontFamily = robotoFamily,
                             fontWeight = FontWeight.Bold,
-                            color = TextButtonColor
+                            color = Color.Black
                         )
                     }
                 }
+                Divider(thickness = 2.dp)
             }
         },
         properties = DialogProperties(
             dismissOnClickOutside = true
         )
     )
-
-    if (takenImageUri.path?.isNotEmpty() == true) {
-        Image(
-            modifier = Modifier
-                .padding(16.dp, 8.dp),
-            painter = rememberAsyncImagePainter(takenImageUri),
-            contentDescription = null
-        )
-    }
 }
 
 @Composable
-fun signOutDialog(fireBaseAuth: FirebaseAuth){
+fun ProfilePicSelect(auth: FirebaseAuth){
+    val contextForToast = LocalContext.current.applicationContext
+
+    AlertDialog(
+        onDismissRequest = {
+            profileImageUri.value = Uri.EMPTY
+            openPicSelectDialog.value = false
+        },
+        title = {
+            Text(
+                text = "Use this picture?",
+                style = MaterialTheme.typography.bodyLarge,
+                fontFamily = robotoFamily,
+                fontWeight = FontWeight.Bold,
+                color = Color.Black
+            )
+        },
+        text = {
+            Row(
+                modifier = Modifier.fillMaxWidth(),
+                horizontalArrangement = Arrangement.Center
+            ){
+                Image(
+                    contentScale = ContentScale.Crop,
+                    modifier = Modifier
+                        .size(100.dp)
+                        .clip(CircleShape),
+                    painter = rememberAsyncImagePainter(profileImageUri.value),
+                    contentDescription = null
+                )
+            }
+        },
+        dismissButton = {
+            TextButton(onClick = {
+                profileImageUri.value = Uri.EMPTY
+                openPicSelectDialog.value = false
+            }) {
+                Text(
+                    text = "CANCEL",
+                    fontFamily = robotoFamily,
+                    color = Color.Red,
+                )
+            }
+        },
+        confirmButton = {
+            TextButton(onClick = {
+                var user = auth.currentUser
+                user!!.updateProfile(userProfileChangeRequest {
+                    photoUri = profileImageUri.value
+                }).addOnSuccessListener {
+                    Toast.makeText(
+                        contextForToast,
+                        "Your picture has been updated.",
+                        Toast.LENGTH_SHORT
+                    ).show()
+                    profileImageUri.value = Uri.EMPTY
+                    openPicSelectDialog.value = false
+                }.addOnFailureListener {
+                    Toast.makeText(
+                        contextForToast,
+                        "Something went wrong changing your picture.",
+                        Toast.LENGTH_SHORT
+                    ).show()
+                    profileImageUri.value = Uri.EMPTY
+                    openPicSelectDialog.value = false
+                }
+            }) {
+                Text(
+                    text = "CONFIRM",
+                    fontFamily = robotoFamily,
+                    color = TextButtonColor,
+                )
+            }
+        },
+        properties = DialogProperties(
+            dismissOnClickOutside = true
+        )
+    )
+}
+
+@Composable
+fun ProfilePicTaken(auth: FirebaseAuth){
+    val contextForToast = LocalContext.current.applicationContext
+
+    AlertDialog(
+        onDismissRequest = {
+            takenImageUri.value = Uri.EMPTY
+            openPicTakenDialog.value = false
+        },
+        title = {
+            Text(
+                text = "Use this picture?",
+                style = MaterialTheme.typography.bodyLarge,
+                fontFamily = robotoFamily,
+                fontWeight = FontWeight.Bold,
+                color = Color.Black
+            )
+        },
+        text = {
+            Box {
+                Row(
+                    modifier = Modifier.fillMaxWidth(),
+                    horizontalArrangement = Arrangement.Center
+                ){
+                    Image(
+                        contentScale = ContentScale.Crop,
+                        modifier = Modifier
+                            .size(100.dp)
+                            .clip(CircleShape),
+                        painter = rememberAsyncImagePainter(takenImageUri.value),
+                        contentDescription = null
+                    )
+                }
+            }
+        },
+        dismissButton = {
+            TextButton(onClick = {
+                takenImageUri.value = Uri.EMPTY
+                openPicTakenDialog.value = false
+            }) {
+                Text(
+                    text = "CANCEL",
+                    fontFamily = robotoFamily,
+                    color = Color.Red,
+                )
+            }
+        },
+        confirmButton = {
+            TextButton(onClick = {
+                var user = auth.currentUser
+                user!!.updateProfile(userProfileChangeRequest {
+                    photoUri = takenImageUri.value
+                }).addOnSuccessListener {
+                    Toast.makeText(
+                        contextForToast,
+                        "Your picture has been updated.",
+                        Toast.LENGTH_SHORT
+                    ).show()
+                    takenImageUri.value = Uri.EMPTY
+                    openPicTakenDialog.value = false
+                }.addOnFailureListener {
+                    Toast.makeText(
+                        contextForToast,
+                        "Something went wrong changing your picture.",
+                        Toast.LENGTH_SHORT
+                    ).show()
+                    takenImageUri.value = Uri.EMPTY
+                    openPicTakenDialog.value = false
+                }
+            }) {
+                Text(
+                    text = "CONFIRM",
+                    fontFamily = robotoFamily,
+                    color = TextButtonColor,
+                )
+            }
+        },
+        properties = DialogProperties(
+            dismissOnClickOutside = true
+        )
+    )
+}
+
+@Composable
+fun SignOutDialog(fireBaseAuth: FirebaseAuth){
     val contextForToast = LocalContext.current.applicationContext
 
     AlertDialog(
@@ -390,7 +605,7 @@ fun signOutDialog(fireBaseAuth: FirebaseAuth){
 }
 
 @Composable
-fun deleteAccountDialog(fireBaseAuth: FirebaseAuth){
+fun DeleteAccountDialog(fireBaseAuth: FirebaseAuth){
     val contextForToast = LocalContext.current.applicationContext
     val focusManager = LocalFocusManager.current
 
@@ -400,7 +615,7 @@ fun deleteAccountDialog(fireBaseAuth: FirebaseAuth){
 
     var validateUsernameError by rememberSaveable { mutableStateOf(true) }
 
-    var usernameError = "This username does not match your current username."
+    val usernameError = "This username does not match your current username."
 
     AlertDialog(
         onDismissRequest = {
@@ -414,15 +629,15 @@ fun deleteAccountDialog(fireBaseAuth: FirebaseAuth){
             )
         },
         text = {
-            Column(){
-                Row(){
+            Column {
+                Row {
                     Text(
                         text = "Are you sure you wish to PERMANENTLY delete your account? This cannot be undone.",
                         fontFamily = robotoFamily,
                         color = Color.Black
                     )
                 }
-                Row(){
+                Row {
                     CustomOutlinedTextField(
                         value = username,
                         onValueChange = { username = it },
@@ -444,15 +659,15 @@ fun deleteAccountDialog(fireBaseAuth: FirebaseAuth){
         },
         confirmButton = {
             TextButton(onClick = {
-                var fireStore = FirebaseFirestore.getInstance()
+                    val fireStore = FirebaseFirestore.getInstance()
 
-                var userID = Firebase.auth.currentUser?.uid.toString()
+                val userID = Firebase.auth.currentUser?.uid.toString()
 
-                var documentReference = fireStore.collection("users").document(userID)
+                val documentReference = fireStore.collection("users").document(userID)
 
                 documentReference.get().addOnSuccessListener { documentSnapshot ->
 
-                    var user = documentSnapshot.toObject<TravelyzeUser>()
+                    val user = documentSnapshot.toObject<TravelyzeUser>()
 
                     if( username == user?.info?.userName )
                     {
@@ -498,7 +713,7 @@ fun deleteAccountDialog(fireBaseAuth: FirebaseAuth){
 }
 
 @Composable
-fun editUsernameDialog() {
+fun EditUsernameDialog() {
     val contextForToast = LocalContext.current.applicationContext
     val focusManager = LocalFocusManager.current
 
@@ -519,8 +734,8 @@ fun editUsernameDialog() {
             )
         },
         text = {
-            Column(){
-                Row(){
+            Column {
+                Row {
                     CustomOutlinedTextField(
                         value = username,
                         onValueChange = { username = it },
@@ -541,16 +756,16 @@ fun editUsernameDialog() {
             TextButton(onClick = {
                 openEditDialog.value = false
 
-                var fireStore = FirebaseFirestore.getInstance()
+                val fireStore = FirebaseFirestore.getInstance()
 
-                var userID = Firebase.auth.currentUser?.uid.toString()
+                val userID = Firebase.auth.currentUser?.uid.toString()
 
-                var documentReference = fireStore.collection("users").document(userID)
+                val documentReference = fireStore.collection("users").document(userID)
 
 
                 documentReference.get().addOnSuccessListener { documentSnapshot ->
 
-                    var user = documentSnapshot.toObject<TravelyzeUser>()
+                    val user = documentSnapshot.toObject<TravelyzeUser>()
 
                     user?.info?.userName = username
 
@@ -591,10 +806,10 @@ fun editUsernameDialog() {
 }
 
 @Composable
-fun sendEmailToExistingUser(user: FirebaseUser?){
+fun SendEmailToExistingUser(user: FirebaseUser?){
     val contextForToast = LocalContext.current.applicationContext
     var isEmailPassword = false
-    var email = user?.email.toString()
+    val email = user?.email.toString()
 
     if(user != null) {
         for (profile:UserInfo in user.providerData) {

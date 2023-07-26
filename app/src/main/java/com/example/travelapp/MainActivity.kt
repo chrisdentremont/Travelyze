@@ -101,19 +101,27 @@ class MainActivity : ComponentActivity() {
                         NavBar()
 
                         if (openSignoutDialog.value){
-                            signOutDialog(auth)
+                            SignOutDialog(auth)
                         }
 
                         if(openDeleteDialog.value){
-                            deleteAccountDialog(auth)
+                            DeleteAccountDialog(auth)
                         }
 
                         if(openEditDialog.value){
-                            editUsernameDialog()
+                            EditUsernameDialog()
                         }
 
                         if(openPicDialog.value){
-                            profilePicturePicker(auth)
+                            ProfilePicturePicker(auth)
+                        }
+
+                        if(openPicSelectDialog.value){
+                            ProfilePicSelect(auth)
+                        }
+
+                        if(openPicTakenDialog.value){
+                            ProfilePicTaken(auth)
                         }
                     }
                 }
@@ -187,7 +195,7 @@ class MainActivity : ComponentActivity() {
                 }
                 composable(Screen.Profile.route) {
                     if (isLoggedIn.value) {
-                        Profile()
+                        Profile(auth)
                     }
                     else{
                         Login(auth, navController)
