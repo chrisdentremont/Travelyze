@@ -11,6 +11,9 @@ import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.*
 import androidx.compose.material.icons.outlined.Add
+import androidx.compose.material.icons.outlined.Message
+import androidx.compose.material.icons.outlined.Person
+import androidx.compose.material.icons.outlined.PersonAdd
 import androidx.compose.material3.*
 import androidx.compose.runtime.*
 import androidx.compose.runtime.saveable.rememberSaveable
@@ -48,13 +51,9 @@ import com.google.firebase.ktx.Firebase
 import kotlinx.coroutines.launch
 
 val openAddFriendDialog = mutableStateOf(false)
+val isAddingFriend = mutableStateOf(false)
 @Composable
 fun Social(){
-
-    if(openAddFriendDialog.value){
-        addFriendDialog()
-    }
-    
     Column(
         modifier = Modifier
             .fillMaxHeight()
@@ -67,10 +66,9 @@ fun Social(){
         ){
             TopBar(
                 title = "Friends",
-                buttonIcon = Icons.Outlined.Add,
+                buttonIcon = Icons.Filled.PersonAdd,
                 onButtonClicked = {
-                    /*TODO Implement friend addition window*/
-                    openAddFriendDialog.value = true
+                isAddingFriend.value = true
                 }
             )
         }
@@ -231,6 +229,13 @@ fun addFriendDialog(){
                                     val friend = documents.elementAt(0)
                                     //TODO Remove Logs
                                     Log.d(MainActivity.TAG, "User Search - friend ${friend.id} is ${friend.data}")
+
+                                    openAddFriendDialog.value = false
+                                    Toast.makeText(
+                                        contextForToast,
+                                        "Friend request sent!.",
+                                        Toast.LENGTH_SHORT
+                                    ).show()
                                 }else {
                                     Log.d(MainActivity.TAG, "User Search - No user found")
 

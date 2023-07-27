@@ -36,7 +36,7 @@ import kotlinx.coroutines.GlobalScope
 import kotlinx.coroutines.async
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.tasks.await
-
+//TODO Change to
 val isLoggedIn = mutableStateOf(Firebase.auth.currentUser != null)
 
 var locationList = mutableListOf<LocationObject>()
@@ -123,6 +123,15 @@ class MainActivity : ComponentActivity() {
                         if(openPicTakenDialog.value){
                             ProfilePicTaken(auth)
                         }
+
+                        if(openAddFriendDialog.value){
+                            addFriendDialog()
+                        }
+
+                        //If added here the navbar goes away??
+//                        if(isAddingFriend.value){
+//                            FriendRequests()
+//                        }
                     }
                 }
             }
@@ -181,34 +190,40 @@ class MainActivity : ComponentActivity() {
             NavHost(navController, startDestination = Screen.Explore.route, Modifier.padding(innerPadding)) {
                 composable(Screen.Friends.route) {
                     if(isLoggedIn.value){
-                        Social()
                         isDrawerOpen.value = false
+                        Social()
+
+                        if(isAddingFriend.value){
+                            FriendRequests()
+                        }
                     }
                     else{
-                        Login(auth, navController)
                         isDrawerOpen.value = false
+                        Login(auth, navController)
                     }
                 }
                 composable(Screen.Explore.route) {
-                    Home()
                     isDrawerOpen.value = false
+                    isAddingFriend.value = false
+                    Home()
                 }
                 composable(Screen.Profile.route) {
                     if (isLoggedIn.value) {
+                        isAddingFriend.value = false
                         Profile(auth)
                     }
                     else{
-                        Login(auth, navController)
                         isDrawerOpen.value = false
+                        Login(auth, navController)
                     }
                 }
                 composable(Screen.Login.route){
-                    Login(auth, navController)
                     isDrawerOpen.value = false
+                    Login(auth, navController)
                 }
                 composable(Screen.Register.route){
-                    RegisterForm()
                     isDrawerOpen.value = false
+                    RegisterForm()
                 }
             }
         }
