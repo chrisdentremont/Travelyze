@@ -24,6 +24,7 @@ import androidx.compose.runtime.DisposableEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.res.painterResource
 import androidx.navigation.NavHostController
 import com.example.travelapp.composable.LocationObject
 import com.example.travelapp.ui.theme.*
@@ -234,12 +235,9 @@ class MainActivity : ComponentActivity() {
     private fun getLocationsAsync() = GlobalScope.async {
         var fireStore = FirebaseFirestore.getInstance()
         var locationCollection = fireStore.collection("countries")
-        locationCollection.get().addOnSuccessListener {
-            Log.w("success", "successful")
+        locationCollection.get().addOnFailureListener {exception ->
+            Log.w("Exception", exception)
         }
-            .addOnFailureListener {exception ->
-                Log.w("Exception", exception)
-            }
     }
 }
 

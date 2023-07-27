@@ -63,7 +63,6 @@ fun Home(){
                 placeholder = { Text("Search for a place") },
                 keyboardActions = KeyboardActions(onSearch = {
                     /*TODO Search for locations*/
-                    Log.d("Search","Searched")
                     focusManager.clearFocus()
                 }),
                 keyboardOptions = KeyboardOptions.Default.copy(imeAction = ImeAction.Search, keyboardType = KeyboardType.Text),
