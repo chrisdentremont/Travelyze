@@ -2,8 +2,10 @@ package com.example.travelapp
 
 
 import android.net.Uri
+import android.util.Log
 import android.util.Patterns
 import android.widget.Toast
+import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.gestures.detectTapGestures
 import androidx.compose.foundation.layout.Arrangement
@@ -34,6 +36,7 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.input.pointer.pointerInput
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.LocalFocusManager
+import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.input.ImeAction
 import androidx.compose.ui.text.input.KeyboardType
@@ -51,6 +54,7 @@ import com.google.firebase.auth.ktx.auth
 import com.google.firebase.auth.ktx.userProfileChangeRequest
 import com.google.firebase.firestore.FirebaseFirestore
 import com.google.firebase.ktx.Firebase
+import com.google.firebase.storage.ktx.storage
 import java.io.File
 
 val showNavBar = mutableStateOf(true)
@@ -114,6 +118,7 @@ fun RegisterForm(){
         confirmPassword: String
     ){
         val fireStore = FirebaseFirestore.getInstance()
+        val storage = Firebase.storage
 
         if(validateData(firstName, lastName, email, userName, password, confirmPassword)){
             auth.createUserWithEmailAndPassword(email,password)
@@ -125,6 +130,16 @@ fun RegisterForm(){
                             displayName = userName
                             photoUri = Uri.parse("android.resource://com.example.travelapp/" + R.drawable.default_profile_picture)
                         })
+
+                        var defaultPic = Uri.parse("android.resource://com.example.travelapp/" + R.drawable.default_profile_picture.toString())
+                        val profilePicRef = storage.reference.child("users/${newUser.uid}/profile_picture.jpg")
+                        val uploadTask = profilePicRef.putFile(defaultPic)
+                        uploadTask.addOnSuccessListener {
+                            Log.w("pic upload", "success")
+                        }.addOnFailureListener() {
+                            Log.w("pic upload", "failure")
+                        }
+
 
                         var user = TravelyzeUser (
                             AccountInfo(

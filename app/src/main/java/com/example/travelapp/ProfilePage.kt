@@ -30,6 +30,7 @@ import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.LocalFocusManager
 import androidx.compose.ui.platform.LocalLayoutDirection
+import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.input.ImeAction
 import androidx.compose.ui.text.input.KeyboardType
@@ -57,6 +58,7 @@ import com.google.firebase.auth.ktx.userProfileChangeRequest
 import com.google.firebase.firestore.FirebaseFirestore
 import com.google.firebase.firestore.ktx.toObject
 import com.google.firebase.ktx.Firebase
+import com.google.firebase.storage.ktx.storage
 import kotlinx.coroutines.launch
 import java.io.File
 import java.text.SimpleDateFormat
@@ -79,6 +81,8 @@ fun Profile(auth: FirebaseAuth){
 
     val drawerState = rememberDrawerState(DrawerValue.Closed)
     val scope = rememberCoroutineScope()
+
+    val storage = Firebase.storage
 
     fun openDrawer()  {
         scope.launch {
@@ -122,6 +126,14 @@ fun Profile(auth: FirebaseAuth){
     }
 
     CompositionLocalProvider(LocalLayoutDirection provides LayoutDirection.Rtl) {
+        var profileImage = storage.reference.child("users/${auth.currentUser?.uid}/profile_picture.jpg")
+        val profileImageFile = File.createTempFile("image", "jpg")
+
+        profileImage.getFile(profileImageFile).addOnCompleteListener { result ->
+            //TODO Apply image url to profile pic display
+            Log.w("file", profileImageFile.absolutePath)
+        }
+
         ModalNavigationDrawer(
             drawerState = drawerState,
             modifier = Modifier.fillMaxHeight(),
