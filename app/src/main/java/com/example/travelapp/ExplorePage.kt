@@ -26,9 +26,12 @@ import coil.compose.AsyncImage
 import com.example.travelapp.ui.theme.BackgroundColor
 import com.example.travelapp.ui.theme.marsFamily
 import com.example.travelapp.ui.theme.robotoFamily
+import com.google.firebase.auth.FirebaseAuth
+import com.google.firebase.ktx.Firebase
+import com.google.firebase.storage.ktx.storage
 
 @Composable
-fun Home(){
+fun Home(auth: FirebaseAuth){
     Column(
         Modifier
             .fillMaxWidth()

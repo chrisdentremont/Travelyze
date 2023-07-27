@@ -33,15 +33,20 @@ import com.google.firebase.auth.ktx.auth
 import com.google.firebase.firestore.FirebaseFirestore
 import com.google.firebase.firestore.ktx.toObject
 import com.google.firebase.ktx.Firebase
+import com.google.firebase.storage.ktx.storage
 import kotlinx.coroutines.GlobalScope
 import kotlinx.coroutines.async
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.tasks.await
+import java.io.File
+
 //TODO Change to
 val isLoggedIn = mutableStateOf(Firebase.auth.currentUser != null)
 
 var locationList = mutableListOf<LocationObject>()
 var locationNames = mutableListOf<String?>()
+
+val profileImageFile = mutableStateOf<File>(File.createTempFile("image", ".jpg"))
 
 class MainActivity : ComponentActivity() {
 
@@ -57,6 +62,21 @@ class MainActivity : ComponentActivity() {
     }
 
 
+    override fun onStop() {
+        super.onStop()
+
+        var deleted = profileImageFile.value.delete()
+    }
+
+    override fun onResume() {
+        super.onResume()
+
+        var profileImage = Firebase.storage.reference.child("users/${auth.currentUser?.uid}/profile_picture.jpg")
+
+        profileImage.getFile(profileImageFile.value).addOnCompleteListener {
+            displayedPicture.value = profileImageFile.value
+        }
+    }
     override fun onCreate(savedInstanceState: Bundle?){
         super.onCreate(savedInstanceState)
 
@@ -206,7 +226,7 @@ class MainActivity : ComponentActivity() {
                 composable(Screen.Explore.route) {
                     isDrawerOpen.value = false
                     isAddingFriend.value = false
-                    Home()
+                    Home(auth)
                 }
                 composable(Screen.Profile.route) {
                     if (isLoggedIn.value) {

@@ -133,12 +133,7 @@ fun RegisterForm(){
 
                         var defaultPic = Uri.parse("android.resource://com.example.travelapp/" + R.drawable.default_profile_picture.toString())
                         val profilePicRef = storage.reference.child("users/${newUser.uid}/profile_picture.jpg")
-                        val uploadTask = profilePicRef.putFile(defaultPic)
-                        uploadTask.addOnSuccessListener {
-                            Log.w("pic upload", "success")
-                        }.addOnFailureListener() {
-                            Log.w("pic upload", "failure")
-                        }
+                        profilePicRef.putFile(defaultPic)
 
 
                         var user = TravelyzeUser (

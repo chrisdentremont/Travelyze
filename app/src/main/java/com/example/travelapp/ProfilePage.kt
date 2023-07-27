@@ -43,6 +43,8 @@ import androidx.compose.ui.window.DialogProperties
 import androidx.core.content.ContextCompat
 import androidx.core.content.FileProvider
 import coil.compose.rememberAsyncImagePainter
+import coil.request.ImageRequest
+import coil.size.Size
 import com.example.travelapp.composable.CustomOutlinedTextField
 import com.example.travelapp.composable.TopBar
 import com.example.travelapp.composable.TravelyzeUser
@@ -75,6 +77,7 @@ val sendPasswordChangeEmail = mutableStateOf(false)
 
 var profileImageUri = mutableStateOf(Uri.EMPTY)
 var takenImageUri = mutableStateOf(Uri.EMPTY)
+var displayedPicture = mutableStateOf<File>(File(""))
 
 @Composable
 fun Profile(auth: FirebaseAuth){
@@ -82,7 +85,7 @@ fun Profile(auth: FirebaseAuth){
     val drawerState = rememberDrawerState(DrawerValue.Closed)
     val scope = rememberCoroutineScope()
 
-    val storage = Firebase.storage
+
 
     fun openDrawer()  {
         scope.launch {
@@ -126,12 +129,11 @@ fun Profile(auth: FirebaseAuth){
     }
 
     CompositionLocalProvider(LocalLayoutDirection provides LayoutDirection.Rtl) {
-        var profileImage = storage.reference.child("users/${auth.currentUser?.uid}/profile_picture.jpg")
-        val profileImageFile = File.createTempFile("image", "jpg")
 
-        profileImage.getFile(profileImageFile).addOnCompleteListener { result ->
-            //TODO Apply image url to profile pic display
-            Log.w("file", profileImageFile.absolutePath)
+        var profileImage = Firebase.storage.reference.child("users/${auth.currentUser?.uid}/profile_picture.jpg")
+
+        profileImage.getFile(profileImageFile.value).addOnCompleteListener {
+            displayedPicture.value = profileImageFile.value
         }
 
         ModalNavigationDrawer(
@@ -231,9 +233,13 @@ fun Profile(auth: FirebaseAuth){
                             verticalAlignment = Alignment.CenterVertically,
                         ){
                             Box {
-                                Log.d("pic", "${auth.currentUser?.photoUrl!!}")
                                 Image(
-                                    painter = rememberAsyncImagePainter(model = auth.currentUser?.photoUrl!!),
+                                    painter = rememberAsyncImagePainter(model =
+                                    ImageRequest.Builder(LocalContext.current)
+                                        .data(displayedPicture.value)
+                                        .size(Size.ORIGINAL)
+                                        .build()
+                                    ),
                                     contentDescription = null,
                                     contentScale = ContentScale.Crop,
                                     modifier = Modifier
@@ -396,6 +402,7 @@ fun ProfilePicturePicker(auth: FirebaseAuth){
 @Composable
 fun ProfilePicSelect(auth: FirebaseAuth){
     val contextForToast = LocalContext.current.applicationContext
+    var storage = Firebase.storage
 
     AlertDialog(
         onDismissRequest = {
@@ -440,18 +447,18 @@ fun ProfilePicSelect(auth: FirebaseAuth){
         },
         confirmButton = {
             TextButton(onClick = {
-                var user = auth.currentUser
-                user!!.updateProfile(userProfileChangeRequest {
-                    photoUri = profileImageUri.value
-                }).addOnSuccessListener {
+                val profilePicRef = storage.reference.child("users/${auth.currentUser?.uid}/profile_picture.jpg")
+                val uploadTask = profilePicRef.putFile(profileImageUri.value)
+                uploadTask.addOnSuccessListener {
                     Toast.makeText(
                         contextForToast,
                         "Your picture has been updated.",
                         Toast.LENGTH_SHORT
                     ).show()
+
                     profileImageUri.value = Uri.EMPTY
                     openPicSelectDialog.value = false
-                }.addOnFailureListener {
+                }.addOnFailureListener() {
                     Toast.makeText(
                         contextForToast,
                         "Something went wrong changing your picture.",
@@ -477,6 +484,7 @@ fun ProfilePicSelect(auth: FirebaseAuth){
 @Composable
 fun ProfilePicTaken(auth: FirebaseAuth){
     val contextForToast = LocalContext.current.applicationContext
+    var storage = Firebase.storage
 
     AlertDialog(
         onDismissRequest = {
@@ -523,18 +531,18 @@ fun ProfilePicTaken(auth: FirebaseAuth){
         },
         confirmButton = {
             TextButton(onClick = {
-                var user = auth.currentUser
-                user!!.updateProfile(userProfileChangeRequest {
-                    photoUri = takenImageUri.value
-                }).addOnSuccessListener {
+                val profilePicRef = storage.reference.child("users/${auth.currentUser?.uid}/profile_picture.jpg")
+                val uploadTask = profilePicRef.putFile(takenImageUri.value)
+                uploadTask.addOnSuccessListener {
                     Toast.makeText(
                         contextForToast,
                         "Your picture has been updated.",
                         Toast.LENGTH_SHORT
                     ).show()
+
                     takenImageUri.value = Uri.EMPTY
                     openPicTakenDialog.value = false
-                }.addOnFailureListener {
+                }.addOnFailureListener() {
                     Toast.makeText(
                         contextForToast,
                         "Something went wrong changing your picture.",
