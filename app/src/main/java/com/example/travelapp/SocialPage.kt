@@ -179,7 +179,7 @@ fun addFriendDialog(){
         },
         title = {
             Text(
-                text = "Search for a user:",
+                text = "Add a New Friend",
                 fontFamily = robotoFamily,
                 style = MaterialTheme.typography.bodyLarge,
                 color = Color.Black
@@ -189,7 +189,7 @@ fun addFriendDialog(){
             Column(){
                 Row(){
                     Text(
-                        text = "Search for a user:",
+                        text = "Enter another username exactly as it appears to send a friend request:",
                         fontFamily = robotoFamily,
                         style = MaterialTheme.typography.bodyMedium,
                         color = Color.Black
