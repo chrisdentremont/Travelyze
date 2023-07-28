@@ -7,33 +7,42 @@ import androidx.activity.compose.setContent
 import androidx.annotation.StringRes
 import androidx.compose.foundation.background
 import androidx.compose.foundation.isSystemInDarkTheme
-import androidx.compose.foundation.layout.*
-import androidx.compose.material.*
+import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.padding
+import androidx.compose.material.BottomNavigation
+import androidx.compose.material.BottomNavigationItem
+import androidx.compose.material.Icon
+import androidx.compose.material.Scaffold
+import androidx.compose.material.Surface
+import androidx.compose.material.Text
 import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.*
-import androidx.compose.ui.Modifier
-import androidx.compose.ui.res.stringResource
-import androidx.navigation.NavDestination.Companion.hierarchy
-import androidx.navigation.NavGraph.Companion.findStartDestination
-import androidx.navigation.compose.NavHost
-import androidx.navigation.compose.composable
-import androidx.navigation.compose.currentBackStackEntryAsState
-import androidx.navigation.compose.rememberNavController
+import androidx.compose.material.icons.filled.Group
+import androidx.compose.material.icons.filled.Person
+import androidx.compose.material.icons.filled.Search
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.DisposableEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
+import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalFocusManager
+import androidx.compose.ui.res.stringResource
+import androidx.navigation.NavDestination.Companion.hierarchy
+import androidx.navigation.NavGraph.Companion.findStartDestination
 import androidx.navigation.NavHostController
-import com.example.travelapp.R
-import com.travelapp.composable.LocationObject
+import androidx.navigation.compose.NavHost
+import androidx.navigation.compose.composable
+import androidx.navigation.compose.currentBackStackEntryAsState
+import androidx.navigation.compose.rememberNavController
+import com.travelapp.composable.TravelyzeUser
 import com.google.accompanist.systemuicontroller.rememberSystemUiController
 import com.google.firebase.auth.ktx.auth
 import com.google.firebase.firestore.FirebaseFirestore
 import com.google.firebase.firestore.ktx.toObject
 import com.google.firebase.ktx.Firebase
 import com.google.firebase.storage.ktx.storage
+import com.travelapp.composable.LocationObject
 import com.travelapp.ui.theme.BackgroundColor
 import com.travelapp.ui.theme.TravelAppTheme
 import com.travelapp.ui.theme.robotoFamily
@@ -43,7 +52,6 @@ import kotlinx.coroutines.launch
 import kotlinx.coroutines.tasks.await
 import java.io.File
 
-//TODO Change to
 val isLoggedIn = mutableStateOf(Firebase.auth.currentUser != null)
 
 var locationList = mutableListOf<LocationObject>()
@@ -54,10 +62,10 @@ val profileImageFile = mutableStateOf<File>(File.createTempFile("image", ".jpg")
 class MainActivity : ComponentActivity() {
 
 
-
     private lateinit var navController: NavHostController
+
     companion object {
-        val TAG:String = MainActivity::class.java.simpleName
+        val TAG: String = MainActivity::class.java.simpleName
     }
 
     private val auth by lazy {
@@ -74,26 +82,42 @@ class MainActivity : ComponentActivity() {
     override fun onResume() {
         super.onResume()
 
-        if(isLoggedIn.value){
-            var profileImage = Firebase.storage.reference.child("users/${auth.currentUser?.uid}/profile_picture.jpg")
+        if (isLoggedIn.value) {
+            var profileImage =
+                Firebase.storage.reference.child("users/${auth.currentUser?.uid}/profile_picture.jpg")
 
             profileImage.getFile(profileImageFile.value).addOnCompleteListener {
                 displayedPicture.value = profileImageFile.value
             }
         }
     }
-    override fun onCreate(savedInstanceState: Bundle?){
+
+    override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
 
         GlobalScope.launch {
             var getLocationsFromDb = getLocationsAsync().await().await()
 
-            for(document in getLocationsFromDb.documents){
+            for (document in getLocationsFromDb.documents) {
                 var current = document.toObject<LocationObject>()
                 if (current != null) {
                     locationList.add(current)
                     current.Name?.let { locationNames.add(it) }
                 }
+            }
+        }
+
+        if (auth.currentUser != null) {
+            val fireStore = FirebaseFirestore.getInstance()
+
+            val userID = auth.currentUser?.uid.toString()
+
+            val documentReference = fireStore.collection("users").document(userID)
+
+            documentReference.get().addOnSuccessListener { documentSnapshot ->
+
+                currentUser.value = documentSnapshot.toObject<TravelyzeUser>()!!
+
             }
         }
 
@@ -118,7 +142,7 @@ class MainActivity : ComponentActivity() {
 
                 Box(
                     modifier = Modifier.background(BackgroundColor)
-                ){
+                ) {
                     Surface(
                         modifier = Modifier.fillMaxSize(),
                     ) {
@@ -126,31 +150,31 @@ class MainActivity : ComponentActivity() {
 
                         NavBar()
 
-                        if (openSignoutDialog.value){
+                        if (openSignoutDialog.value) {
                             SignOutDialog(auth)
                         }
 
-                        if(openDeleteDialog.value){
+                        if (openDeleteDialog.value) {
                             DeleteAccountDialog(auth)
                         }
 
-                        if(openEditDialog.value){
+                        if (openEditDialog.value) {
                             EditUsernameDialog()
                         }
 
-                        if(openPicDialog.value){
+                        if (openPicDialog.value) {
                             ProfilePicturePicker(auth)
                         }
 
-                        if(openPicSelectDialog.value){
+                        if (openPicSelectDialog.value) {
                             ProfilePicSelect(auth)
                         }
 
-                        if(openPicTakenDialog.value){
+                        if (openPicTakenDialog.value) {
                             ProfilePicTaken(auth)
                         }
 
-                        if(openAddFriendDialog.value){
+                        if (openAddFriendDialog.value) {
                             addFriendDialog()
                         }
 
@@ -169,7 +193,7 @@ class MainActivity : ComponentActivity() {
      * of the screen and provides functionality to them.
      */
     @Composable
-    fun NavBar(){
+    fun NavBar() {
         val routeMap = mapOf(
             Screen.Friends to Icons.Filled.Group,
             Screen.Explore to Icons.Filled.Search,
@@ -185,10 +209,14 @@ class MainActivity : ComponentActivity() {
                     val currentDestination = navBackStackEntry?.destination
                     routeMap.forEach { (key, value) ->
                         BottomNavigationItem(
-                            icon = {Icon(value, contentDescription = null, tint = Color.Black)},
-                            label = { Text(stringResource(key.resourceId),
-                                color = Color.Black,
-                                fontFamily = robotoFamily,) },
+                            icon = { Icon(value, contentDescription = null, tint = Color.Black) },
+                            label = {
+                                Text(
+                                    stringResource(key.resourceId),
+                                    color = Color.Black,
+                                    fontFamily = robotoFamily,
+                                )
+                            },
                             selected = currentDestination?.hierarchy?.any { it.route == key.route } == true,
                             onClick = {
                                 navController.navigate(key.route) {
@@ -202,7 +230,8 @@ class MainActivity : ComponentActivity() {
                                     // re-selecting the same item
                                     launchSingleTop = true
                                     // Restore state when re-selecting a previously selected item
-                                    restoreState = (navController.graph.findNode(Screen.Register.route) == null)
+                                    restoreState =
+                                        (navController.graph.findNode(Screen.Register.route) == null)
                                 }
                             },
                             modifier = Modifier.background(color = BackgroundColor)
@@ -211,19 +240,21 @@ class MainActivity : ComponentActivity() {
 
                 }
             }
-        ) {
-                innerPadding ->
-            NavHost(navController, startDestination = Screen.Explore.route, Modifier.padding(innerPadding)) {
+        ) { innerPadding ->
+            NavHost(
+                navController,
+                startDestination = Screen.Explore.route,
+                Modifier.padding(innerPadding)
+            ) {
                 composable(Screen.Friends.route) {
-                    if(isLoggedIn.value){
+                    if (isLoggedIn.value) {
                         isDrawerOpen.value = false
                         Social()
 
-                        if(isAddingFriend.value){
+                        if (isAddingFriend.value) {
                             FriendRequests()
                         }
-                    }
-                    else{
+                    } else {
                         isDrawerOpen.value = false
                         Login(auth, navController)
                     }
@@ -231,15 +262,15 @@ class MainActivity : ComponentActivity() {
                 composable(Screen.Explore.route) {
                     isDrawerOpen.value = false
                     isAddingFriend.value = false
-                    if(locationSelected.value){
+                    if (locationSelected.value) {
                         LocationPage(selectedName.value, navController)
-                    }else{
+                    } else {
                         Home(auth, navController)
                     }
                 }
 
                 composable(Screen.Location.route) {
-                    if(locationSelected.value) {
+                    if (locationSelected.value) {
                         LocalFocusManager.current.clearFocus()
                         LocationPage(selectedName.value, navController)
                     }
@@ -249,17 +280,16 @@ class MainActivity : ComponentActivity() {
                     if (isLoggedIn.value) {
                         isAddingFriend.value = false
                         Profile(auth)
-                    }
-                    else{
+                    } else {
                         isDrawerOpen.value = false
                         Login(auth, navController)
                     }
                 }
-                composable(Screen.Login.route){
+                composable(Screen.Login.route) {
                     isDrawerOpen.value = false
                     Login(auth, navController)
                 }
-                composable(Screen.Register.route){
+                composable(Screen.Register.route) {
                     isDrawerOpen.value = false
                     RegisterForm()
                 }
@@ -272,7 +302,7 @@ class MainActivity : ComponentActivity() {
     private fun getLocationsAsync() = GlobalScope.async {
         var fireStore = FirebaseFirestore.getInstance()
         var locationCollection = fireStore.collection("countries")
-        locationCollection.get().addOnFailureListener {exception ->
+        locationCollection.get().addOnFailureListener { exception ->
             Log.w("Exception", exception)
         }
     }

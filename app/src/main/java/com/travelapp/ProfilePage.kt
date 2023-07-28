@@ -39,14 +39,6 @@ import androidx.core.content.FileProvider
 import coil.compose.rememberAsyncImagePainter
 import coil.request.ImageRequest
 import coil.size.Size
-import com.example.travelapp.BuildConfig
-import com.travelapp.composable.CustomOutlinedTextField
-import com.travelapp.composable.TopBar
-import com.travelapp.composable.TravelyzeUser
-import com.travelapp.ui.theme.BackgroundColor
-import com.travelapp.ui.theme.TextButtonColor
-import com.travelapp.ui.theme.marsFamily
-import com.travelapp.ui.theme.robotoFamily
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.auth.FirebaseUser
 import com.google.firebase.auth.UserInfo
@@ -55,6 +47,13 @@ import com.google.firebase.firestore.FirebaseFirestore
 import com.google.firebase.firestore.ktx.toObject
 import com.google.firebase.ktx.Firebase
 import com.google.firebase.storage.ktx.storage
+import com.travelapp.composable.CustomOutlinedTextField
+import com.travelapp.composable.TopBar
+import com.travelapp.composable.TravelyzeUser
+import com.travelapp.ui.theme.BackgroundColor
+import com.travelapp.ui.theme.TextButtonColor
+import com.travelapp.ui.theme.marsFamily
+import com.travelapp.ui.theme.robotoFamily
 import kotlinx.coroutines.launch
 import java.io.File
 import java.text.SimpleDateFormat
@@ -73,34 +72,32 @@ var profileImageUri = mutableStateOf(Uri.EMPTY)
 var takenImageUri = mutableStateOf(Uri.EMPTY)
 var displayedPicture = mutableStateOf<File>(File(""))
 
-var currentUser = mutableStateOf(TravelyzeUser(null, null))
-
 @Composable
-fun Profile(auth: FirebaseAuth){
+fun Profile(auth: FirebaseAuth) {
 
     val drawerState = rememberDrawerState(DrawerValue.Closed)
     val scope = rememberCoroutineScope()
 
 
-
-    fun openDrawer()  {
+    fun openDrawer() {
         scope.launch {
             drawerState.open()
         }
     }
-    fun closeDrawer(){
+
+    fun closeDrawer() {
         scope.launch {
             drawerState.close()
         }
     }
 
-    if(isDrawerOpen.value){
+    if (isDrawerOpen.value) {
         openDrawer()
     } else {
         closeDrawer()
     }
 
-    if(sendPasswordChangeEmail.value){
+    if (sendPasswordChangeEmail.value) {
         SendEmailToExistingUser(Firebase.auth.currentUser)
     }
 
@@ -114,19 +111,10 @@ fun Profile(auth: FirebaseAuth){
         openPicTakenDialog.value = true
     }
 
-    val fireStore = FirebaseFirestore.getInstance()
-
-    val userID = Firebase.auth.currentUser?.uid.toString()
-    val documentReference = fireStore.collection("users").document(userID)
-
-    documentReference.get().addOnSuccessListener { documentSnapshot ->
-        //TODO Figure out how to use this variable outside this listener
-        currentUser.value = documentSnapshot.toObject<TravelyzeUser>()!!
-    }
-
     CompositionLocalProvider(LocalLayoutDirection provides LayoutDirection.Rtl) {
 
-        var profileImage = Firebase.storage.reference.child("users/${auth.currentUser?.uid}/profile_picture.jpg")
+        var profileImage =
+            Firebase.storage.reference.child("users/${auth.currentUser?.uid}/profile_picture.jpg")
 
         profileImage.getFile(profileImageFile.value).addOnCompleteListener {
             displayedPicture.value = profileImageFile.value
@@ -139,7 +127,7 @@ fun Profile(auth: FirebaseAuth){
                 ModalDrawerSheet(
                     modifier = Modifier.width(300.dp),
                     drawerShape = RectangleShape
-                ){
+                ) {
                     Text(
                         modifier = Modifier
                             .padding(top = 30.dp, bottom = 30.dp)
@@ -152,10 +140,13 @@ fun Profile(auth: FirebaseAuth){
                     )
                     Spacer(Modifier.height(30.dp))
                     NavigationDrawerItem(
-                        label = {Text(
-                            text = "Edit Username",
-                            fontFamily = robotoFamily,
-                            fontSize = 20.sp)},
+                        label = {
+                            Text(
+                                text = "Edit Username",
+                                fontFamily = robotoFamily,
+                                fontSize = 20.sp
+                            )
+                        },
                         onClick = {
                             openEditDialog.value = true
                         },
@@ -164,10 +155,13 @@ fun Profile(auth: FirebaseAuth){
                         modifier = Modifier.padding(NavigationDrawerItemDefaults.ItemPadding)
                     )
                     NavigationDrawerItem(
-                        label = {Text(
-                            text = "Change Password",
-                            fontFamily = robotoFamily,
-                            fontSize = 20.sp)},
+                        label = {
+                            Text(
+                                text = "Change Password",
+                                fontFamily = robotoFamily,
+                                fontSize = 20.sp
+                            )
+                        },
                         onClick = {
                             sendPasswordChangeEmail.value = true
                         },
@@ -176,10 +170,13 @@ fun Profile(auth: FirebaseAuth){
                         modifier = Modifier.padding(NavigationDrawerItemDefaults.ItemPadding)
                     )
                     NavigationDrawerItem(
-                        label = {Text(
-                            text = "Sign Out",
-                            fontFamily = robotoFamily,
-                            fontSize = 20.sp)},
+                        label = {
+                            Text(
+                                text = "Sign Out",
+                                fontFamily = robotoFamily,
+                                fontSize = 20.sp
+                            )
+                        },
                         onClick = {
                             openSignoutDialog.value = true
                         },
@@ -190,12 +187,16 @@ fun Profile(auth: FirebaseAuth){
                     Divider(
                         modifier = Modifier.padding(vertical = 50.dp, horizontal = 20.dp),
                         color = Color.Gray,
-                        thickness = 1.dp)
+                        thickness = 1.dp
+                    )
                     NavigationDrawerItem(
-                        label = {Text(
-                            text = "Delete Account",
-                            fontFamily = robotoFamily,
-                            fontSize = 20.sp)},
+                        label = {
+                            Text(
+                                text = "Delete Account",
+                                fontFamily = robotoFamily,
+                                fontSize = 20.sp
+                            )
+                        },
                         onClick = {
                             openDeleteDialog.value = true
                         },
@@ -205,8 +206,8 @@ fun Profile(auth: FirebaseAuth){
                     )
                 }
             }
-        ){
-            CompositionLocalProvider(LocalLayoutDirection provides LayoutDirection.Ltr){
+        ) {
+            CompositionLocalProvider(LocalLayoutDirection provides LayoutDirection.Ltr) {
                 Column(
                     Modifier
                         .fillMaxWidth()
@@ -223,18 +224,19 @@ fun Profile(auth: FirebaseAuth){
                     )
                     Column(
                         Modifier.background(color = BackgroundColor)
-                    ){
+                    ) {
                         Row(
                             modifier = Modifier.padding(horizontal = 30.dp, vertical = 50.dp),
                             verticalAlignment = Alignment.CenterVertically,
-                        ){
+                        ) {
                             Box {
                                 Image(
-                                    painter = rememberAsyncImagePainter(model =
-                                    ImageRequest.Builder(LocalContext.current)
-                                        .data(displayedPicture.value)
-                                        .size(Size.ORIGINAL)
-                                        .build()
+                                    painter = rememberAsyncImagePainter(
+                                        model =
+                                        ImageRequest.Builder(LocalContext.current)
+                                            .data(displayedPicture.value)
+                                            .size(Size.ORIGINAL)
+                                            .build()
                                     ),
                                     contentDescription = null,
                                     contentScale = ContentScale.Crop,
@@ -250,23 +252,22 @@ fun Profile(auth: FirebaseAuth){
                                         }
                                         .align(Alignment.BottomEnd)
                                         .size(20.dp)
-                                        .background(color = Color.Black, shape = CircleShape)
-                                        .padding(3.dp),
+                                        .background(color = Color.Black, shape = CircleShape),
                                     tint = Color.White)
                             }
                             Column(
                                 modifier = Modifier.padding(start = 20.dp)
-                            ){
+                            ) {
                                 Text(
-                                    text = "${currentUser.value.info?.firstName} ${currentUser.value.info?.lastName}",
+                                    text = auth.currentUser?.displayName!!,
                                     style = MaterialTheme.typography.headlineMedium,
                                     fontFamily = robotoFamily,
                                     fontWeight = FontWeight.Normal,
                                     color = Color.Black
                                 )
                                 Text(
-                                    text = auth.currentUser?.displayName!!,
-                                    style = MaterialTheme.typography.bodyLarge,
+                                    text = auth.currentUser?.email!!,
+                                    style = MaterialTheme.typography.bodyMedium,
                                     fontFamily = robotoFamily,
                                     fontWeight = FontWeight.Light,
                                     color = Color.Black
@@ -282,7 +283,7 @@ fun Profile(auth: FirebaseAuth){
 
 @SuppressLint("SimpleDateFormat")
 @Composable
-fun ProfilePicturePicker(auth: FirebaseAuth){
+fun ProfilePicturePicker(auth: FirebaseAuth) {
     LocalContext.current.applicationContext
 
     val singlePhotoPickerLauncher = rememberLauncherForActivityResult(
@@ -322,7 +323,7 @@ fun ProfilePicturePicker(auth: FirebaseAuth){
             Row(
                 modifier = Modifier.fillMaxWidth(),
                 horizontalArrangement = Arrangement.Center
-            ){
+            ) {
                 Text(
                     text = "Change photo",
                     style = MaterialTheme.typography.headlineSmall,
@@ -341,16 +342,20 @@ fun ProfilePicturePicker(auth: FirebaseAuth){
                 Row(
                     modifier = Modifier.fillMaxWidth(),
                     horizontalArrangement = Arrangement.Center
-                ){
+                ) {
                     TextButton(onClick = {
                         singlePhotoPickerLauncher.launch(
                             PickVisualMediaRequest(ActivityResultContracts.PickVisualMedia.ImageOnly)
                         )
-                    }){
-                        Icon(imageVector = Icons.Filled.Folder,
+                    }) {
+                        Icon(
+                            imageVector = Icons.Filled.Folder,
                             contentDescription = null,
-                            modifier = Modifier.size(size = 30.dp).padding(end = 10.dp),
-                            tint = Color.Black)
+                            modifier = Modifier
+                                .size(size = 30.dp)
+                                .padding(end = 10.dp),
+                            tint = Color.Black
+                        )
                         Text(
                             text = "Upload from camera roll",
                             style = MaterialTheme.typography.bodyLarge,
@@ -364,21 +369,28 @@ fun ProfilePicturePicker(auth: FirebaseAuth){
                 Row(
                     modifier = Modifier.fillMaxWidth(),
                     horizontalArrangement = Arrangement.Center
-                ){
+                ) {
                     TextButton(onClick = {
                         val permissionCheckResult =
-                            ContextCompat.checkSelfPermission(context, android.Manifest.permission.CAMERA)
+                            ContextCompat.checkSelfPermission(
+                                context,
+                                android.Manifest.permission.CAMERA
+                            )
                         if (permissionCheckResult == PackageManager.PERMISSION_GRANTED) {
                             cameraLauncher.launch(uri)
                         } else {
                             // Request a permission
                             permissionLauncher.launch(android.Manifest.permission.CAMERA)
                         }
-                    }){
-                        Icon(imageVector = Icons.Filled.PhotoCamera,
+                    }) {
+                        Icon(
+                            imageVector = Icons.Filled.PhotoCamera,
                             contentDescription = null,
-                            modifier = Modifier.size(size = 30.dp).padding(end = 10.dp),
-                            tint = Color.Black)
+                            modifier = Modifier
+                                .size(size = 30.dp)
+                                .padding(end = 10.dp),
+                            tint = Color.Black
+                        )
                         Text(
                             text = "Take a new picture",
                             style = MaterialTheme.typography.bodyLarge,
@@ -398,7 +410,7 @@ fun ProfilePicturePicker(auth: FirebaseAuth){
 }
 
 @Composable
-fun ProfilePicSelect(auth: FirebaseAuth){
+fun ProfilePicSelect(auth: FirebaseAuth) {
     val contextForToast = LocalContext.current.applicationContext
     var storage = Firebase.storage
 
@@ -420,7 +432,7 @@ fun ProfilePicSelect(auth: FirebaseAuth){
             Row(
                 modifier = Modifier.fillMaxWidth(),
                 horizontalArrangement = Arrangement.Center
-            ){
+            ) {
                 Image(
                     contentScale = ContentScale.Crop,
                     modifier = Modifier
@@ -445,7 +457,8 @@ fun ProfilePicSelect(auth: FirebaseAuth){
         },
         confirmButton = {
             TextButton(onClick = {
-                val profilePicRef = storage.reference.child("users/${auth.currentUser?.uid}/profile_picture.jpg")
+                val profilePicRef =
+                    storage.reference.child("users/${auth.currentUser?.uid}/profile_picture.jpg")
                 val uploadTask = profilePicRef.putFile(profileImageUri.value)
                 uploadTask.addOnSuccessListener {
                     Toast.makeText(
@@ -480,7 +493,7 @@ fun ProfilePicSelect(auth: FirebaseAuth){
 }
 
 @Composable
-fun ProfilePicTaken(auth: FirebaseAuth){
+fun ProfilePicTaken(auth: FirebaseAuth) {
     val contextForToast = LocalContext.current.applicationContext
     var storage = Firebase.storage
 
@@ -503,7 +516,7 @@ fun ProfilePicTaken(auth: FirebaseAuth){
                 Row(
                     modifier = Modifier.fillMaxWidth(),
                     horizontalArrangement = Arrangement.Center
-                ){
+                ) {
                     Image(
                         contentScale = ContentScale.Crop,
                         modifier = Modifier
@@ -529,7 +542,8 @@ fun ProfilePicTaken(auth: FirebaseAuth){
         },
         confirmButton = {
             TextButton(onClick = {
-                val profilePicRef = storage.reference.child("users/${auth.currentUser?.uid}/profile_picture.jpg")
+                val profilePicRef =
+                    storage.reference.child("users/${auth.currentUser?.uid}/profile_picture.jpg")
                 val uploadTask = profilePicRef.putFile(takenImageUri.value)
                 uploadTask.addOnSuccessListener {
                     Toast.makeText(
@@ -564,7 +578,7 @@ fun ProfilePicTaken(auth: FirebaseAuth){
 }
 
 @Composable
-fun SignOutDialog(fireBaseAuth: FirebaseAuth){
+fun SignOutDialog(fireBaseAuth: FirebaseAuth) {
     val contextForToast = LocalContext.current.applicationContext
 
     AlertDialog(
@@ -597,7 +611,7 @@ fun SignOutDialog(fireBaseAuth: FirebaseAuth){
                     "You are now logged out",
                     Toast.LENGTH_SHORT
                 ).show()
-            }){
+            }) {
                 Text(
                     text = "SIGN OUT",
                     fontFamily = robotoFamily,
@@ -608,7 +622,7 @@ fun SignOutDialog(fireBaseAuth: FirebaseAuth){
         dismissButton = {
             TextButton(onClick = {
                 openSignoutDialog.value = false
-            }){
+            }) {
                 Text(
                     text = "CANCEL",
                     fontFamily = robotoFamily,
@@ -623,7 +637,7 @@ fun SignOutDialog(fireBaseAuth: FirebaseAuth){
 }
 
 @Composable
-fun DeleteAccountDialog(fireBaseAuth: FirebaseAuth){
+fun DeleteAccountDialog(fireBaseAuth: FirebaseAuth) {
     val contextForToast = LocalContext.current.applicationContext
     val focusManager = LocalFocusManager.current
 
@@ -677,35 +691,28 @@ fun DeleteAccountDialog(fireBaseAuth: FirebaseAuth){
         },
         confirmButton = {
             TextButton(onClick = {
-                    val fireStore = FirebaseFirestore.getInstance()
+                val fireStore = FirebaseFirestore.getInstance()
 
                 val userID = Firebase.auth.currentUser?.uid.toString()
 
                 val documentReference = fireStore.collection("users").document(userID)
 
-                documentReference.get().addOnSuccessListener { documentSnapshot ->
+                if (username == currentUser.value.info?.userName) {
+                    fireBaseAuth.currentUser?.delete()
+                    documentReference.delete()
 
-                    val user = documentSnapshot.toObject<TravelyzeUser>()
+                    openDeleteDialog.value = false
+                    isLoggedIn.value = false
 
-                    if( username == user?.info?.userName )
-                    {
-                        fireBaseAuth.currentUser?.delete()
-                        documentReference.delete()
-
-                        openDeleteDialog.value = false
-                        isLoggedIn.value = false
-                        Toast.makeText(
-                            contextForToast,
-                            "Account successfully deleted.",
-                            Toast.LENGTH_SHORT
-                        ).show()
-                    } else{
-                        validateUsernameError = false
-                    }
-
-
+                    Toast.makeText(
+                        contextForToast,
+                        "Account successfully deleted.",
+                        Toast.LENGTH_SHORT
+                    ).show()
+                } else {
+                    validateUsernameError = false
                 }
-            }){
+            }) {
                 Text(
                     text = "CONFIRM",
                     fontFamily = robotoFamily,
@@ -716,7 +723,7 @@ fun DeleteAccountDialog(fireBaseAuth: FirebaseAuth){
         dismissButton = {
             TextButton(onClick = {
                 openDeleteDialog.value = false
-            }){
+            }) {
                 Text(
                     text = "CANCEL",
                     fontFamily = robotoFamily,
@@ -780,17 +787,8 @@ fun EditUsernameDialog() {
 
                 val documentReference = fireStore.collection("users").document(userID)
 
-
-                documentReference.get().addOnSuccessListener { documentSnapshot ->
-
-                    val user = documentSnapshot.toObject<TravelyzeUser>()
-
-                    user?.info?.userName = username
-
-                    if (user != null) {
-                        documentReference.set(user)
-                    }
-                }
+                currentUser.value.info?.userName = username
+                documentReference.set(currentUser.value)
 
 
                 Toast.makeText(
@@ -798,7 +796,7 @@ fun EditUsernameDialog() {
                     "Username successfully changed.",
                     Toast.LENGTH_SHORT
                 ).show()
-            }){
+            }) {
                 Text(
                     text = "CONFIRM",
                     fontFamily = robotoFamily,
@@ -809,7 +807,7 @@ fun EditUsernameDialog() {
         dismissButton = {
             TextButton(onClick = {
                 openEditDialog.value = false
-            }){
+            }) {
                 Text(
                     text = "CANCEL",
                     fontFamily = robotoFamily,
@@ -824,22 +822,22 @@ fun EditUsernameDialog() {
 }
 
 @Composable
-fun SendEmailToExistingUser(user: FirebaseUser?){
+fun SendEmailToExistingUser(user: FirebaseUser?) {
     val contextForToast = LocalContext.current.applicationContext
     var isEmailPassword = false
     val email = user?.email.toString()
 
-    if(user != null) {
-        for (profile:UserInfo in user.providerData) {
-            if(profile.providerId == "password"){
+    if (user != null) {
+        for (profile: UserInfo in user.providerData) {
+            if (profile.providerId == "password") {
                 isEmailPassword = true
             }
         }
     }
 
-    if(isEmailPassword){
-        Firebase.auth.sendPasswordResetEmail(email).addOnCompleteListener{
-            if(it.isSuccessful) {
+    if (isEmailPassword) {
+        Firebase.auth.sendPasswordResetEmail(email).addOnCompleteListener {
+            if (it.isSuccessful) {
                 Toast.makeText(
                     contextForToast,
                     "Password change email sent.",

@@ -1,11 +1,23 @@
 package com.travelapp
 
 import androidx.compose.foundation.background
-import androidx.compose.foundation.layout.*
+import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.fillMaxHeight
+import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.verticalScroll
-import androidx.compose.material.*
-import androidx.compose.runtime.*
+import androidx.compose.material.Card
+import androidx.compose.material.Text
+import androidx.compose.runtime.Composable
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.text.font.FontWeight
@@ -15,24 +27,27 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.navigation.NavController
 import coil.compose.AsyncImage
+import com.google.firebase.auth.FirebaseAuth
 import com.travelapp.composable.TextFieldWithDropdown
 import com.travelapp.ui.theme.BackgroundColor
 import com.travelapp.ui.theme.marsFamily
 import com.travelapp.ui.theme.robotoFamily
-import com.google.firebase.auth.FirebaseAuth
 
 var locationSelected = mutableStateOf(false)
 var selectedName = mutableStateOf("")
 
 @Composable
-fun Home(auth: FirebaseAuth, nav: NavController){
+fun Home(auth: FirebaseAuth, nav: NavController) {
 
     Column(
         Modifier
             .fillMaxWidth()
-            .background(color = BackgroundColor)){
-        Row(Modifier.fillMaxWidth(),
-            horizontalArrangement = Arrangement.Center) {
+            .background(color = BackgroundColor)
+    ) {
+        Row(
+            Modifier.fillMaxWidth(),
+            horizontalArrangement = Arrangement.Center
+        ) {
             Text(
                 modifier = Modifier
                     .padding(top = 30.dp, bottom = 30.dp)
@@ -41,7 +56,8 @@ fun Home(auth: FirebaseAuth, nav: NavController){
                 fontWeight = FontWeight.Normal,
                 textAlign = TextAlign.Center,
                 fontFamily = marsFamily,
-                text = "Travelyze")
+                text = "Travelyze"
+            )
         }
 
         Row(
@@ -49,15 +65,18 @@ fun Home(auth: FirebaseAuth, nav: NavController){
             horizontalArrangement = Arrangement.Center
         ) {
 
-            var textFieldValue by remember {mutableStateOf(TextFieldValue())}
-            var dropDownExpanded by remember {mutableStateOf(false)}
-            var searchedLocations by remember {mutableStateOf(listOf<String>())}
+            var textFieldValue by remember { mutableStateOf(TextFieldValue()) }
+            var dropDownExpanded by remember { mutableStateOf(false) }
+            var searchedLocations by remember { mutableStateOf(listOf<String>()) }
 
             fun onValueChanged(value: TextFieldValue) {
-                if(!locationSelected.value) {
+                if (!locationSelected.value) {
                     dropDownExpanded = value.text.isNotEmpty()
                     textFieldValue = value
-                    searchedLocations = locationNames.filter {it.lowercase().startsWith(value.text.lowercase()) && value.text.isNotEmpty() && it.lowercase() != value.text.lowercase() }.take(3)
+                    searchedLocations = locationNames.filter {
+                        it.lowercase()
+                            .startsWith(value.text.lowercase()) && value.text.isNotEmpty() && it.lowercase() != value.text.lowercase()
+                    }.take(3)
                 }
             }
 
@@ -107,22 +126,25 @@ fun Home(auth: FirebaseAuth, nav: NavController){
                 fontWeight = FontWeight.Light,
                 fontSize = 20.sp,
                 textAlign = TextAlign.Center,
-                modifier = Modifier.padding(top = 80.dp))
+                modifier = Modifier.padding(top = 80.dp)
+            )
         }
 
         Row(Modifier.fillMaxWidth()) {
-            Column(modifier = Modifier
-                .fillMaxHeight()
-                .fillMaxWidth()
-                .padding(start = 20.dp, end = 20.dp, bottom = 20.dp, top = 10.dp)
-                .verticalScroll(rememberScrollState())) {
+            Column(
+                modifier = Modifier
+                    .fillMaxHeight()
+                    .fillMaxWidth()
+                    .padding(start = 20.dp, end = 20.dp, bottom = 20.dp, top = 10.dp)
+                    .verticalScroll(rememberScrollState())
+            ) {
 
                 Card(
                     modifier = Modifier
                         .fillMaxWidth()
                         .padding(15.dp),
                     elevation = 10.dp,
-                ){
+                ) {
                     Column() {
                         Row(
                             verticalAlignment = Alignment.CenterVertically,
@@ -153,7 +175,7 @@ fun Home(auth: FirebaseAuth, nav: NavController){
                         .fillMaxWidth()
                         .padding(15.dp),
                     elevation = 10.dp,
-                ){
+                ) {
                     Column() {
                         Row(
                             verticalAlignment = Alignment.CenterVertically,

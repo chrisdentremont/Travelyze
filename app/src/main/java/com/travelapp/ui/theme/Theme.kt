@@ -19,7 +19,7 @@ import androidx.compose.ui.text.font.FontFamily
 import androidx.compose.ui.text.font.FontStyle
 import androidx.compose.ui.text.font.FontWeight
 import androidx.core.view.ViewCompat
-import com.example.travelapp.R
+import com.travelapp.R
 
 private val DarkColorScheme = darkColorScheme(
     primary = TextButtonColor,
@@ -70,6 +70,7 @@ fun TravelAppTheme(
             val context = LocalContext.current
             if (darkTheme) dynamicDarkColorScheme(context) else dynamicLightColorScheme(context)
         }
+
         darkTheme -> DarkColorScheme
         else -> LightColorScheme
     }

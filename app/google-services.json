@@ -10,7 +10,7 @@
       "client_info": {
         "mobilesdk_app_id": "1:445988020076:android:bf7a10e58c0bac4c4d1d49",
         "android_client_info": {
-          "package_name": "com.example.travelapp"
+          "package_name": "com.travelapp"
         }
       },
       "oauth_client": [

@@ -5,11 +5,11 @@ plugins {
 }
 
 android {
-    namespace 'com.example.travelapp'
+    namespace 'com.travelapp'
     compileSdk 33
 
     defaultConfig {
-        applicationId "com.example.travelapp"
+        applicationId "com.travelapp"
         minSdk 24
         targetSdk 33
         versionCode 1
@@ -85,4 +85,3 @@ dependencies {
     implementation "com.google.accompanist:accompanist-systemuicontroller:0.30.1"
 
 }
-

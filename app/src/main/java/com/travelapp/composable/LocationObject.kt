@@ -1,15 +1,15 @@
 package com.travelapp.composable
 
-data class LocationObject (
+data class LocationObject(
     var Name: String?,
     var Categories: Map<String, Category>?
 ) {
     constructor() : this(null, null)
 }
 
-data class Category (
+data class Category(
     var text: String?,
     var images: Map<String, String>?
-    ) {
+) {
     constructor() : this(null, null)
 }

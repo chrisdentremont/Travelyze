@@ -1,13 +1,17 @@
 package com.travelapp
 
-import android.util.Log
 import androidx.compose.foundation.background
-import androidx.compose.foundation.layout.*
+import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.size
 import androidx.compose.material.Icon
 import androidx.compose.material.IconButton
 import androidx.compose.material.TopAppBar
 import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.AddAPhoto
 import androidx.compose.material.icons.filled.ArrowBack
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
@@ -19,7 +23,6 @@ import androidx.compose.ui.platform.LocalLayoutDirection
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.LayoutDirection
 import androidx.compose.ui.unit.dp
-import androidx.compose.ui.unit.sp
 import androidx.navigation.NavController
 import com.travelapp.ui.theme.BackgroundColor
 import com.travelapp.ui.theme.robotoFamily
@@ -27,15 +30,17 @@ import com.travelapp.ui.theme.robotoFamily
 @Composable
 fun LocationPage(
     name: String,
-    nav : NavController
-){
+    nav: NavController
+) {
 
     var selectedLocation = locationList.find { it.Name.equals(name) }
 
     Column(
-        modifier = Modifier.fillMaxSize().background(color = BackgroundColor)
-    ){
-        CompositionLocalProvider(LocalLayoutDirection provides LayoutDirection.Rtl){
+        modifier = Modifier
+            .fillMaxSize()
+            .background(color = BackgroundColor)
+    ) {
+        CompositionLocalProvider(LocalLayoutDirection provides LayoutDirection.Rtl) {
             TopAppBar(
                 title = {
                     Text(
@@ -65,7 +70,7 @@ fun LocationPage(
         Row(
             modifier = Modifier.fillMaxWidth(),
             horizontalArrangement = Arrangement.Center
-        ){
+        ) {
             Text(
                 text = selectedLocation?.Name!!,
                 style = MaterialTheme.typography.headlineMedium,

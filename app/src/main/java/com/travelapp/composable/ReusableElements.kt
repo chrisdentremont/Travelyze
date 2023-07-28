@@ -1,10 +1,22 @@
 package com.travelapp.composable
 
-import android.util.Log
-import androidx.compose.foundation.layout.*
+import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.text.KeyboardActions
 import androidx.compose.foundation.text.KeyboardOptions
-import androidx.compose.material.*
+import androidx.compose.material.DropdownMenu
+import androidx.compose.material.DropdownMenuItem
+import androidx.compose.material.Icon
+import androidx.compose.material.IconButton
+import androidx.compose.material.MaterialTheme
+import androidx.compose.material.OutlinedTextField
+import androidx.compose.material.Text
+import androidx.compose.material.TextFieldDefaults
+import androidx.compose.material.TopAppBar
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Error
 import androidx.compose.material.icons.filled.Visibility
@@ -28,7 +40,6 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.compose.ui.window.PopupProperties
 import androidx.navigation.NavController
-import com.travelapp.LocationPage
 import com.travelapp.locationSelected
 import com.travelapp.selectedName
 import com.travelapp.ui.theme.BackgroundColor
@@ -49,17 +60,17 @@ fun CustomOutlinedTextField(
     showError: Boolean = false,
     errorMessage: String = "",
     modifier: Modifier
-){
+) {
     Column(
         modifier = Modifier.fillMaxWidth(),
         horizontalAlignment = Alignment.CenterHorizontally,
         verticalArrangement = Arrangement.Center
-    ){
+    ) {
         OutlinedTextField(
             value = value,
-            onValueChange = { onValueChange(it)},
+            onValueChange = { onValueChange(it) },
             modifier = modifier,
-            label = {Text(label)},
+            label = { Text(label) },
             leadingIcon = {
                 Icon(
                     imageVector = leadingIconImageVector,
@@ -69,11 +80,14 @@ fun CustomOutlinedTextField(
             },
             isError = showError,
             trailingIcon = {
-                if(showError && !isPasswordField) Icon(imageVector = Icons.Filled.Error, contentDescription = "Show error icon")
-                if(isPasswordField){
-                    IconButton(onClick = {onVisibilityChange(!isPasswordVisible)}) {
+                if (showError && !isPasswordField) Icon(
+                    imageVector = Icons.Filled.Error,
+                    contentDescription = "Show error icon"
+                )
+                if (isPasswordField) {
+                    IconButton(onClick = { onVisibilityChange(!isPasswordVisible) }) {
                         Icon(
-                            imageVector = if(isPasswordVisible) Icons.Default.Visibility else Icons.Default.VisibilityOff,
+                            imageVector = if (isPasswordVisible) Icons.Default.Visibility else Icons.Default.VisibilityOff,
                             contentDescription = "Toggle password visibility"
                         )
                     }
@@ -89,7 +103,7 @@ fun CustomOutlinedTextField(
             singleLine = true
         )
 
-        if(showError){
+        if (showError) {
             Text(
                 text = errorMessage,
                 textAlign = TextAlign.Center,
@@ -156,9 +170,11 @@ fun TextFieldWithDropdown(
                 cursorColor = Color.Black
             ),
             trailingIcon = {
-                Icon(imageVector = Icons.Outlined.Search,
+                Icon(
+                    imageVector = Icons.Outlined.Search,
                     contentDescription = "",
-                    modifier = Modifier.size(size = 25.dp))
+                    modifier = Modifier.size(size = 25.dp)
+                )
             },
             keyboardOptions = KeyboardOptions.Default.copy(imeAction = ImeAction.Search),
             maxLines = 1,

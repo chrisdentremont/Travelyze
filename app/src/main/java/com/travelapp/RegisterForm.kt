@@ -40,24 +40,25 @@ import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
-import com.example.travelapp.R
 import com.travelapp.composable.AccountData
 import com.travelapp.composable.AccountInfo
-import com.travelapp.composable.CustomOutlinedTextField
+import com.travelapp.composable.AccountRequests
 import com.travelapp.composable.TravelyzeUser
-import com.travelapp.ui.theme.TextButtonColor
-import com.travelapp.ui.theme.BackgroundColor
-import com.travelapp.ui.theme.robotoFamily
+import com.travelapp.isRegistering
 import com.google.firebase.auth.ktx.auth
 import com.google.firebase.auth.ktx.userProfileChangeRequest
 import com.google.firebase.firestore.FirebaseFirestore
 import com.google.firebase.ktx.Firebase
 import com.google.firebase.storage.ktx.storage
+import com.travelapp.composable.CustomOutlinedTextField
+import com.travelapp.ui.theme.BackgroundColor
+import com.travelapp.ui.theme.TextButtonColor
+import com.travelapp.ui.theme.robotoFamily
 
 val showNavBar = mutableStateOf(true)
 
 @Composable
-fun RegisterForm(){
+fun RegisterForm() {
     val auth by lazy {
         Firebase.auth
     }
@@ -68,12 +69,12 @@ fun RegisterForm(){
     val focusManager = LocalFocusManager.current
     val scrollState = rememberScrollState()
 
-    var firstname by remember {mutableStateOf("")}
-    var lastname by remember {mutableStateOf("")}
-    var email by remember {mutableStateOf("")}
-    var username by remember {mutableStateOf("")}
-    var password by remember {mutableStateOf("")}
-    var confirmPassword by remember {mutableStateOf("")}
+    var firstname by remember { mutableStateOf("") }
+    var lastname by remember { mutableStateOf("") }
+    var email by remember { mutableStateOf("") }
+    var username by remember { mutableStateOf("") }
+    var password by remember { mutableStateOf("") }
+    var confirmPassword by remember { mutableStateOf("") }
 
     var validateFirstName by rememberSaveable { mutableStateOf(true) }
     var validateLastName by rememberSaveable { mutableStateOf(true) }
@@ -89,10 +90,18 @@ fun RegisterForm(){
     val validateLastNameError = "Please input a valid last name"
     val validateEmailError = "Please input a valid email"
     val validateUserNameError = "Please input an appropriate username"
-    val validatePasswordError = "Password must mix capital and non-capital letters, a number, special character, and a minimum length of 8"
+    val validatePasswordError =
+        "Password must mix capital and non-capital letters, a number, special character, and a minimum length of 8"
     val validateEqualPasswordError = "Passwords must be equal"
 
-    fun validateData(firstname: String, lastname: String, email:String, username: String, password: String, confirmPassword: String): Boolean {
+    fun validateData(
+        firstname: String,
+        lastname: String,
+        email: String,
+        username: String,
+        password: String,
+        confirmPassword: String
+    ): Boolean {
         val passwordRegex = "(?=.*\\d)(?=.*[a-z])(?=.*[A-Z])(?=.*[@#\$%^&+=]).{8,}".toRegex()
 
         validateFirstName = firstname.isNotBlank()
@@ -106,34 +115,37 @@ fun RegisterForm(){
         return validateFirstName && validateLastName && validateEmail && validatePassword && validateConfirmPassword && validateArePasswordsEqual
     }
 
-    fun register (
+    fun register(
         firstName: String,
         lastName: String,
         email: String,
         userName: String,
         password: String,
         confirmPassword: String
-    ){
+    ) {
         val fireStore = FirebaseFirestore.getInstance()
         val storage = Firebase.storage
 
-        if(validateData(firstName, lastName, email, userName, password, confirmPassword)){
-            auth.createUserWithEmailAndPassword(email,password)
-                .addOnCompleteListener(){ task ->
-                    if(task.isSuccessful){
+        if (validateData(firstName, lastName, email, userName, password, confirmPassword)) {
+            auth.createUserWithEmailAndPassword(email, password)
+                .addOnCompleteListener() { task ->
+                    if (task.isSuccessful) {
 
                         var newUser = task.result.user
                         newUser!!.updateProfile(userProfileChangeRequest {
                             displayName = userName
-                            photoUri = Uri.parse("android.resource://com.example.travelapp/" + R.drawable.default_profile_picture)
+                            photoUri =
+                                Uri.parse("android.resource://com.example.travelapp/" + R.drawable.default_profile_picture)
                         })
 
-                        var defaultPic = Uri.parse("android.resource://com.example.travelapp/" + R.drawable.default_profile_picture.toString())
-                        val profilePicRef = storage.reference.child("users/${newUser.uid}/profile_picture.jpg")
+                        var defaultPic =
+                            Uri.parse("android.resource://com.example.travelapp/" + R.drawable.default_profile_picture.toString())
+                        val profilePicRef =
+                            storage.reference.child("users/${newUser.uid}/profile_picture.jpg")
                         profilePicRef.putFile(defaultPic)
 
 
-                        var user = TravelyzeUser (
+                        var user = TravelyzeUser(
                             AccountInfo(
                                 firstName,
                                 lastName,
@@ -142,6 +154,11 @@ fun RegisterForm(){
                             ),
 
                             AccountData(
+                                mutableListOf(),
+                                mutableListOf()
+                            ),
+
+                            AccountRequests(
                                 mutableListOf(),
                                 mutableListOf()
                             )
@@ -153,10 +170,11 @@ fun RegisterForm(){
                         documentReference.set(user)
 
                         isRegistering.value = false
-                        Toast.makeText(context, "Account Successfully Created!", Toast.LENGTH_SHORT).show()
-                    }
-                    else {
-                        Toast.makeText(context, "Error creating account.", Toast.LENGTH_SHORT).show()
+                        Toast.makeText(context, "Account Successfully Created!", Toast.LENGTH_SHORT)
+                            .show()
+                    } else {
+                        Toast.makeText(context, "Error creating account.", Toast.LENGTH_SHORT)
+                            .show()
                     }
                 }
         } else {
@@ -177,7 +195,7 @@ fun RegisterForm(){
             .padding(20.dp),
         horizontalAlignment = Alignment.CenterHorizontally,
         verticalArrangement = Arrangement.Top
-    ){
+    ) {
         Text(
             text = "Create account",
             modifier = Modifier.padding(bottom = 20.dp),
@@ -203,7 +221,8 @@ fun RegisterForm(){
                 imeAction = ImeAction.Next
             ),
             keyboardActions = KeyboardActions(
-                onNext = {focusManager.moveFocus(FocusDirection.Down)
+                onNext = {
+                    focusManager.moveFocus(FocusDirection.Down)
                 }
             ),
             modifier = Modifier
@@ -226,7 +245,7 @@ fun RegisterForm(){
                 imeAction = ImeAction.Next
             ),
             keyboardActions = KeyboardActions(
-                onNext = {focusManager.moveFocus(FocusDirection.Down)}
+                onNext = { focusManager.moveFocus(FocusDirection.Down) }
             ),
             modifier = Modifier
                 .fillMaxWidth(.95f)
@@ -248,7 +267,7 @@ fun RegisterForm(){
                 imeAction = ImeAction.Next
             ),
             keyboardActions = KeyboardActions(
-                onNext = {focusManager.moveFocus(FocusDirection.Down)}
+                onNext = { focusManager.moveFocus(FocusDirection.Down) }
             ),
             modifier = Modifier
                 .fillMaxWidth(.95f)
@@ -270,7 +289,7 @@ fun RegisterForm(){
                 imeAction = ImeAction.Next
             ),
             keyboardActions = KeyboardActions(
-                onNext = {focusManager.moveFocus(FocusDirection.Down)}
+                onNext = { focusManager.moveFocus(FocusDirection.Down) }
             ),
             modifier = Modifier
                 .fillMaxWidth(.95f)
@@ -288,14 +307,14 @@ fun RegisterForm(){
             errorMessage = validatePasswordError,
             isPasswordField = true,
             isPasswordVisible = isPasswordVisible,
-            onVisibilityChange = {isPasswordVisible = it},
+            onVisibilityChange = { isPasswordVisible = it },
             leadingIconImageVector = Icons.Default.Password,
             keyboardOptions = KeyboardOptions(
                 keyboardType = KeyboardType.Text,
                 imeAction = ImeAction.Next
             ),
             keyboardActions = KeyboardActions(
-                onNext = {focusManager.moveFocus(FocusDirection.Down)}
+                onNext = { focusManager.moveFocus(FocusDirection.Down) }
             ),
             modifier = Modifier
                 .fillMaxWidth(.95f)
@@ -310,17 +329,17 @@ fun RegisterForm(){
             onValueChange = { confirmPassword = it },
             label = "Confirm Password",
             showError = !validateConfirmPassword || !validateArePasswordsEqual,
-            errorMessage = if(!validateConfirmPassword) validatePasswordError else validateEqualPasswordError,
+            errorMessage = if (!validateConfirmPassword) validatePasswordError else validateEqualPasswordError,
             isPasswordField = true,
             isPasswordVisible = isConfirmPasswordVisible,
-            onVisibilityChange = {isConfirmPasswordVisible = it},
+            onVisibilityChange = { isConfirmPasswordVisible = it },
             leadingIconImageVector = Icons.Default.Password,
             keyboardOptions = KeyboardOptions(
                 keyboardType = KeyboardType.Text,
                 imeAction = ImeAction.Done
             ),
             keyboardActions = KeyboardActions(
-                onDone = {focusManager.clearFocus()}
+                onDone = { focusManager.clearFocus() }
             ),
             modifier = Modifier
                 .fillMaxWidth(.95f)
@@ -332,7 +351,7 @@ fun RegisterForm(){
                 .fillMaxWidth()
                 .padding(top = 15.dp),
             horizontalArrangement = Arrangement.Center
-        ){
+        ) {
             Button(
                 onClick = {
                     register(firstname, lastname, email, username, password, confirmPassword)
@@ -341,8 +360,11 @@ fun RegisterForm(){
                     .padding(start = 20.dp, end = 10.dp, bottom = 30.dp)
                     .fillMaxWidth(0.5f)
                     .fillMaxHeight(0.3f),
-                colors = ButtonDefaults.buttonColors(backgroundColor = TextButtonColor, contentColor = Color.White)
-            ){
+                colors = ButtonDefaults.buttonColors(
+                    backgroundColor = TextButtonColor,
+                    contentColor = Color.White
+                )
+            ) {
                 Text(text = "Register", fontSize = 20.sp)
             }
         }
