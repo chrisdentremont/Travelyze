@@ -1,4 +1,4 @@
-package com.example.travelapp
+package com.travelapp
 
 import android.util.Log
 import android.widget.Toast
@@ -10,45 +10,31 @@ import androidx.compose.foundation.text.KeyboardActions
 import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.*
-import androidx.compose.material.icons.outlined.Add
-import androidx.compose.material.icons.outlined.Message
-import androidx.compose.material.icons.outlined.Person
-import androidx.compose.material.icons.outlined.PersonAdd
 import androidx.compose.material3.*
 import androidx.compose.runtime.*
-import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.graphics.RectangleShape
 import androidx.compose.ui.graphics.SolidColor
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.LocalFocusManager
-import androidx.compose.ui.platform.LocalLayoutDirection
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.input.ImeAction
 import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.text.style.TextAlign
-import androidx.compose.ui.unit.LayoutDirection
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import coil.compose.rememberAsyncImagePainter
-import com.example.travelapp.composable.CustomOutlinedTextField
-import com.example.travelapp.composable.TopBar
-import com.example.travelapp.composable.TravelyzeUser
-import com.example.travelapp.ui.theme.*
-import com.google.firebase.auth.FirebaseAuth
-import com.google.firebase.auth.FirebaseUser
-import com.google.firebase.auth.UserInfo
-import com.google.firebase.auth.ktx.auth
-import com.google.firebase.firestore.FieldPath
-import com.google.firebase.firestore.FirebaseFirestore
+import com.travelapp.composable.CustomOutlinedTextField
+import com.travelapp.composable.TopBar
 import com.google.firebase.firestore.ktx.firestore
-import com.google.firebase.firestore.ktx.toObject
 import com.google.firebase.ktx.Firebase
-import kotlinx.coroutines.launch
+import com.travelapp.ui.theme.Alabaster
+import com.travelapp.ui.theme.BackgroundColor
+import com.travelapp.ui.theme.TextButtonColor
+import com.travelapp.ui.theme.robotoFamily
 
 val openAddFriendDialog = mutableStateOf(false)
 val isAddingFriend = mutableStateOf(false)

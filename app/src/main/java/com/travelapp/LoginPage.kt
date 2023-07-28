@@ -1,6 +1,5 @@
-package com.example.travelapp
+package com.travelapp
 
-import android.util.Log
 import android.util.Patterns
 import android.widget.Toast
 import androidx.compose.foundation.background
@@ -29,17 +28,14 @@ import androidx.compose.ui.text.font.FontStyle
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.input.ImeAction
 import androidx.compose.ui.text.input.KeyboardType
-import androidx.compose.ui.text.input.PasswordVisualTransformation
-import androidx.compose.ui.text.input.VisualTransformation
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.navigation.NavController
-import com.example.travelapp.MainActivity.Companion.TAG
-import com.example.travelapp.composable.CustomOutlinedTextField
-import com.example.travelapp.ui.theme.TextButtonColor
-import com.example.travelapp.ui.theme.BackgroundColor
-import com.example.travelapp.ui.theme.robotoFamily
+import com.travelapp.composable.CustomOutlinedTextField
+import com.travelapp.ui.theme.TextButtonColor
+import com.travelapp.ui.theme.BackgroundColor
+import com.travelapp.ui.theme.robotoFamily
 import com.google.firebase.auth.FirebaseAuth
 
 val isRegistering = mutableStateOf(false)

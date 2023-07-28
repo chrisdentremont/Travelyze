@@ -1,34 +1,24 @@
-package com.example.travelapp
+package com.travelapp
 
-import android.util.Log
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.rememberScrollState
-import androidx.compose.foundation.text.KeyboardActions
-import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.*
-import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.outlined.Search
 import androidx.compose.runtime.*
-import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.platform.LocalFocusManager
 import androidx.compose.ui.text.font.FontWeight
-import androidx.compose.ui.text.input.ImeAction
-import androidx.compose.ui.text.input.KeyboardType
+import androidx.compose.ui.text.input.TextFieldValue
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import coil.compose.AsyncImage
-import com.example.travelapp.ui.theme.BackgroundColor
-import com.example.travelapp.ui.theme.marsFamily
-import com.example.travelapp.ui.theme.robotoFamily
+import com.travelapp.composable.TextFieldWithDropdown
+import com.travelapp.ui.theme.BackgroundColor
+import com.travelapp.ui.theme.marsFamily
+import com.travelapp.ui.theme.robotoFamily
 import com.google.firebase.auth.FirebaseAuth
-import com.google.firebase.ktx.Firebase
-import com.google.firebase.storage.ktx.storage
 
 @Composable
 fun Home(auth: FirebaseAuth){
@@ -53,34 +43,53 @@ fun Home(auth: FirebaseAuth){
             Modifier.fillMaxWidth(),
             horizontalArrangement = Arrangement.Center
         ) {
-            var text by rememberSaveable { mutableStateOf("") }
-            val focusManager = LocalFocusManager.current
 
-            //TODO Create next page of home page once a search is conducted
-            OutlinedTextField(
-                value = text,
-                onValueChange = {text = it /*TODO Limit Characters*/},
-                modifier = Modifier
-                    .heightIn(0.dp, 50.dp)
-                    .widthIn(0.dp, 280.dp),
-                placeholder = { Text("Search for a place") },
-                keyboardActions = KeyboardActions(onSearch = {
-                    /*TODO Search for locations*/
-                    focusManager.clearFocus()
-                }),
-                keyboardOptions = KeyboardOptions.Default.copy(imeAction = ImeAction.Search, keyboardType = KeyboardType.Text),
-                trailingIcon = {
-                    Icon(imageVector = Icons.Outlined.Search,
-                        contentDescription = "",
-                        modifier = Modifier.size(size = 25.dp))
-                },
-                colors = TextFieldDefaults.textFieldColors(
-                    leadingIconColor = Color.Black,
-                    focusedIndicatorColor = Color.Black,
-                    backgroundColor = Color.White,
-                    cursorColor = Color.Black
-                )
+            var textFieldValue by remember {mutableStateOf(TextFieldValue())}
+            var dropDownExpanded by remember {mutableStateOf(false)}
+            var searchedLocations by remember {mutableStateOf(listOf<String>())}
+
+            fun onValueChanged(value: TextFieldValue) {
+                dropDownExpanded = value.text.isNotEmpty()
+                textFieldValue = value
+                searchedLocations = locationNames.filter {it.lowercase().startsWith(value.text.lowercase()) && value.text.isNotEmpty() && it.lowercase() != value.text.lowercase() }.take(3)
+            }
+
+            TextFieldWithDropdown(
+                value = textFieldValue,
+                setValue = ::onValueChanged,
+                onDismissRequest = { dropDownExpanded = false },
+                dropDownExpanded = dropDownExpanded,
+                list = searchedLocations
             )
+
+//            var text by rememberSaveable { mutableStateOf("") }
+//            val focusManager = LocalFocusManager.current
+//
+//            //TODO Create next page of home page once a search is conducted
+//            OutlinedTextField(
+//                value = text,
+//                onValueChange = {text = it /*TODO Limit Characters*/},
+//                modifier = Modifier
+//                    .heightIn(0.dp, 50.dp)
+//                    .widthIn(0.dp, 280.dp),
+//                placeholder = { Text("Search for a place") },
+//                keyboardActions = KeyboardActions(onSearch = {
+//                    /*TODO Search for locations*/
+//                    focusManager.clearFocus()
+//                }),
+//                keyboardOptions = KeyboardOptions.Default.copy(imeAction = ImeAction.Search, keyboardType = KeyboardType.Text),
+//                trailingIcon = {
+//                    Icon(imageVector = Icons.Outlined.Search,
+//                        contentDescription = "",
+//                        modifier = Modifier.size(size = 25.dp))
+//                },
+//                colors = TextFieldDefaults.textFieldColors(
+//                    leadingIconColor = Color.Black,
+//                    focusedIndicatorColor = Color.Black,
+//                    backgroundColor = Color.White,
+//                    cursorColor = Color.Black
+//                )
+//            )
         }
 
         Row(Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.Center) {

@@ -1,11 +1,9 @@
-package com.example.travelapp
+package com.travelapp
 
 
 import android.net.Uri
-import android.util.Log
 import android.util.Patterns
 import android.widget.Toast
-import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.gestures.detectTapGestures
 import androidx.compose.foundation.layout.Arrangement
@@ -36,26 +34,25 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.input.pointer.pointerInput
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.LocalFocusManager
-import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.input.ImeAction
 import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
-import com.example.travelapp.composable.AccountData
-import com.example.travelapp.composable.AccountInfo
-import com.example.travelapp.composable.CustomOutlinedTextField
-import com.example.travelapp.composable.TravelyzeUser
-import com.example.travelapp.ui.theme.TextButtonColor
-import com.example.travelapp.ui.theme.BackgroundColor
-import com.example.travelapp.ui.theme.robotoFamily
+import com.example.travelapp.R
+import com.travelapp.composable.AccountData
+import com.travelapp.composable.AccountInfo
+import com.travelapp.composable.CustomOutlinedTextField
+import com.travelapp.composable.TravelyzeUser
+import com.travelapp.ui.theme.TextButtonColor
+import com.travelapp.ui.theme.BackgroundColor
+import com.travelapp.ui.theme.robotoFamily
 import com.google.firebase.auth.ktx.auth
 import com.google.firebase.auth.ktx.userProfileChangeRequest
 import com.google.firebase.firestore.FirebaseFirestore
 import com.google.firebase.ktx.Firebase
 import com.google.firebase.storage.ktx.storage
-import java.io.File
 
 val showNavBar = mutableStateOf(true)
 

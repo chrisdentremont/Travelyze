@@ -1,4 +1,4 @@
-package com.example.travelapp.composable
+package com.travelapp.composable
 
 
 data class AccountInfo(

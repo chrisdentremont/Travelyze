@@ -1,9 +1,8 @@
-package com.example.travelapp
+package com.travelapp
 
 import android.annotation.SuppressLint
 import android.content.pm.PackageManager
 import android.net.Uri
-import android.util.Log
 import android.widget.Toast
 import androidx.activity.compose.rememberLauncherForActivityResult
 import androidx.activity.result.PickVisualMediaRequest
@@ -15,27 +14,22 @@ import androidx.compose.foundation.text.KeyboardActions
 import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.*
-import androidx.compose.material.icons.rounded.Edit
 import androidx.compose.material3.*
 import androidx.compose.runtime.*
 import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
-import androidx.compose.ui.draw.shadow
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.RectangleShape
-import androidx.compose.ui.graphics.SolidColor
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.LocalFocusManager
 import androidx.compose.ui.platform.LocalLayoutDirection
-import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.input.ImeAction
 import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.text.style.TextAlign
-import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.LayoutDirection
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
@@ -45,18 +39,18 @@ import androidx.core.content.FileProvider
 import coil.compose.rememberAsyncImagePainter
 import coil.request.ImageRequest
 import coil.size.Size
-import com.example.travelapp.composable.CustomOutlinedTextField
-import com.example.travelapp.composable.TopBar
-import com.example.travelapp.composable.TravelyzeUser
-import com.example.travelapp.ui.theme.BackgroundColor
-import com.example.travelapp.ui.theme.TextButtonColor
-import com.example.travelapp.ui.theme.marsFamily
-import com.example.travelapp.ui.theme.robotoFamily
+import com.example.travelapp.BuildConfig
+import com.travelapp.composable.CustomOutlinedTextField
+import com.travelapp.composable.TopBar
+import com.travelapp.composable.TravelyzeUser
+import com.travelapp.ui.theme.BackgroundColor
+import com.travelapp.ui.theme.TextButtonColor
+import com.travelapp.ui.theme.marsFamily
+import com.travelapp.ui.theme.robotoFamily
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.auth.FirebaseUser
 import com.google.firebase.auth.UserInfo
 import com.google.firebase.auth.ktx.auth
-import com.google.firebase.auth.ktx.userProfileChangeRequest
 import com.google.firebase.firestore.FirebaseFirestore
 import com.google.firebase.firestore.ktx.toObject
 import com.google.firebase.ktx.Firebase
@@ -246,15 +240,16 @@ fun Profile(auth: FirebaseAuth){
                                         .size(75.dp)
                                         .clip(CircleShape)
                                 )
-                                Icon(Icons.Filled.Edit,
+                                Icon(Icons.Filled.AddAPhoto,
                                     contentDescription = null,
                                     modifier = Modifier
                                         .clickable {
                                             openPicDialog.value = true
                                         }
                                         .align(Alignment.BottomEnd)
-                                        .size(25.dp)
-                                        .background(color = Color.White, shape = CircleShape))
+                                        .size(20.dp)
+                                        .background(color = Color.Black, shape = CircleShape),
+                                    tint = Color.White)
                             }
                             Column(
                                 modifier = Modifier.padding(start = 20.dp)

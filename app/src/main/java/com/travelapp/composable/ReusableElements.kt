@@ -1,40 +1,33 @@
-package com.example.travelapp.composable
+package com.travelapp.composable
 
-import androidx.compose.foundation.clickable
-import androidx.compose.foundation.interaction.MutableInteractionSource
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.text.KeyboardActions
 import androidx.compose.foundation.text.KeyboardOptions
-import androidx.compose.material.Divider
-import androidx.compose.material.Icon
-import androidx.compose.material.IconButton
-import androidx.compose.material.MaterialTheme
-import androidx.compose.material.OutlinedTextField
-import androidx.compose.material.Text
-import androidx.compose.material.TextButton
-import androidx.compose.material.TopAppBar
+import androidx.compose.material.*
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Error
 import androidx.compose.material.icons.filled.Visibility
 import androidx.compose.material.icons.filled.VisibilityOff
-import androidx.compose.material3.ModalNavigationDrawer
+import androidx.compose.material.icons.outlined.Search
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.focus.onFocusChanged
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.vector.ImageVector
-import androidx.compose.ui.text.TextStyle
+import androidx.compose.ui.text.TextRange
 import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.text.input.ImeAction
 import androidx.compose.ui.text.input.PasswordVisualTransformation
+import androidx.compose.ui.text.input.TextFieldValue
 import androidx.compose.ui.text.input.VisualTransformation
 import androidx.compose.ui.text.style.TextAlign
+import androidx.compose.ui.unit.DpOffset
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
-import com.example.travelapp.*
-import com.example.travelapp.ui.theme.BackgroundColor
-import com.example.travelapp.ui.theme.robotoFamily
-import com.google.firebase.auth.FirebaseAuth
+import androidx.compose.ui.window.PopupProperties
+import com.travelapp.ui.theme.BackgroundColor
+import com.travelapp.ui.theme.robotoFamily
 
 @Composable
 fun CustomOutlinedTextField(
@@ -130,4 +123,64 @@ fun TopBar(title: String = "", buttonIcon: ImageVector, onButtonClicked: () -> U
         backgroundColor = BackgroundColor,
         modifier = Modifier.padding(bottom = 10.dp)
     )
+}
+
+@Composable
+fun TextFieldWithDropdown(
+    value: TextFieldValue,
+    setValue: (TextFieldValue) -> Unit,
+    onDismissRequest: () -> Unit,
+    dropDownExpanded: Boolean,
+    list: List<String>,
+) {
+    Box(content = {
+        OutlinedTextField(
+            modifier = Modifier
+                .onFocusChanged { focusState ->
+                    if (!focusState.isFocused)
+                        onDismissRequest()
+                },
+            value = value,
+            onValueChange = setValue,
+            placeholder = { Text("Search for a place") },
+            colors = TextFieldDefaults.textFieldColors(
+                leadingIconColor = Color.Black,
+                focusedIndicatorColor = Color.Black,
+                backgroundColor = Color.White,
+                cursorColor = Color.Black
+            ),
+            trailingIcon = {
+                Icon(imageVector = Icons.Outlined.Search,
+                    contentDescription = "",
+                    modifier = Modifier.size(size = 25.dp))
+            },
+            keyboardOptions = KeyboardOptions.Default.copy(imeAction = ImeAction.Search),
+            maxLines = 1,
+        )
+
+        DropdownMenu(
+            offset = DpOffset(0.dp, 0.dp),
+            expanded = dropDownExpanded,
+            properties = PopupProperties(
+                focusable = false,
+                dismissOnBackPress = true,
+                dismissOnClickOutside = true
+            ),
+            onDismissRequest = onDismissRequest
+        ) {
+            list.forEach { text ->
+                DropdownMenuItem(onClick = {
+                    setValue(
+                        TextFieldValue(
+                            text,
+                            TextRange(text.length)
+                        )
+                    )
+                    onDismissRequest()
+                }) {
+                    Text(text = text)
+                }
+            }
+        }
+    })
 }

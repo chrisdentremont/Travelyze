@@ -1,4 +1,4 @@
-package com.example.travelapp
+package com.travelapp
 
 import android.annotation.SuppressLint
 import androidx.compose.foundation.background
@@ -15,6 +15,8 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.sp
 import com.example.travelapp.ui.theme.*
+import com.travelapp.ui.theme.BackgroundColor
+import com.travelapp.ui.theme.TuftsBlue
 
 
 @SuppressLint("UnusedMaterialScaffoldPaddingParameter")

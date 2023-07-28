@@ -1,4 +1,4 @@
-package com.example.travelapp
+package com.travelapp
 
 import android.os.Bundle
 import android.util.Log
@@ -24,16 +24,18 @@ import androidx.compose.runtime.DisposableEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.res.painterResource
 import androidx.navigation.NavHostController
-import com.example.travelapp.composable.LocationObject
-import com.example.travelapp.ui.theme.*
+import com.example.travelapp.R
+import com.travelapp.composable.LocationObject
 import com.google.accompanist.systemuicontroller.rememberSystemUiController
 import com.google.firebase.auth.ktx.auth
 import com.google.firebase.firestore.FirebaseFirestore
 import com.google.firebase.firestore.ktx.toObject
 import com.google.firebase.ktx.Firebase
 import com.google.firebase.storage.ktx.storage
+import com.travelapp.ui.theme.BackgroundColor
+import com.travelapp.ui.theme.TravelAppTheme
+import com.travelapp.ui.theme.robotoFamily
 import kotlinx.coroutines.GlobalScope
 import kotlinx.coroutines.async
 import kotlinx.coroutines.launch
@@ -44,7 +46,7 @@ import java.io.File
 val isLoggedIn = mutableStateOf(Firebase.auth.currentUser != null)
 
 var locationList = mutableListOf<LocationObject>()
-var locationNames = mutableListOf<String?>()
+var locationNames = mutableListOf<String>()
 
 val profileImageFile = mutableStateOf<File>(File.createTempFile("image", ".jpg"))
 
@@ -87,7 +89,7 @@ class MainActivity : ComponentActivity() {
                 var current = document.toObject<LocationObject>()
                 if (current != null) {
                     locationList.add(current)
-                    locationNames.add(current.Name)
+                    current.Name?.let { locationNames.add(it) }
                 }
             }
         }
