@@ -73,6 +73,8 @@ var profileImageUri = mutableStateOf(Uri.EMPTY)
 var takenImageUri = mutableStateOf(Uri.EMPTY)
 var displayedPicture = mutableStateOf<File>(File(""))
 
+var currentUser = mutableStateOf(TravelyzeUser(null, null))
+
 @Composable
 fun Profile(auth: FirebaseAuth){
 
@@ -119,7 +121,7 @@ fun Profile(auth: FirebaseAuth){
 
     documentReference.get().addOnSuccessListener { documentSnapshot ->
         //TODO Figure out how to use this variable outside this listener
-        documentSnapshot.toObject<TravelyzeUser>()
+        currentUser.value = documentSnapshot.toObject<TravelyzeUser>()!!
     }
 
     CompositionLocalProvider(LocalLayoutDirection provides LayoutDirection.Rtl) {
@@ -248,22 +250,23 @@ fun Profile(auth: FirebaseAuth){
                                         }
                                         .align(Alignment.BottomEnd)
                                         .size(20.dp)
-                                        .background(color = Color.Black, shape = CircleShape),
+                                        .background(color = Color.Black, shape = CircleShape)
+                                        .padding(3.dp),
                                     tint = Color.White)
                             }
                             Column(
                                 modifier = Modifier.padding(start = 20.dp)
                             ){
                                 Text(
-                                    text = auth.currentUser?.displayName!!,
+                                    text = "${currentUser.value.info?.firstName} ${currentUser.value.info?.lastName}",
                                     style = MaterialTheme.typography.headlineMedium,
                                     fontFamily = robotoFamily,
                                     fontWeight = FontWeight.Normal,
                                     color = Color.Black
                                 )
                                 Text(
-                                    text = auth.currentUser?.email!!,
-                                    style = MaterialTheme.typography.bodyMedium,
+                                    text = auth.currentUser?.displayName!!,
+                                    style = MaterialTheme.typography.bodyLarge,
                                     fontFamily = robotoFamily,
                                     fontWeight = FontWeight.Light,
                                     color = Color.Black

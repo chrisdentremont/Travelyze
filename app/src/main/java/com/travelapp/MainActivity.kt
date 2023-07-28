@@ -74,10 +74,12 @@ class MainActivity : ComponentActivity() {
     override fun onResume() {
         super.onResume()
 
-        var profileImage = Firebase.storage.reference.child("users/${auth.currentUser?.uid}/profile_picture.jpg")
+        if(isLoggedIn.value){
+            var profileImage = Firebase.storage.reference.child("users/${auth.currentUser?.uid}/profile_picture.jpg")
 
-        profileImage.getFile(profileImageFile.value).addOnCompleteListener {
-            displayedPicture.value = profileImageFile.value
+            profileImage.getFile(profileImageFile.value).addOnCompleteListener {
+                displayedPicture.value = profileImageFile.value
+            }
         }
     }
     override fun onCreate(savedInstanceState: Bundle?){
