@@ -1,5 +1,6 @@
 package com.travelapp.composable
 
+import android.util.Log
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.text.KeyboardActions
 import androidx.compose.foundation.text.KeyboardOptions
@@ -26,6 +27,10 @@ import androidx.compose.ui.unit.DpOffset
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.compose.ui.window.PopupProperties
+import androidx.navigation.NavController
+import com.travelapp.LocationPage
+import com.travelapp.locationSelected
+import com.travelapp.selectedName
 import com.travelapp.ui.theme.BackgroundColor
 import com.travelapp.ui.theme.robotoFamily
 
@@ -132,6 +137,7 @@ fun TextFieldWithDropdown(
     onDismissRequest: () -> Unit,
     dropDownExpanded: Boolean,
     list: List<String>,
+    nav: NavController
 ) {
     Box(content = {
         OutlinedTextField(
@@ -176,6 +182,9 @@ fun TextFieldWithDropdown(
                             TextRange(text.length)
                         )
                     )
+                    selectedName.value = text
+                    locationSelected.value = true
+                    nav.navigate("location")
                     onDismissRequest()
                 }) {
                     Text(text = text)

@@ -14,7 +14,7 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.sp
-import com.example.travelapp.ui.theme.*
+import com.travelapp.ui.theme.*
 import com.travelapp.ui.theme.BackgroundColor
 import com.travelapp.ui.theme.TuftsBlue
 

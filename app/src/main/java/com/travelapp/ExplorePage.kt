@@ -13,6 +13,7 @@ import androidx.compose.ui.text.input.TextFieldValue
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import androidx.navigation.NavController
 import coil.compose.AsyncImage
 import com.travelapp.composable.TextFieldWithDropdown
 import com.travelapp.ui.theme.BackgroundColor
@@ -20,8 +21,12 @@ import com.travelapp.ui.theme.marsFamily
 import com.travelapp.ui.theme.robotoFamily
 import com.google.firebase.auth.FirebaseAuth
 
+var locationSelected = mutableStateOf(false)
+var selectedName = mutableStateOf("")
+
 @Composable
-fun Home(auth: FirebaseAuth){
+fun Home(auth: FirebaseAuth, nav: NavController){
+
     Column(
         Modifier
             .fillMaxWidth()
@@ -49,9 +54,11 @@ fun Home(auth: FirebaseAuth){
             var searchedLocations by remember {mutableStateOf(listOf<String>())}
 
             fun onValueChanged(value: TextFieldValue) {
-                dropDownExpanded = value.text.isNotEmpty()
-                textFieldValue = value
-                searchedLocations = locationNames.filter {it.lowercase().startsWith(value.text.lowercase()) && value.text.isNotEmpty() && it.lowercase() != value.text.lowercase() }.take(3)
+                if(!locationSelected.value) {
+                    dropDownExpanded = value.text.isNotEmpty()
+                    textFieldValue = value
+                    searchedLocations = locationNames.filter {it.lowercase().startsWith(value.text.lowercase()) && value.text.isNotEmpty() && it.lowercase() != value.text.lowercase() }.take(3)
+                }
             }
 
             TextFieldWithDropdown(
@@ -59,7 +66,8 @@ fun Home(auth: FirebaseAuth){
                 setValue = ::onValueChanged,
                 onDismissRequest = { dropDownExpanded = false },
                 dropDownExpanded = dropDownExpanded,
-                list = searchedLocations
+                list = searchedLocations,
+                nav = nav
             )
 
 //            var text by rememberSaveable { mutableStateOf("") }

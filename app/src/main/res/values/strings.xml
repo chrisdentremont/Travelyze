@@ -1,6 +1,7 @@
 <resources>
     <string name="app_name">Travelyze</string>
     <string name="explore_name">Explore</string>
+    <string name="location_name">Location</string>
     <string name="friends_name">Friends</string>
     <string name="profile_name">Profile</string>
     <string name="login_name">Login</string>

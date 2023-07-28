@@ -24,6 +24,7 @@ import androidx.compose.runtime.DisposableEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.platform.LocalFocusManager
 import androidx.navigation.NavHostController
 import com.example.travelapp.R
 import com.travelapp.composable.LocationObject
@@ -228,8 +229,20 @@ class MainActivity : ComponentActivity() {
                 composable(Screen.Explore.route) {
                     isDrawerOpen.value = false
                     isAddingFriend.value = false
-                    Home(auth)
+                    if(locationSelected.value){
+                        LocationPage(selectedName.value, navController)
+                    }else{
+                        Home(auth, navController)
+                    }
                 }
+
+                composable(Screen.Location.route) {
+                    if(locationSelected.value) {
+                        LocalFocusManager.current.clearFocus()
+                        LocationPage(selectedName.value, navController)
+                    }
+                }
+
                 composable(Screen.Profile.route) {
                     if (isLoggedIn.value) {
                         isAddingFriend.value = false
@@ -273,6 +286,7 @@ sealed class Screen(val route: String, @StringRes val resourceId: Int) {
     object Profile : Screen("profile", R.string.profile_name)
     object Login : Screen("login", R.string.login_name)
     object Register : Screen("register", R.string.register_name)
+    object Location : Screen("location", R.string.location_name)
 }
 
 
