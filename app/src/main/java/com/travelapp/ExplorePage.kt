@@ -1,6 +1,7 @@
 package com.travelapp
 
 import androidx.compose.foundation.background
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.verticalScroll
@@ -96,14 +97,18 @@ fun Home(auth: FirebaseAuth, nav: NavController) {
                 modifier = Modifier
                     .fillMaxHeight()
                     .fillMaxWidth()
-                    .padding(start = 20.dp, end = 20.dp, top = 10.dp)
+                    .padding(start = 20.dp, end = 20.dp, top = 10.dp, bottom = 60.dp)
                     .verticalScroll(rememberScrollState())
             ) {
 
                 Card(
                     modifier = Modifier
                         .fillMaxWidth()
-                        .padding(15.dp),
+                        .padding(15.dp)
+                        .clickable {
+                            selectedName.value = "France"
+                            locationSelected.value = true
+                        },
                     elevation = 10.dp,
                 ) {
                     Column() {
@@ -126,7 +131,7 @@ fun Home(auth: FirebaseAuth, nav: NavController) {
                                 .fillMaxWidth()
                                 .padding(15.dp)
                         ) {
-                            Text(text = "Paris, France")
+                            Text(text = "France")
                         }
                     }
                 }
@@ -134,7 +139,11 @@ fun Home(auth: FirebaseAuth, nav: NavController) {
                 Card(
                     modifier = Modifier
                         .fillMaxWidth()
-                        .padding(15.dp),
+                        .padding(15.dp)
+                        .clickable {
+                            selectedName.value = "United States"
+                            locationSelected.value = true
+                        },
                     elevation = 10.dp,
                 ) {
                     Column() {

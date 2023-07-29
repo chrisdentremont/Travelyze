@@ -88,7 +88,7 @@ fun IncomingRequestsScreen() {
         horizontalAlignment = Alignment.CenterHorizontally,
         verticalArrangement = Arrangement.Center
     ) {
-        if (currentUser.value.requests?.incomingFriendRequests?.size == 0) {
+        if (currentUser.value.requests?.incomingFriendRequests.isNullOrEmpty()) {
             item {
                 Text(
                     text = "Incoming Requests",
@@ -193,7 +193,7 @@ fun OutgoingRequestsScreen() {
         horizontalAlignment = Alignment.CenterHorizontally,
         verticalArrangement = Arrangement.Center
     ) {
-        if (currentUser.value.requests?.outgoingFriendRequests?.size == 0) {
+        if (currentUser.value.requests?.outgoingFriendRequests.isNullOrEmpty()) {
             item {
                 Text(
                     text = "Outgoing Requests",

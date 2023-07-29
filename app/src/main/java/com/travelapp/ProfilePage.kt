@@ -10,6 +10,7 @@ import androidx.activity.result.contract.ActivityResultContracts
 import androidx.compose.foundation.*
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.shape.CircleShape
+import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.text.KeyboardActions
 import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.material.icons.Icons
@@ -21,11 +22,13 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.graphics.FilterQuality
 import androidx.compose.ui.graphics.RectangleShape
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.LocalFocusManager
 import androidx.compose.ui.platform.LocalLayoutDirection
+import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.input.ImeAction
 import androidx.compose.ui.text.input.KeyboardType
@@ -36,7 +39,9 @@ import androidx.compose.ui.unit.sp
 import androidx.compose.ui.window.DialogProperties
 import androidx.core.content.ContextCompat
 import androidx.core.content.FileProvider
+import coil.compose.AsyncImage
 import coil.compose.rememberAsyncImagePainter
+import coil.decode.SvgDecoder
 import coil.request.ImageRequest
 import coil.size.Size
 import com.travelapp.BuildConfig
@@ -56,6 +61,7 @@ import kotlinx.coroutines.launch
 import java.io.File
 import java.text.SimpleDateFormat
 import java.util.*
+import androidx.compose.material.Card
 
 var openSignoutDialog = mutableStateOf(false)
 var openDeleteDialog = mutableStateOf(false)
@@ -70,7 +76,8 @@ var profileImageUri = mutableStateOf(Uri.EMPTY)
 var takenImageUri = mutableStateOf(Uri.EMPTY)
 var displayedPicture = mutableStateOf<File>(File(""))
 
-var currentUser = mutableStateOf(TravelyzeUser(null, null, null))
+var profileLocationSelected = mutableStateOf(false)
+var profileSelectedName = mutableStateOf("")
 
 @Composable
 fun Profile(auth: FirebaseAuth) {
@@ -111,16 +118,6 @@ fun Profile(auth: FirebaseAuth) {
         openPicTakenDialog.value = true
     }
 
-    val fireStore = FirebaseFirestore.getInstance()
-
-    val userID = Firebase.auth.currentUser?.uid.toString()
-    val documentReference = fireStore.collection("users").document(userID)
-
-    documentReference.get().addOnSuccessListener { documentSnapshot ->
-        //TODO Figure out how to use this variable outside this listener
-        currentUser.value = documentSnapshot.toObject<TravelyzeUser>()!!
-    }
-
     CompositionLocalProvider(LocalLayoutDirection provides LayoutDirection.Rtl) {
 
         var profileImage =
@@ -138,16 +135,6 @@ fun Profile(auth: FirebaseAuth) {
                     modifier = Modifier.width(300.dp),
                     drawerShape = RectangleShape
                 ) {
-                    Text(
-                        modifier = Modifier
-                            .padding(top = 30.dp, bottom = 30.dp)
-                            .width(200.dp),
-                        fontSize = 30.sp,
-                        fontWeight = FontWeight.Normal,
-                        textAlign = TextAlign.Center,
-                        fontFamily = marsFamily,
-                        text = "Settings"
-                    )
                     Spacer(Modifier.height(30.dp))
                     NavigationDrawerItem(
                         label = {
@@ -184,27 +171,6 @@ fun Profile(auth: FirebaseAuth) {
                     NavigationDrawerItem(
                         label = {
                             Text(
-                                text = "Sign Out",
-                                fontFamily = robotoFamily,
-                                fontWeight = FontWeight.Bold,
-                                fontSize = 20.sp
-                            )
-                        },
-                        onClick = {
-                            openSignoutDialog.value = true
-                        },
-                        icon = { Icon(Icons.Filled.DoorFront, null) },
-                        selected = false,
-                        modifier = Modifier.padding(NavigationDrawerItemDefaults.ItemPadding)
-                    )
-                    Divider(
-                        modifier = Modifier.padding(vertical = 50.dp, horizontal = 20.dp),
-                        color = Color.Gray,
-                        thickness = 1.dp
-                    )
-                    NavigationDrawerItem(
-                        label = {
-                            Text(
                                 text = "Delete Account",
                                 fontFamily = robotoFamily,
                                 fontWeight = FontWeight.Bold,
@@ -215,6 +181,27 @@ fun Profile(auth: FirebaseAuth) {
                             openDeleteDialog.value = true
                         },
                         icon = { Icon(Icons.Filled.Delete, null) },
+                        selected = false,
+                        modifier = Modifier.padding(NavigationDrawerItemDefaults.ItemPadding)
+                    )
+                    Divider(
+                        modifier = Modifier.padding(vertical = 30.dp, horizontal = 20.dp),
+                        color = Color.Gray,
+                        thickness = 1.dp
+                    )
+                    NavigationDrawerItem(
+                        label = {
+                            Text(
+                                text = "Sign Out",
+                                fontFamily = robotoFamily,
+                                fontWeight = FontWeight.Bold,
+                                fontSize = 20.sp
+                            )
+                        },
+                        onClick = {
+                            openSignoutDialog.value = true
+                        },
+                        icon = { Icon(Icons.Filled.DoorFront, null) },
                         selected = false,
                         modifier = Modifier.padding(NavigationDrawerItemDefaults.ItemPadding)
                     )
@@ -286,6 +273,72 @@ fun Profile(auth: FirebaseAuth) {
                                     fontWeight = FontWeight.Light,
                                     color = Color.Black
                                 )
+                            }
+                        }
+
+                        Row( modifier = Modifier
+                            .padding(start = 30.dp, bottom = 10.dp)
+                            .background(color = BackgroundColor)){
+                            Text(
+                                text = "Favorite Locations",
+                                style = MaterialTheme.typography.headlineMedium,
+                                fontFamily = halcomFamily,
+                                fontWeight = FontWeight.Normal,
+                                color = Color.Black
+                            )
+                        }
+
+                        Row(
+                            modifier = Modifier
+                                .padding(start = 20.dp, end = 20.dp)
+                                .horizontalScroll(rememberScrollState())
+                                .fillMaxHeight()
+                        ){
+                            if(!currentUser.value.data?.favoriteLocations.isNullOrEmpty()){
+                                currentUser.value.data?.favoriteLocations?.forEach { name ->
+                                    var location = locationList.find { it.Name.equals(name) }
+                                    Card(
+                                        modifier = Modifier
+                                            .size(width = 250.dp, height = 150.dp)
+                                            .padding(10.dp)
+                                            .clickable {
+                                                profileSelectedName.value = name
+                                                profileLocationSelected.value = true
+                                            },
+                                        shape = RoundedCornerShape(15.dp),
+                                        elevation = 5.dp
+                                    ) {
+                                        Column() {
+                                            Row(verticalAlignment = Alignment.CenterVertically,
+                                                horizontalArrangement = Arrangement.Start,
+                                                modifier = Modifier
+                                                    .fillMaxWidth()){
+                                                AsyncImage(
+                                                    model =
+                                                    ImageRequest.Builder(LocalContext.current)
+                                                        .decoderFactory(SvgDecoder.Factory())
+                                                        .data(location?.Flag)
+                                                        .build(),
+                                                    filterQuality = FilterQuality.None,
+                                                    contentScale = ContentScale.FillBounds,
+                                                    contentDescription = null,
+                                                )
+                                            }
+                                        }
+                                    }
+                                }
+                            }else{
+                                Row( modifier = Modifier
+                                    .padding(start = 10.dp, bottom = 10.dp)
+                                    .background(color = BackgroundColor)){
+                                    Text(
+                                        text = "You don't have any. Go find some!",
+                                        style = MaterialTheme.typography.bodyLarge,
+                                        fontFamily = halcomFamily,
+                                        fontWeight = FontWeight.Normal,
+                                        color = Color.Black
+                                    )
+                                }
                             }
                         }
                     }

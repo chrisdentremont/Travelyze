@@ -3,10 +3,10 @@ package com.travelapp
 import android.graphics.BlurMaskFilter
 import android.graphics.PorterDuff
 import android.graphics.PorterDuffXfermode
-import android.net.Uri
 import android.util.Log
-import androidx.compose.animation.slideInVertically
+import android.widget.Toast
 import androidx.compose.foundation.*
+import androidx.compose.foundation.gestures.scrollable
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.Card
@@ -15,10 +15,14 @@ import androidx.compose.material.IconButton
 import androidx.compose.material.TopAppBar
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.ArrowBack
+import androidx.compose.material.icons.filled.BookmarkAdd
+import androidx.compose.material.icons.filled.Bookmarks
+import androidx.compose.material.icons.outlined.Bookmark
+import androidx.compose.material.icons.outlined.Bookmarks
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
-import androidx.compose.runtime.Composable
-import androidx.compose.runtime.CompositionLocalProvider
+import androidx.compose.material3.AlertDialog
+import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.drawWithContent
@@ -36,29 +40,47 @@ import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.LayoutDirection
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import androidx.compose.ui.window.DialogProperties
 import androidx.navigation.NavController
 import coil.compose.AsyncImage
 import coil.decode.SvgDecoder
 import coil.request.ImageRequest
-import coil.size.Scale
-import coil.size.Size
-import coil.size.SizeResolver
+import com.google.firebase.auth.FirebaseAuth
+import com.google.firebase.firestore.ktx.firestore
+import com.google.firebase.ktx.Firebase
+import com.travelapp.composable.LocationObject
 import com.travelapp.ui.theme.*
+
+var showCategoryDialog = mutableStateOf(false)
+var selectedCategory = mutableStateOf("")
 
 @Composable
 fun LocationPage(
     name: String,
-    nav: NavController
+    nav: NavController,
+    auth: FirebaseAuth
 ) {
 
+    var userID = auth.currentUser?.uid.toString()
+    var documentReference = Firebase.firestore.collection("users").document(userID)
+    var locationSaved by remember {mutableStateOf(false)}
+    try{
+        locationSaved = currentUser.value.data?.favoriteLocations?.contains(name)!!
+    } catch (Exception: java.lang.NullPointerException){
+
+    }
+
     var selectedLocation = locationList.find { it.Name.equals(name) }
+
+    if(showCategoryDialog.value){
+        CategoryDialog(selectedLocation, selectedCategory.value)
+    }
 
     Column(
         modifier = Modifier
             .fillMaxSize()
             .background(color = BackgroundColor)
     ) {
-        CompositionLocalProvider(LocalLayoutDirection provides LayoutDirection.Rtl) {
             TopAppBar(
                 title = {
                     androidx.compose.material.Text(
@@ -66,14 +88,19 @@ fun LocationPage(
                         fontWeight = FontWeight.Normal,
                         textAlign = TextAlign.Center,
                         fontFamily = marsFamily,
-                        text = "Travelyze"
+                        text = ""
                     )
                 },
-                actions = {
+                navigationIcon = {
                     IconButton(
                         onClick = {
-                            locationSelected.value = false
-                            nav.navigate("explore")
+                            if(locationSelected.value){
+                                locationSelected.value = false
+                                nav.navigate("explore")
+                            }else{
+                                profileLocationSelected.value = false
+                                nav.navigate("profile")
+                            }
                         },
                     ) {
                         Icon(
@@ -84,9 +111,41 @@ fun LocationPage(
                         )
                     }
                 },
+                actions = {
+                    if(locationSaved) {
+                        IconButton(
+                            onClick = {
+                                currentUser.value.data?.favoriteLocations?.remove(name)
+                                locationSaved = false
+                                documentReference.set(currentUser.value)
+                            },
+                        ) {
+                            Icon(
+                                Icons.Filled.Bookmarks,
+                                contentDescription = "",
+                                modifier = Modifier.size(size = 40.dp),
+                                tint = Color.Black
+                            )
+                        }
+                    }else {
+                        IconButton(
+                            onClick = {
+                                currentUser.value.data?.favoriteLocations?.add(name)
+                                locationSaved = true
+                                documentReference.set(currentUser.value)
+                            },
+                        ) {
+                            Icon(
+                                Icons.Outlined.Bookmarks,
+                                contentDescription = "",
+                                modifier = Modifier.size(size = 40.dp),
+                                tint = Color.Black
+                            )
+                        }
+                    }
+                },
                 backgroundColor = BackgroundAccentColor,
             )
-        }
 
         Column(
             modifier = Modifier
@@ -111,10 +170,11 @@ fun LocationPage(
                 modifier = Modifier
                     .fillMaxWidth()
                     .padding(15.dp),
-                shape = RoundedCornerShape(10.dp),
-                elevation = 5.dp
+                shape = RoundedCornerShape(20.dp),
             ) {
-                Column(){
+                Column(
+                    modifier = Modifier.background(color = BackgroundAccentColor)
+                ){
                     Row(
                         modifier = Modifier
                             .fillMaxSize(),
@@ -149,7 +209,21 @@ fun LocationPage(
             }
 
             Row(
-                Modifier.horizontalScroll(rememberScrollState()).padding(bottom = 60.dp)
+                modifier = Modifier.padding(start = 15.dp)
+            ){
+                Text(
+                    text = "See more",
+                    style = MaterialTheme.typography.headlineSmall,
+                    fontFamily = halcomFamily,
+                    fontWeight = FontWeight.Normal,
+                    color = Color.Black
+                )
+            }
+
+            Row(
+                Modifier
+                    .horizontalScroll(rememberScrollState())
+                    .padding(bottom = 65.dp, start = 5.dp, end = 5.dp)
             ){
                 selectedLocation?.Categories!!.forEach {
                     if(it.value.text != null) {
@@ -167,10 +241,13 @@ fun LocationPage(
                         var categoryDisplay = if (it.key == "Transportation") "Transport" else it.key
                         Card(
                             modifier = Modifier
-                                .size(width = 150.dp, height = 200.dp)
-                                .padding(15.dp),
-                            shape = RoundedCornerShape(10.dp),
-                            elevation = 5.dp
+                                .size(width = 150.dp, height = 175.dp)
+                                .padding(10.dp)
+                                .clickable {
+                                    showCategoryDialog.value = true
+                                    selectedCategory.value = it.key
+                                },
+                            shape = RoundedCornerShape(15.dp),
                         ) {
                             Column(){
                                 Row(
@@ -214,6 +291,89 @@ fun LocationPage(
 
         }
     }
+}
+
+@Composable
+fun CategoryDialog(
+    location: LocationObject?,
+    category: String
+){
+    AlertDialog(
+        modifier = Modifier.fillMaxWidth(),
+        onDismissRequest = {
+            showCategoryDialog.value = false
+        },
+        title = {
+            Row(){
+                androidx.compose.material3.Icon(
+                    imageVector = Icons.Filled.ArrowBack,
+                    contentDescription = null,
+                    modifier = Modifier
+                        .size(size = 40.dp)
+                        .padding(end = 10.dp)
+                        .clickable {
+                            showCategoryDialog.value = false
+                        },
+                    tint = Color.Black
+                )
+                Text(
+                    text = category,
+                    style = MaterialTheme.typography.headlineSmall,
+                    fontFamily = halcomFamily,
+                    fontWeight = FontWeight.Normal,
+                    color = Color.Black
+                )
+            }
+        },
+        text = {
+            Column(
+                modifier = Modifier.verticalScroll(rememberScrollState())
+            ){
+                    Text(
+                        text = location?.Categories?.get(category)?.text!!,
+                        style = MaterialTheme.typography.bodyMedium,
+                        fontFamily = halcomFamily,
+                        fontWeight = FontWeight.Normal,
+                        color = Color.Black,
+                        modifier = Modifier.padding(bottom = 20.dp)
+                    )
+
+                var images = location?.Categories?.get(category)?.images
+                if(!images.isNullOrEmpty()){
+                    images.forEach {
+                        AsyncImage(
+                            model =
+                            ImageRequest.Builder(LocalContext.current)
+                                .data("https:${it.key}")
+                                .build(),
+                            filterQuality = FilterQuality.None,
+                            contentDescription = null,
+                            modifier = Modifier.size(width = 300.dp, height = 150.dp)
+                        )
+                        Text(
+                            text = it.value,
+                            style = MaterialTheme.typography.bodySmall,
+                            fontFamily = halcomFamily,
+                            fontWeight = FontWeight.Normal,
+                            textAlign = TextAlign.Center,
+                            color = Color.Gray,
+                            modifier = Modifier.padding(bottom = 20.dp)
+                        )
+                    }
+                }
+            }
+        },
+        confirmButton = {
+
+        },
+        dismissButton = {
+
+        },
+        properties = DialogProperties(
+            dismissOnClickOutside = true,
+            dismissOnBackPress = true
+        )
+    )
 }
 
 fun Modifier.categoryShadow(

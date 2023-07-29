@@ -8,5 +8,5 @@ val Khaki = Color(163, 155, 139)
 val Alabaster = Color(241, 233, 219)
 
 val TextButtonColor = Color(93, 183, 222)
-val BackgroundColor = Color(233, 232, 229, 255)
-val BackgroundAccentColor = Color(237, 238, 236, 255)
+val BackgroundColor = Color(254, 254, 254, 255)
+val BackgroundAccentColor = Color(247, 248, 249, 255)

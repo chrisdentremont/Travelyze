@@ -44,6 +44,7 @@ import com.google.firebase.firestore.ktx.toObject
 import com.google.firebase.ktx.Firebase
 import com.google.firebase.storage.ktx.storage
 import com.travelapp.composable.LocationObject
+import com.travelapp.composable.TravelyzeUser
 import com.travelapp.ui.theme.BackgroundAccentColor
 import com.travelapp.ui.theme.BackgroundColor
 import com.travelapp.ui.theme.TravelAppTheme
@@ -61,6 +62,8 @@ var locationList = mutableListOf<LocationObject>()
 var locationNames = mutableListOf<String>()
 
 val profileImageFile = mutableStateOf<File>(File.createTempFile("image", ".jpg"))
+
+var currentUser = mutableStateOf(TravelyzeUser(null, null, null))
 
 class MainActivity : ComponentActivity() {
 
@@ -106,6 +109,17 @@ class MainActivity : ComponentActivity() {
                 if (current != null) {
                     locationList.add(current)
                     current.Name?.let { locationNames.add(it) }
+                }
+            }
+
+            val fireStore = FirebaseFirestore.getInstance()
+
+            val userID = Firebase.auth.currentUser?.uid.toString()
+            val documentReference = fireStore.collection("users").document(userID)
+
+            if(isLoggedIn.value){
+                documentReference.get().addOnSuccessListener { documentSnapshot ->
+                    currentUser.value = documentSnapshot.toObject<TravelyzeUser>()!!
                 }
             }
         }
@@ -237,7 +251,7 @@ class MainActivity : ComponentActivity() {
                         isDrawerOpen.value = false
                         isAddingFriend.value = false
                         if (locationSelected.value) {
-                            LocationPage(selectedName.value, navController)
+                            LocationPage(selectedName.value, navController, auth)
                         } else {
                             Home(auth, navController)
                         }
@@ -246,14 +260,18 @@ class MainActivity : ComponentActivity() {
                     composable(Screen.Location.route) {
                         if (locationSelected.value) {
                             LocalFocusManager.current.clearFocus()
-                            LocationPage(selectedName.value, navController)
+                            LocationPage(selectedName.value, navController, auth)
                         }
                     }
 
                     composable(Screen.Profile.route) {
                         if (isLoggedIn.value) {
-                            isAddingFriend.value = false
-                            Profile(auth)
+                            if(profileLocationSelected.value){
+                                LocationPage(profileSelectedName.value, navController, auth)
+                            }else{
+                                isAddingFriend.value = false
+                                Profile(auth)
+                            }
                         } else {
                             isDrawerOpen.value = false
                             Login(auth, navController)
