@@ -3,6 +3,7 @@ package com.travelapp
 import android.annotation.SuppressLint
 import android.content.pm.PackageManager
 import android.net.Uri
+import android.util.Log
 import android.widget.Toast
 import androidx.activity.compose.rememberLauncherForActivityResult
 import androidx.activity.result.PickVisualMediaRequest
@@ -62,6 +63,9 @@ import java.io.File
 import java.text.SimpleDateFormat
 import java.util.*
 import androidx.compose.material.Card
+import com.google.firebase.firestore.ktx.firestore
+import kotlinx.coroutines.tasks.await
+import okhttp3.internal.wait
 
 var openSignoutDialog = mutableStateOf(false)
 var openDeleteDialog = mutableStateOf(false)
@@ -267,7 +271,7 @@ fun Profile(auth: FirebaseAuth) {
                                     color = Color.Black
                                 )
                                 Text(
-                                    text = "@${auth.currentUser?.displayName!!}",
+                                    text = "@${currentUser.value.info?.userName}",
                                     style = MaterialTheme.typography.bodyLarge,
                                     fontFamily = halcomFamily,
                                     fontWeight = FontWeight.Light,
@@ -852,32 +856,45 @@ fun EditUsernameDialog() {
         },
         confirmButton = {
             TextButton(onClick = {
-                openEditDialog.value = false
+                if(username.isNotBlank()){
+                    val db = Firebase.firestore
 
-                val fireStore = FirebaseFirestore.getInstance()
+                    val docRef = db.collection("users")
+                        .whereEqualTo("info.userName", username)
+                        .get()
+                        .addOnSuccessListener { documents ->
+                            if (documents.size() == 0) {
+                                openEditDialog.value = false
 
-                val userID = Firebase.auth.currentUser?.uid.toString()
+                                val fireStore = FirebaseFirestore.getInstance()
 
-                val documentReference = fireStore.collection("users").document(userID)
+                                val userID = Firebase.auth.currentUser?.uid.toString()
 
+                                val documentReference = fireStore.collection("users").document(userID)
 
-                documentReference.get().addOnSuccessListener { documentSnapshot ->
+                                currentUser.value.info?.userName = username
+                                documentReference.set(currentUser.value)
 
-                    val user = documentSnapshot.toObject<TravelyzeUser>()
-
-                    user?.info?.userName = username
-
-                    if (user != null) {
-                        documentReference.set(user)
-                    }
+                                Toast.makeText(
+                                    contextForToast,
+                                    "Username successfully changed.",
+                                    Toast.LENGTH_SHORT
+                                ).show()
+                            } else {
+                                Toast.makeText(
+                                    contextForToast,
+                                    "Username already taken.",
+                                    Toast.LENGTH_SHORT
+                                ).show()
+                            }
+                        }.addOnFailureListener { exception ->
+                            Log.w(
+                                MainActivity.TAG,
+                                "User Search - Error getting documents: ",
+                                exception
+                            )
+                        }
                 }
-
-
-                Toast.makeText(
-                    contextForToast,
-                    "Username successfully changed.",
-                    Toast.LENGTH_SHORT
-                ).show()
             }) {
                 Text(
                     text = "CONFIRM",
@@ -931,8 +948,6 @@ fun SendEmailToExistingUser(user: FirebaseUser?) {
         }
     }
 }
-
-
 
 
 

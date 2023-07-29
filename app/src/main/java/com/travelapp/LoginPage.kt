@@ -28,7 +28,12 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.navigation.NavController
 import com.google.firebase.auth.FirebaseAuth
+import com.google.firebase.auth.ktx.auth
+import com.google.firebase.firestore.FirebaseFirestore
+import com.google.firebase.firestore.ktx.toObject
+import com.google.firebase.ktx.Firebase
 import com.travelapp.composable.CustomOutlinedTextField
+import com.travelapp.composable.TravelyzeUser
 import com.travelapp.ui.theme.BackgroundColor
 import com.travelapp.ui.theme.TextButtonColor
 import com.travelapp.ui.theme.robotoFamily
@@ -156,7 +161,15 @@ fun Login(auth: FirebaseAuth, nav: NavController) {
                     auth.signInWithEmailAndPassword(email, password)
                         .addOnCompleteListener {
                             if (it.isSuccessful) {
-                                /*TODO populate app with info from user data*/
+                                val fireStore = FirebaseFirestore.getInstance()
+
+                                val userID = Firebase.auth.currentUser?.uid.toString()
+                                val documentReference = fireStore.collection("users").document(userID)
+
+                                documentReference.get().addOnSuccessListener { documentSnapshot ->
+                                    currentUser.value = documentSnapshot.toObject<TravelyzeUser>()!!
+                                }
+
                                 isLoggedIn.value = true
                                 isPasswordValid = true
                                 loginErrorMessage = ""

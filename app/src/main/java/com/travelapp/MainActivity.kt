@@ -111,13 +111,13 @@ class MainActivity : ComponentActivity() {
                     current.Name?.let { locationNames.add(it) }
                 }
             }
+            
+            if(auth.currentUser != null){
+                val fireStore = FirebaseFirestore.getInstance()
 
-            val fireStore = FirebaseFirestore.getInstance()
-
-            val userID = Firebase.auth.currentUser?.uid.toString()
-            val documentReference = fireStore.collection("users").document(userID)
-
-            if(isLoggedIn.value){
+                val userID = Firebase.auth.currentUser?.uid.toString()
+                val documentReference = fireStore.collection("users").document(userID)
+                
                 documentReference.get().addOnSuccessListener { documentSnapshot ->
                     currentUser.value = documentSnapshot.toObject<TravelyzeUser>()!!
                 }
