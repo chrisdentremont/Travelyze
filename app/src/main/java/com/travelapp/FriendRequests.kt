@@ -46,7 +46,7 @@ fun FriendRequests() {
                         Tab(text = { Text(title) },
                             selected = tabIndex == index,
                             onClick = { tabIndex = index },
-                            modifier = Modifier.background(color = TuftsBlue),
+                            modifier = Modifier.background(color = Color.DarkGray),
                             icon = {
                                 when (index) {
                                     0 -> Icon(Icons.Filled.Inbox, "")

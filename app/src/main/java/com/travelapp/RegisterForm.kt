@@ -40,10 +40,7 @@ import com.google.firebase.auth.ktx.userProfileChangeRequest
 import com.google.firebase.firestore.FirebaseFirestore
 import com.google.firebase.ktx.Firebase
 import com.google.firebase.storage.ktx.storage
-import com.travelapp.composable.AccountData
-import com.travelapp.composable.AccountInfo
-import com.travelapp.composable.CustomOutlinedTextField
-import com.travelapp.composable.TravelyzeUser
+import com.travelapp.composable.*
 import com.travelapp.ui.theme.BackgroundColor
 import com.travelapp.ui.theme.TextButtonColor
 import com.travelapp.ui.theme.robotoFamily
@@ -147,6 +144,11 @@ fun RegisterForm() {
                             ),
 
                             AccountData(
+                                mutableListOf(),
+                                mutableListOf()
+                            ),
+
+                            AccountRequests(
                                 mutableListOf(),
                                 mutableListOf()
                             )

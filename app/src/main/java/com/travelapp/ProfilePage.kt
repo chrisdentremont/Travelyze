@@ -70,7 +70,7 @@ var profileImageUri = mutableStateOf(Uri.EMPTY)
 var takenImageUri = mutableStateOf(Uri.EMPTY)
 var displayedPicture = mutableStateOf<File>(File(""))
 
-var currentUser = mutableStateOf(TravelyzeUser(null, null))
+var currentUser = mutableStateOf(TravelyzeUser(null, null, null))
 
 @Composable
 fun Profile(auth: FirebaseAuth) {
