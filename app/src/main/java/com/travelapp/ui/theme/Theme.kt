@@ -3,11 +3,7 @@ package com.travelapp.ui.theme
 import android.app.Activity
 import android.os.Build
 import androidx.compose.foundation.isSystemInDarkTheme
-import androidx.compose.material3.MaterialTheme
-import androidx.compose.material3.darkColorScheme
-import androidx.compose.material3.dynamicDarkColorScheme
-import androidx.compose.material3.dynamicLightColorScheme
-import androidx.compose.material3.lightColorScheme
+import androidx.compose.material3.*
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.SideEffect
 import androidx.compose.ui.graphics.Color
@@ -19,7 +15,7 @@ import androidx.compose.ui.text.font.FontFamily
 import androidx.compose.ui.text.font.FontStyle
 import androidx.compose.ui.text.font.FontWeight
 import androidx.core.view.ViewCompat
-import com.example.travelapp.R
+import com.travelapp.R
 
 private val DarkColorScheme = darkColorScheme(
     primary = TextButtonColor,
@@ -29,11 +25,16 @@ private val DarkColorScheme = darkColorScheme(
 )
 
 private val LightColorScheme = lightColorScheme(
-    primary = Color.Transparent,
+    primary = BackgroundAccentColor,
     secondary = TuftsBlue,
     tertiary = Khaki,
     background = BackgroundColor,
-    onBackground = BackgroundColor
+    surface = BackgroundColor,
+    onBackground = BackgroundColor,
+    onPrimary = BackgroundColor,
+    onSecondary = BackgroundColor,
+    onTertiary = BackgroundColor,
+    onSurface = BackgroundColor,
 
     /* Other default colors to override
     surface = Color(0xFFFFFBFE),
@@ -58,6 +59,24 @@ val robotoFamily = FontFamily(
     Font(R.font.roboto_light_italic, FontWeight.Light, FontStyle.Italic)
 )
 
+val poppinsFamily = FontFamily(
+    Font(R.font.poppins_regular, FontWeight.Normal),
+    Font(R.font.poppins_italic, FontWeight.Normal, FontStyle.Italic),
+    Font(R.font.poppins_bold, FontWeight.Bold),
+    Font(R.font.poppins_bold_italic, FontWeight.Bold, FontStyle.Italic),
+    Font(R.font.poppins_light, FontWeight.Light),
+    Font(R.font.poppins_light_italic, FontWeight.Light, FontStyle.Italic),
+)
+
+val halcomFamily = FontFamily(
+    Font(R.font.halcom_regular, FontWeight.Normal),
+    Font(R.font.halcom_italic, FontWeight.Normal, FontStyle.Italic),
+    Font(R.font.halcom_bold, FontWeight.Bold),
+    Font(R.font.halcom_bold_italic, FontWeight.Bold, FontStyle.Italic),
+    Font(R.font.halcom_light, FontWeight.Light),
+    Font(R.font.halcom_light_italic, FontWeight.Light, FontStyle.Italic),
+)
+
 @Composable
 fun TravelAppTheme(
     darkTheme: Boolean = isSystemInDarkTheme(),
@@ -77,7 +96,7 @@ fun TravelAppTheme(
     if (!view.isInEditMode) {
         SideEffect {
             (view.context as Activity).window.statusBarColor = colorScheme.primary.toArgb()
-            ViewCompat.getWindowInsetsController(view)?.isAppearanceLightStatusBars = darkTheme
+            ViewCompat.getWindowInsetsController(view)?.isAppearanceLightStatusBars = !darkTheme
         }
     }
 

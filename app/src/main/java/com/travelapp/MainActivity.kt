@@ -1,5 +1,6 @@
 package com.travelapp
 
+import android.annotation.SuppressLint
 import android.os.Bundle
 import android.util.Log
 import androidx.activity.ComponentActivity
@@ -8,32 +9,42 @@ import androidx.annotation.StringRes
 import androidx.compose.foundation.background
 import androidx.compose.foundation.isSystemInDarkTheme
 import androidx.compose.foundation.layout.*
+import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.*
 import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.*
-import androidx.compose.ui.Modifier
-import androidx.compose.ui.res.stringResource
-import androidx.navigation.NavDestination.Companion.hierarchy
-import androidx.navigation.NavGraph.Companion.findStartDestination
-import androidx.navigation.compose.NavHost
-import androidx.navigation.compose.composable
-import androidx.navigation.compose.currentBackStackEntryAsState
-import androidx.navigation.compose.rememberNavController
+import androidx.compose.material.icons.filled.Group
+import androidx.compose.material.icons.filled.Person
+import androidx.compose.material.icons.filled.Search
+import androidx.compose.material.icons.outlined.Group
+import androidx.compose.material.icons.outlined.Person
+import androidx.compose.material.icons.outlined.Search
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.DisposableEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
+import androidx.compose.ui.Alignment
+import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalFocusManager
+import androidx.compose.ui.res.stringResource
+import androidx.compose.ui.unit.dp
+import androidx.navigation.NavDestination.Companion.hierarchy
+import androidx.navigation.NavGraph.Companion.findStartDestination
 import androidx.navigation.NavHostController
-import com.example.travelapp.R
-import com.travelapp.composable.LocationObject
+import androidx.navigation.compose.NavHost
+import androidx.navigation.compose.composable
+import androidx.navigation.compose.currentBackStackEntryAsState
+import androidx.navigation.compose.rememberNavController
+import com.travelapp.R
 import com.google.accompanist.systemuicontroller.rememberSystemUiController
 import com.google.firebase.auth.ktx.auth
 import com.google.firebase.firestore.FirebaseFirestore
 import com.google.firebase.firestore.ktx.toObject
 import com.google.firebase.ktx.Firebase
 import com.google.firebase.storage.ktx.storage
+import com.travelapp.composable.LocationObject
+import com.travelapp.ui.theme.BackgroundAccentColor
 import com.travelapp.ui.theme.BackgroundColor
 import com.travelapp.ui.theme.TravelAppTheme
 import com.travelapp.ui.theme.robotoFamily
@@ -54,10 +65,10 @@ val profileImageFile = mutableStateOf<File>(File.createTempFile("image", ".jpg")
 class MainActivity : ComponentActivity() {
 
 
-
     private lateinit var navController: NavHostController
+
     companion object {
-        val TAG:String = MainActivity::class.java.simpleName
+        val TAG: String = MainActivity::class.java.simpleName
     }
 
     private val auth by lazy {
@@ -74,21 +85,23 @@ class MainActivity : ComponentActivity() {
     override fun onResume() {
         super.onResume()
 
-        if(isLoggedIn.value){
-            var profileImage = Firebase.storage.reference.child("users/${auth.currentUser?.uid}/profile_picture.jpg")
+        if (isLoggedIn.value) {
+            var profileImage =
+                Firebase.storage.reference.child("users/${auth.currentUser?.uid}/profile_picture.jpg")
 
             profileImage.getFile(profileImageFile.value).addOnCompleteListener {
                 displayedPicture.value = profileImageFile.value
             }
         }
     }
-    override fun onCreate(savedInstanceState: Bundle?){
+
+    override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
 
         GlobalScope.launch {
             var getLocationsFromDb = getLocationsAsync().await().await()
 
-            for(document in getLocationsFromDb.documents){
+            for (document in getLocationsFromDb.documents) {
                 var current = document.toObject<LocationObject>()
                 if (current != null) {
                     locationList.add(current)
@@ -100,57 +113,39 @@ class MainActivity : ComponentActivity() {
         setContent {
             TravelAppTheme {
 
-                val systemUiController = rememberSystemUiController()
-                val useDarkIcons = !isSystemInDarkTheme()
-
-                DisposableEffect(systemUiController, useDarkIcons) {
-                    // Update all of the system bar colors to be transparent, and use
-                    // dark icons if we're in light theme
-                    systemUiController.setSystemBarsColor(
-                        color = Color.Transparent,
-                        darkIcons = useDarkIcons
-                    )
-
-                    // setStatusBarColor() and setNavigationBarColor() also exist
-
-                    onDispose {}
-                }
-
                 Box(
-                    modifier = Modifier.background(BackgroundColor)
-                ){
-                    Surface(
-                        modifier = Modifier.fillMaxSize(),
-                    ) {
+                    modifier = Modifier.background(BackgroundColor).fillMaxSize()
+                ) {
+                    Surface() {
                         navController = rememberNavController()
 
                         NavBar()
 
-                        if (openSignoutDialog.value){
+                        if (openSignoutDialog.value) {
                             SignOutDialog(auth)
                         }
 
-                        if(openDeleteDialog.value){
+                        if (openDeleteDialog.value) {
                             DeleteAccountDialog(auth)
                         }
 
-                        if(openEditDialog.value){
+                        if (openEditDialog.value) {
                             EditUsernameDialog()
                         }
 
-                        if(openPicDialog.value){
+                        if (openPicDialog.value) {
                             ProfilePicturePicker(auth)
                         }
 
-                        if(openPicSelectDialog.value){
+                        if (openPicSelectDialog.value) {
                             ProfilePicSelect(auth)
                         }
 
-                        if(openPicTakenDialog.value){
+                        if (openPicTakenDialog.value) {
                             ProfilePicTaken(auth)
                         }
 
-                        if(openAddFriendDialog.value){
+                        if (openAddFriendDialog.value) {
                             addFriendDialog()
                         }
 
@@ -168,111 +163,119 @@ class MainActivity : ComponentActivity() {
      * The composable function that represents the tabs at the bottom
      * of the screen and provides functionality to them.
      */
+    @SuppressLint("UnusedMaterialScaffoldPaddingParameter")
     @Composable
-    fun NavBar(){
+    fun NavBar() {
         val routeMap = mapOf(
-            Screen.Friends to Icons.Filled.Group,
-            Screen.Explore to Icons.Filled.Search,
-            Screen.Profile to Icons.Filled.Person,
+            Screen.Friends to Icons.Outlined.Group,
+            Screen.Explore to Icons.Outlined.Search,
+            Screen.Profile to Icons.Outlined.Person,
         )
 
         val navController = rememberNavController()
 
-        Scaffold(
-            bottomBar = {
-                BottomNavigation {
-                    val navBackStackEntry by navController.currentBackStackEntryAsState()
-                    val currentDestination = navBackStackEntry?.destination
-                    routeMap.forEach { (key, value) ->
-                        BottomNavigationItem(
-                            icon = {Icon(value, contentDescription = null, tint = Color.Black)},
-                            label = { Text(stringResource(key.resourceId),
-                                color = Color.Black,
-                                fontFamily = robotoFamily,) },
-                            selected = currentDestination?.hierarchy?.any { it.route == key.route } == true,
-                            onClick = {
-                                navController.navigate(key.route) {
-                                    // Pop up to the start destination of the graph to
-                                    // avoid building up a large stack of destinations
-                                    // on the back stack as users select items
-                                    popUpTo(navController.graph.findStartDestination().id) {
-                                        saveState = true
-                                    }
-                                    // Avoid multiple copies of the same destination when
-                                    // re-selecting the same item
-                                    launchSingleTop = true
-                                    // Restore state when re-selecting a previously selected item
-                                    restoreState = (navController.graph.findNode(Screen.Register.route) == null)
-                                }
-                            },
-                            modifier = Modifier.background(color = BackgroundColor)
-                        )
-                    }
+        Box {
+            Scaffold(
+                bottomBar = {
+                    Box(modifier = Modifier.fillMaxWidth().height(80.dp)) {
+                        BottomNavigation(
+                            modifier = Modifier
+                                .clip(RoundedCornerShape(20.dp, 20.dp, 20.dp, 20.dp))
+                                .width(300.dp)
+                                .background(color = Color.Transparent)
+                                .align(Alignment.Center),
+                            elevation = 10.dp
+                        ) {
+                            val navBackStackEntry by navController.currentBackStackEntryAsState()
+                            val currentDestination = navBackStackEntry?.destination
+                            routeMap.forEach { (key, value) ->
+                                BottomNavigationItem(
+                                    modifier = Modifier.background(color = Color.DarkGray),
+                                    icon = { Icon(value, contentDescription = null, tint = Color.White) },
+                                    selected = currentDestination?.hierarchy?.any { it.route == key.route } == true,
+                                    onClick = {
+                                        navController.navigate(key.route) {
+                                            // Pop up to the start destination of the graph to
+                                            // avoid building up a large stack of destinations
+                                            // on the back stack as users select items
+                                            popUpTo(navController.graph.findStartDestination().id) {
+                                                saveState = true
+                                            }
+                                            // Avoid multiple copies of the same destination when
+                                            // re-selecting the same item
+                                            launchSingleTop = true
+                                            // Restore state when re-selecting a previously selected item
+                                            restoreState =
+                                                (navController.graph.findNode(Screen.Register.route) == null)
+                                        }
+                                    },
+                                )
+                            }
 
-                }
-            }
-        ) {
-                innerPadding ->
-            NavHost(navController, startDestination = Screen.Explore.route, Modifier.padding(innerPadding)) {
-                composable(Screen.Friends.route) {
-                    if(isLoggedIn.value){
-                        isDrawerOpen.value = false
-                        Social()
-
-                        if(isAddingFriend.value){
-                            FriendRequests()
                         }
                     }
-                    else{
+                }
+            ) {
+                NavHost(
+                    navController,
+                    startDestination = Screen.Explore.route,
+                ) {
+                    composable(Screen.Friends.route) {
+                        if (isLoggedIn.value) {
+                            isDrawerOpen.value = false
+                            Social()
+
+                            if (isAddingFriend.value) {
+                                FriendRequests()
+                            }
+                        } else {
+                            isDrawerOpen.value = false
+                            Login(auth, navController)
+                        }
+                    }
+                    composable(Screen.Explore.route) {
                         isDrawerOpen.value = false
-                        Login(auth, navController)
-                    }
-                }
-                composable(Screen.Explore.route) {
-                    isDrawerOpen.value = false
-                    isAddingFriend.value = false
-                    if(locationSelected.value){
-                        LocationPage(selectedName.value, navController)
-                    }else{
-                        Home(auth, navController)
-                    }
-                }
-
-                composable(Screen.Location.route) {
-                    if(locationSelected.value) {
-                        LocalFocusManager.current.clearFocus()
-                        LocationPage(selectedName.value, navController)
-                    }
-                }
-
-                composable(Screen.Profile.route) {
-                    if (isLoggedIn.value) {
                         isAddingFriend.value = false
-                        Profile(auth)
+                        if (locationSelected.value) {
+                            LocationPage(selectedName.value, navController)
+                        } else {
+                            Home(auth, navController)
+                        }
                     }
-                    else{
+
+                    composable(Screen.Location.route) {
+                        if (locationSelected.value) {
+                            LocalFocusManager.current.clearFocus()
+                            LocationPage(selectedName.value, navController)
+                        }
+                    }
+
+                    composable(Screen.Profile.route) {
+                        if (isLoggedIn.value) {
+                            isAddingFriend.value = false
+                            Profile(auth)
+                        } else {
+                            isDrawerOpen.value = false
+                            Login(auth, navController)
+                        }
+                    }
+                    composable(Screen.Login.route) {
                         isDrawerOpen.value = false
                         Login(auth, navController)
                     }
-                }
-                composable(Screen.Login.route){
-                    isDrawerOpen.value = false
-                    Login(auth, navController)
-                }
-                composable(Screen.Register.route){
-                    isDrawerOpen.value = false
-                    RegisterForm()
+                    composable(Screen.Register.route) {
+                        isDrawerOpen.value = false
+                        RegisterForm()
+                    }
                 }
             }
         }
-
-
     }
 
     private fun getLocationsAsync() = GlobalScope.async {
         var fireStore = FirebaseFirestore.getInstance()
         var locationCollection = fireStore.collection("countries")
-        locationCollection.get().addOnFailureListener {exception ->
+        locationCollection.get().addOnFailureListener { exception ->
             Log.w("Exception", exception)
         }
     }

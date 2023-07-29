@@ -10,7 +10,7 @@ data class AccountInfo(
     constructor() : this(null, null, null, null)
 }
 
-data class AccountData (
+data class AccountData(
     var favoriteLocations: MutableList<String>?,
     var friendsList: MutableList<String>?
 ) {

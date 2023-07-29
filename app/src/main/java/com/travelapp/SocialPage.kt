@@ -9,7 +9,8 @@ import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.text.KeyboardActions
 import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.*
+import androidx.compose.material.icons.filled.Person2
+import androidx.compose.material.icons.filled.PersonAdd
 import androidx.compose.material3.*
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
@@ -27,64 +28,62 @@ import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import coil.compose.rememberAsyncImagePainter
-import com.travelapp.composable.CustomOutlinedTextField
-import com.travelapp.composable.TopBar
 import com.google.firebase.firestore.ktx.firestore
 import com.google.firebase.ktx.Firebase
-import com.travelapp.ui.theme.Alabaster
-import com.travelapp.ui.theme.BackgroundColor
-import com.travelapp.ui.theme.TextButtonColor
-import com.travelapp.ui.theme.robotoFamily
+import com.travelapp.composable.CustomOutlinedTextField
+import com.travelapp.composable.TopBar
+import com.travelapp.ui.theme.*
 
 val openAddFriendDialog = mutableStateOf(false)
 val isAddingFriend = mutableStateOf(false)
+
 @Composable
-fun Social(){
+fun Social() {
     Column(
         modifier = Modifier
             .fillMaxHeight()
             .fillMaxWidth()
             .background(color = BackgroundColor)
-    ){
+    ) {
         Row(
             Modifier.fillMaxWidth(),
             horizontalArrangement = Arrangement.Center
-        ){
+        ) {
             TopBar(
                 title = "Friends",
                 buttonIcon = Icons.Filled.PersonAdd,
                 onButtonClicked = {
-                isAddingFriend.value = true
-                }
+                    isAddingFriend.value = true
+                },
             )
         }
 
         //TODO Improve the friend page UI and display information in a better way
-        Row(){
+        Row() {
             Column(
                 modifier = Modifier
                     .fillMaxHeight()
                     .fillMaxWidth()
                     .padding(20.dp)
                     .verticalScroll(rememberScrollState())
-            ){
+            ) {
                 Row(
                     horizontalArrangement = Arrangement.SpaceBetween,
                     modifier = Modifier
                         .fillMaxWidth()
                         .padding(bottom = 10.dp)
-                ){
-                    Column(){
+                ) {
+                    Column() {
                         Card(
                             modifier = Modifier
                                 .fillMaxWidth()
                                 .padding(15.dp),
                             elevation = CardDefaults.cardElevation(10.dp),
                             colors = CardDefaults.cardColors(Alabaster)
-                        ){
+                        ) {
                             Column(
                                 modifier = Modifier.padding(15.dp)
-                            ){
+                            ) {
                                 Row(
                                     verticalAlignment = Alignment.CenterVertically,
                                     horizontalArrangement = Arrangement.Start,
@@ -123,21 +122,25 @@ fun Social(){
                                     Row(
                                         Modifier.fillMaxWidth(),
                                         horizontalArrangement = Arrangement.Start
-                                    ){
+                                    ) {
                                         Text(
                                             text = "I read about Paris, France!",
                                             fontWeight = FontWeight.Bold,
                                             fontSize = 16.sp,
-                                            modifier = Modifier.padding(start = 10.dp))
+                                            modifier = Modifier.padding(start = 10.dp)
+                                        )
                                     }
                                     Row(
                                         Modifier
                                             .fillMaxWidth(),
                                         horizontalArrangement = Arrangement.Start,
-                                    ){
+                                    ) {
                                         Text(
                                             text = "Paris is a European city located in France...",
-                                            modifier = Modifier.padding(start = 10.dp, bottom = 15.dp),
+                                            modifier = Modifier.padding(
+                                                start = 10.dp,
+                                                bottom = 15.dp
+                                            ),
                                         )
                                     }
                                 }
@@ -151,7 +154,7 @@ fun Social(){
 }
 
 @Composable
-fun addFriendDialog(){
+fun addFriendDialog() {
     val contextForToast = LocalContext.current.applicationContext
     val focusManager = LocalFocusManager.current
 
@@ -172,8 +175,8 @@ fun addFriendDialog(){
             )
         },
         text = {
-            Column(){
-                Row(){
+            Column() {
+                Row() {
                     Text(
                         text = "Enter another username exactly as it appears to send a friend request:",
                         fontFamily = robotoFamily,
@@ -181,7 +184,7 @@ fun addFriendDialog(){
                         color = Color.Black
                     )
                 }
-                Row(){
+                Row() {
                     CustomOutlinedTextField(
                         value = username,
                         onValueChange = { username = it },
@@ -203,7 +206,7 @@ fun addFriendDialog(){
         confirmButton = {
             TextButton(
                 onClick = {
-                    if(username.isNotBlank()){
+                    if (username.isNotBlank()) {
                         //Send user a friend request
 
                         val db = Firebase.firestore
@@ -211,10 +214,13 @@ fun addFriendDialog(){
                             .whereEqualTo("info.userName", username)
                             .get()
                             .addOnSuccessListener { documents ->
-                                if(documents.size() > 0){
+                                if (documents.size() > 0) {
                                     val friend = documents.elementAt(0)
                                     //TODO Remove Logs
-                                    Log.d(MainActivity.TAG, "User Search - friend ${friend.id} is ${friend.data}")
+                                    Log.d(
+                                        MainActivity.TAG,
+                                        "User Search - friend ${friend.id} is ${friend.data}"
+                                    )
 
                                     openAddFriendDialog.value = false
                                     Toast.makeText(
@@ -222,7 +228,7 @@ fun addFriendDialog(){
                                         "Friend request sent!.",
                                         Toast.LENGTH_SHORT
                                     ).show()
-                                }else {
+                                } else {
                                     Log.d(MainActivity.TAG, "User Search - No user found")
 
                                     Toast.makeText(
@@ -231,8 +237,12 @@ fun addFriendDialog(){
                                         Toast.LENGTH_SHORT
                                     ).show()
                                 }
-                            }.addOnFailureListener{ exception ->
-                                Log.w(MainActivity.TAG, "User Search - Error getting documents: ", exception)
+                            }.addOnFailureListener { exception ->
+                                Log.w(
+                                    MainActivity.TAG,
+                                    "User Search - Error getting documents: ",
+                                    exception
+                                )
                             }
 
                     } else {
@@ -243,7 +253,7 @@ fun addFriendDialog(){
                         ).show()
                     }
                 }
-            ){
+            ) {
                 Text(
                     text = "SEARCH",
                     color = TextButtonColor,
@@ -255,7 +265,7 @@ fun addFriendDialog(){
                 onClick = {
                     openAddFriendDialog.value = false
                 }
-            ){
+            ) {
                 Text(
                     text = "CANCEL",
                     color = TextButtonColor,

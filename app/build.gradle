@@ -5,11 +5,11 @@ plugins {
 }
 
 android {
-    namespace 'com.example.travelapp'
+    namespace 'com.travelapp'
     compileSdk 33
 
     defaultConfig {
-        applicationId "com.example.travelapp"
+        applicationId "com.travelapp"
         minSdk 24
         targetSdk 33
         versionCode 1
@@ -73,6 +73,7 @@ dependencies {
     implementation "org.jetbrains.kotlinx:kotlinx-coroutines-core:1.7.1"
 
     implementation("io.coil-kt:coil-compose:2.4.0")
+    implementation("io.coil-kt:coil-svg:2.4.0")
 
     implementation platform('com.google.firebase:firebase-bom:32.1.1')
     implementation 'com.google.firebase:firebase-auth-ktx:22.0.0'

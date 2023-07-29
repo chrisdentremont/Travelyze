@@ -1,6 +1,5 @@
 package com.travelapp.composable
 
-import android.util.Log
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.text.KeyboardActions
 import androidx.compose.foundation.text.KeyboardOptions
@@ -28,9 +27,9 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.compose.ui.window.PopupProperties
 import androidx.navigation.NavController
-import com.travelapp.LocationPage
 import com.travelapp.locationSelected
 import com.travelapp.selectedName
+import com.travelapp.ui.theme.BackgroundAccentColor
 import com.travelapp.ui.theme.BackgroundColor
 import com.travelapp.ui.theme.robotoFamily
 
@@ -49,17 +48,17 @@ fun CustomOutlinedTextField(
     showError: Boolean = false,
     errorMessage: String = "",
     modifier: Modifier
-){
+) {
     Column(
         modifier = Modifier.fillMaxWidth(),
         horizontalAlignment = Alignment.CenterHorizontally,
         verticalArrangement = Arrangement.Center
-    ){
+    ) {
         OutlinedTextField(
             value = value,
-            onValueChange = { onValueChange(it)},
+            onValueChange = { onValueChange(it) },
             modifier = modifier,
-            label = {Text(label)},
+            label = { Text(label) },
             leadingIcon = {
                 Icon(
                     imageVector = leadingIconImageVector,
@@ -69,11 +68,14 @@ fun CustomOutlinedTextField(
             },
             isError = showError,
             trailingIcon = {
-                if(showError && !isPasswordField) Icon(imageVector = Icons.Filled.Error, contentDescription = "Show error icon")
-                if(isPasswordField){
-                    IconButton(onClick = {onVisibilityChange(!isPasswordVisible)}) {
+                if (showError && !isPasswordField) Icon(
+                    imageVector = Icons.Filled.Error,
+                    contentDescription = "Show error icon"
+                )
+                if (isPasswordField) {
+                    IconButton(onClick = { onVisibilityChange(!isPasswordVisible) }) {
                         Icon(
-                            imageVector = if(isPasswordVisible) Icons.Default.Visibility else Icons.Default.VisibilityOff,
+                            imageVector = if (isPasswordVisible) Icons.Default.Visibility else Icons.Default.VisibilityOff,
                             contentDescription = "Toggle password visibility"
                         )
                     }
@@ -89,7 +91,7 @@ fun CustomOutlinedTextField(
             singleLine = true
         )
 
-        if(showError){
+        if (showError) {
             Text(
                 text = errorMessage,
                 textAlign = TextAlign.Center,
@@ -112,6 +114,7 @@ fun TopBar(title: String = "", buttonIcon: ImageVector, onButtonClicked: () -> U
                 fontSize = 25.sp,
                 fontFamily = robotoFamily,
                 fontWeight = FontWeight.Normal,
+                color = Color.Black
             )
         },
         actions = {
@@ -125,7 +128,7 @@ fun TopBar(title: String = "", buttonIcon: ImageVector, onButtonClicked: () -> U
                 )
             }
         },
-        backgroundColor = BackgroundColor,
+        backgroundColor = BackgroundAccentColor,
         modifier = Modifier.padding(bottom = 10.dp)
     )
 }
@@ -156,9 +159,11 @@ fun TextFieldWithDropdown(
                 cursorColor = Color.Black
             ),
             trailingIcon = {
-                Icon(imageVector = Icons.Outlined.Search,
+                Icon(
+                    imageVector = Icons.Outlined.Search,
                     contentDescription = "",
-                    modifier = Modifier.size(size = 25.dp))
+                    modifier = Modifier.size(size = 25.dp)
+                )
             },
             keyboardOptions = KeyboardOptions.Default.copy(imeAction = ImeAction.Search),
             maxLines = 1,

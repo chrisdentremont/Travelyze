@@ -11,13 +11,8 @@ import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.AlternateEmail
 import androidx.compose.material.icons.filled.Visibility
 import androidx.compose.material.icons.filled.VisibilityOff
-import androidx.compose.runtime.Composable
-import androidx.compose.runtime.derivedStateOf
-import androidx.compose.runtime.getValue
-import androidx.compose.runtime.mutableStateOf
-import androidx.compose.runtime.remember
+import androidx.compose.runtime.*
 import androidx.compose.runtime.saveable.rememberSaveable
-import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.focus.FocusDirection
@@ -32,19 +27,19 @@ import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.navigation.NavController
-import com.travelapp.composable.CustomOutlinedTextField
-import com.travelapp.ui.theme.TextButtonColor
-import com.travelapp.ui.theme.BackgroundColor
-import com.travelapp.ui.theme.robotoFamily
 import com.google.firebase.auth.FirebaseAuth
+import com.travelapp.composable.CustomOutlinedTextField
+import com.travelapp.ui.theme.BackgroundColor
+import com.travelapp.ui.theme.TextButtonColor
+import com.travelapp.ui.theme.robotoFamily
 
 val isRegistering = mutableStateOf(false)
 val openPasswordResetDialog = mutableStateOf(false)
 
 @Composable
-fun Login(auth: FirebaseAuth, nav: NavController){
+fun Login(auth: FirebaseAuth, nav: NavController) {
 
-    var focusManager= LocalFocusManager.current
+    var focusManager = LocalFocusManager.current
 
 
     var email by remember {
@@ -69,14 +64,20 @@ fun Login(auth: FirebaseAuth, nav: NavController){
         mutableStateOf("")
     }
 
-    var isPasswordVisible by rememberSaveable { mutableStateOf(false)}
+    var isPasswordVisible by rememberSaveable { mutableStateOf(false) }
 
 
-    if(openPasswordResetDialog.value){
+    if (openPasswordResetDialog.value) {
         resetPasswordDialog(auth)
     }
 
-    Column(Modifier.fillMaxSize().background(color = BackgroundColor), horizontalAlignment = Alignment.CenterHorizontally, verticalArrangement = Arrangement.Center) {
+    Column(
+        Modifier
+            .fillMaxSize()
+            .background(color = BackgroundColor),
+        horizontalAlignment = Alignment.CenterHorizontally,
+        verticalArrangement = Arrangement.Center
+    ) {
         //
         // Welcome Message
         //
@@ -89,7 +90,8 @@ fun Login(auth: FirebaseAuth, nav: NavController){
                 fontWeight = FontWeight.Light,
                 fontSize = 30.sp,
                 textAlign = TextAlign.Center,
-                text = "Log In")
+                text = "Log In"
+            )
         }
 
         //
@@ -102,7 +104,7 @@ fun Login(auth: FirebaseAuth, nav: NavController){
             placeholder = { Text("example@domain.com") },
             singleLine = true,
             keyboardOptions = KeyboardOptions(
-                keyboardType =  KeyboardType.Email,
+                keyboardType = KeyboardType.Email,
                 imeAction = ImeAction.Next
             ),
             keyboardActions = KeyboardActions(
@@ -124,7 +126,7 @@ fun Login(auth: FirebaseAuth, nav: NavController){
                 .fillMaxWidth(.6f)
                 .padding(top = 15.dp),
             keyboardOptions = KeyboardOptions(
-                keyboardType =  KeyboardType.Password,
+                keyboardType = KeyboardType.Password,
                 imeAction = ImeAction.Done
             ),
             keyboardActions = KeyboardActions(
@@ -136,33 +138,37 @@ fun Login(auth: FirebaseAuth, nav: NavController){
 
             leadingIconImageVector = if (isPasswordVisible)
                 Icons.Filled.Visibility
-                else Icons.Filled.VisibilityOff,
+            else Icons.Filled.VisibilityOff,
             leadingIconDescription = if (isPasswordVisible) "Hide password" else "Show password"
         )
 
         Row(
-            modifier = Modifier.padding(vertical = 30.dp).fillMaxWidth(),
-            horizontalArrangement = Arrangement.Center){
+            modifier = Modifier
+                .padding(vertical = 30.dp)
+                .fillMaxWidth(),
+            horizontalArrangement = Arrangement.Center
+        ) {
             //
             // Login Button
             //
             Button(
                 onClick = {
                     auth.signInWithEmailAndPassword(email, password)
-                        .addOnCompleteListener{
-                            if(it.isSuccessful){
+                        .addOnCompleteListener {
+                            if (it.isSuccessful) {
                                 /*TODO populate app with info from user data*/
                                 isLoggedIn.value = true
                                 isPasswordValid = true
                                 loginErrorMessage = ""
-                            }
-                            else {
+                            } else {
                                 isPasswordValid = false
                                 loginErrorMessage = "Invalid login credentials."
                             }
                         }
                 },
-                modifier = Modifier.size(width = 150.dp, height = 50.dp).padding(horizontal = 10.dp),
+                modifier = Modifier
+                    .size(width = 150.dp, height = 50.dp)
+                    .padding(horizontal = 10.dp),
                 colors = ButtonDefaults.buttonColors(backgroundColor = TextButtonColor),
                 enabled = isEmailValid && password.isNotEmpty()
             ) {
@@ -184,7 +190,9 @@ fun Login(auth: FirebaseAuth, nav: NavController){
                     }
                 },
                 enabled = true,
-                modifier = Modifier.size(width = 150.dp, height = 50.dp).padding(horizontal = 10.dp),
+                modifier = Modifier
+                    .size(width = 150.dp, height = 50.dp)
+                    .padding(horizontal = 10.dp),
                 colors = ButtonDefaults.buttonColors(backgroundColor = TextButtonColor)
             ) {
                 Text(
@@ -208,13 +216,14 @@ fun Login(auth: FirebaseAuth, nav: NavController){
                 fontWeight = FontWeight.Light,
                 fontStyle = FontStyle.Italic,
                 textAlign = TextAlign.Center,
-                fontSize = 18.sp)
+                fontSize = 18.sp
+            )
         }
     }
 }
 
 @Composable
-fun resetPasswordDialog(auth: FirebaseAuth){
+fun resetPasswordDialog(auth: FirebaseAuth) {
     val contextForToast = LocalContext.current.applicationContext
 
     var email by remember {
@@ -237,15 +246,15 @@ fun resetPasswordDialog(auth: FirebaseAuth){
             )
         },
         text = {
-            Column(){
-                Row(){
+            Column() {
+                Row() {
                     Text(
                         text = "Please enter the email address associated with your account.",
                         fontFamily = robotoFamily,
                         color = Color.Black
                     )
                 }
-                Row(){
+                Row() {
                     CustomOutlinedTextField(
                         value = email,
                         onValueChange = { email = it },
@@ -266,9 +275,9 @@ fun resetPasswordDialog(auth: FirebaseAuth){
         },
         confirmButton = {
             TextButton(onClick = {
-                if(email.isNotBlank()){
+                if (email.isNotBlank()) {
                     auth.sendPasswordResetEmail(email).addOnCompleteListener {
-                        if(it.isSuccessful){
+                        if (it.isSuccessful) {
                             openPasswordResetDialog.value = false
                             showEmailError = false
 
@@ -277,8 +286,7 @@ fun resetPasswordDialog(auth: FirebaseAuth){
                                 "Password recovery email sent.",
                                 Toast.LENGTH_SHORT
                             ).show()
-                        }
-                        else {
+                        } else {
                             emailError = "Please enter a valid email."
                             showEmailError = true
                         }
@@ -287,7 +295,7 @@ fun resetPasswordDialog(auth: FirebaseAuth){
                     emailError = "Please enter a valid email."
                     showEmailError = true
                 }
-            }){
+            }) {
                 Text(
                     text = "CONFIRM",
                     fontFamily = robotoFamily,
@@ -298,7 +306,7 @@ fun resetPasswordDialog(auth: FirebaseAuth){
         dismissButton = {
             TextButton(onClick = {
                 openPasswordResetDialog.value = false
-            }){
+            }) {
                 Text(
                     text = "CANCEL",
                     fontFamily = robotoFamily,

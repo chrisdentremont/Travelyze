@@ -6,7 +6,6 @@ import androidx.compose.foundation.layout.*
 import androidx.compose.material.*
 import androidx.compose.material.icons.*
 import androidx.compose.material.icons.filled.*
-import androidx.compose.runtime.Composable
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -15,13 +14,11 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.sp
 import com.travelapp.ui.theme.*
-import com.travelapp.ui.theme.BackgroundColor
-import com.travelapp.ui.theme.TuftsBlue
 
 
 @SuppressLint("UnusedMaterialScaffoldPaddingParameter")
 @Composable
-fun FriendRequests(){
+fun FriendRequests() {
     var tabIndex by remember { mutableStateOf(0) }
 
     val tabs = listOf("Incoming", "Outgoing")
@@ -31,7 +28,7 @@ fun FriendRequests(){
             .fillMaxSize()
             .background(color = BackgroundColor)
     ) {
-        Scaffold (
+        Scaffold(
             topBar = {
                 TabRow(selectedTabIndex = tabIndex) {
                     tabs.forEachIndexed { index, title ->
@@ -40,9 +37,9 @@ fun FriendRequests(){
                             onClick = { tabIndex = index },
                             modifier = Modifier.background(color = TuftsBlue),
                             icon = {
-                                when (index){
+                                when (index) {
                                     0 -> Icon(Icons.Filled.Inbox, "")
-                                    1 -> Icon(Icons.Filled.ForwardToInbox,"")
+                                    1 -> Icon(Icons.Filled.ForwardToInbox, "")
                                 }
                             }
                         )
@@ -73,10 +70,12 @@ fun FriendRequests(){
 }
 
 @Composable
-fun IncomingRequestsScreen(){
-    Column(modifier = Modifier.fillMaxSize(),
+fun IncomingRequestsScreen() {
+    Column(
+        modifier = Modifier.fillMaxSize(),
         horizontalAlignment = Alignment.CenterHorizontally,
-        verticalArrangement = Arrangement.Center) {
+        verticalArrangement = Arrangement.Center
+    ) {
         Row(modifier = Modifier.align(Alignment.CenterHorizontally)) {
             Text(
                 text = "Incoming Requests",
@@ -89,10 +88,12 @@ fun IncomingRequestsScreen(){
 }
 
 @Composable
-fun OutgoingRequestsScreen(){
-    Column(modifier = Modifier.fillMaxSize(),
+fun OutgoingRequestsScreen() {
+    Column(
+        modifier = Modifier.fillMaxSize(),
         horizontalAlignment = Alignment.CenterHorizontally,
-        verticalArrangement = Arrangement.Center) {
+        verticalArrangement = Arrangement.Center
+    ) {
         Row(modifier = Modifier.align(Alignment.CenterHorizontally)) {
             Text(
                 text = "Outgoing Requests",
