@@ -768,26 +768,19 @@ fun DeleteAccountDialog(fireBaseAuth: FirebaseAuth) {
 
                 val documentReference = fireStore.collection("users").document(userID)
 
-                documentReference.get().addOnSuccessListener { documentSnapshot ->
+                if (username == currentUser.value.info?.userName) {
+                    fireBaseAuth.currentUser?.delete()
+                    documentReference.delete()
 
-                    val user = documentSnapshot.toObject<TravelyzeUser>()
-
-                    if (username == user?.info?.userName) {
-                        fireBaseAuth.currentUser?.delete()
-                        documentReference.delete()
-
-                        openDeleteDialog.value = false
-                        isLoggedIn.value = false
-                        Toast.makeText(
-                            contextForToast,
-                            "Account successfully deleted.",
-                            Toast.LENGTH_SHORT
-                        ).show()
-                    } else {
-                        validateUsernameError = false
-                    }
-
-
+                    openDeleteDialog.value = false
+                    isLoggedIn.value = false
+                    Toast.makeText(
+                        contextForToast,
+                        "Account successfully deleted.",
+                        Toast.LENGTH_SHORT
+                    ).show()
+                } else {
+                    validateUsernameError = false
                 }
             }) {
                 Text(
