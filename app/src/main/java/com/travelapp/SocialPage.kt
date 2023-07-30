@@ -1,29 +1,39 @@
 package com.travelapp
 
+import android.annotation.SuppressLint
 import android.util.Log
 import android.widget.Toast
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxHeight
+import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.text.KeyboardActions
 import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.foundation.verticalScroll
+import androidx.compose.material.Icon
+import androidx.compose.material.IconButton
+import androidx.compose.material.Scaffold
 import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.Check
+import androidx.compose.material.icons.filled.Close
 import androidx.compose.material.icons.filled.Person2
 import androidx.compose.material.icons.filled.PersonAdd
 import androidx.compose.material3.AlertDialog
 import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
+import androidx.compose.material3.Divider
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
@@ -47,134 +57,137 @@ import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import coil.compose.rememberAsyncImagePainter
+import coil.request.ImageRequest
+import coil.size.Size
 import com.travelapp.composable.TravelyzeUser
 import com.google.firebase.auth.ktx.auth
 import com.google.firebase.firestore.ktx.firestore
 import com.google.firebase.firestore.ktx.toObject
 import com.google.firebase.ktx.Firebase
+import com.google.firebase.storage.ktx.storage
 import com.travelapp.composable.CustomOutlinedTextField
 import com.travelapp.composable.TopBar
 import com.travelapp.ui.theme.Alabaster
 import com.travelapp.ui.theme.BackgroundColor
 import com.travelapp.ui.theme.TextButtonColor
 import com.travelapp.ui.theme.robotoFamily
+import java.io.File
 
 val openAddFriendDialog = mutableStateOf(false)
 val isAddingFriend = mutableStateOf(false)
+private val currentFriendPage = mutableStateOf("")
 
+@SuppressLint("UnusedMaterialScaffoldPaddingParameter")
 @Composable
 fun Social() {
+    //TODO Improve the friend page UI and display information in a better way
     Column(
         modifier = Modifier
             .fillMaxHeight()
             .fillMaxWidth()
             .background(color = BackgroundColor)
     ) {
-        Row(
-            Modifier.fillMaxWidth(),
-            horizontalArrangement = Arrangement.Center
-        ) {
-            TopBar(
-                title = "Friends",
-                buttonIcon = Icons.Filled.PersonAdd,
-                onButtonClicked = {
-                    isAddingFriend.value = true
-                }
-            )
-        }
-
-        //TODO Improve the friend page UI and display information in a better way
-        Row() {
-            Column(
-                modifier = Modifier
-                    .fillMaxHeight()
-                    .fillMaxWidth()
-                    .padding(20.dp)
-                    .verticalScroll(rememberScrollState())
-            ) {
-                Row(
-                    horizontalArrangement = Arrangement.SpaceBetween,
+        Scaffold(
+            topBar = {
+                TopBar(
+                    title = "Friends",
+                    buttonIcon = Icons.Filled.PersonAdd,
+                    onButtonClicked = {
+                        isAddingFriend.value = true
+                    }
+                )
+            },
+            content = {
+                val db = Firebase.firestore
+                LazyColumn(
                     modifier = Modifier
-                        .fillMaxWidth()
-                        .padding(bottom = 10.dp)
+                        .fillMaxSize()
+                        .padding(top = 25.dp),
+                    horizontalAlignment = Alignment.CenterHorizontally,
                 ) {
-                    Column() {
-                        Card(
-                            modifier = Modifier
-                                .fillMaxWidth()
-                                .padding(15.dp),
-                            elevation = CardDefaults.cardElevation(10.dp),
-                            colors = CardDefaults.cardColors(Alabaster)
-                        ) {
-                            Column(
-                                modifier = Modifier.padding(15.dp)
-                            ) {
+                    if (currentUser.value.data?.friendsList.isNullOrEmpty()) {
+                        item {
+                            Text(
+                                text = "No friends yet, add some!",
+                                textAlign = TextAlign.Center,
+                                fontSize = 20.sp,
+                                fontWeight = FontWeight.Bold
+                            )
+                        }
+                    } else {
+                        for (addedFriend in currentUser.value.data?.friendsList!!) {
+                            val tempProfileImage = mutableStateOf<File>(File(""))
+                            val friendDocumentReference =
+                                db.collection("users").document(addedFriend)
+                            var friend = mutableStateOf(TravelyzeUser(null, null, null))
+
+                            var profileImage =
+                                Firebase.storage.reference.child("users/${addedFriend}/profile_picture.jpg")
+
+                            profileImage.getFile(profileImageFile.value).addOnCompleteListener {
+                                tempProfileImage.value = profileImageFile.value
+                            }
+
+                            friendDocumentReference.get().addOnSuccessListener { documentSnapshot ->
+                                friend.value = documentSnapshot.toObject<TravelyzeUser>()!!
+                            }
+
+                            item {
                                 Row(
-                                    verticalAlignment = Alignment.CenterVertically,
-                                    horizontalArrangement = Arrangement.Start,
+                                    horizontalArrangement = Arrangement.SpaceBetween,
                                     modifier = Modifier
                                         .fillMaxWidth()
-                                        .padding(5.dp)
+                                        .padding(horizontal = 30.dp)
                                 ) {
-                                    Image(
-                                        painter = rememberAsyncImagePainter("https://images-wixmp-ed30a86b8c4ca887773594c2.wixmp.com/f/be718605-eac9-40a7-bccd-dea055256f78/d5d27jb-f8843464-3ce2-4419-be3d-4b1210ca52a4.jpg/v1/fill/w_877,h_620,q_75,strp/mudkip_by_star_soul_d5d27jb-fullview.jpg?token=eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJzdWIiOiJ1cm46YXBwOjdlMGQxODg5ODIyNjQzNzNhNWYwZDQxNWVhMGQyNmUwIiwiaXNzIjoidXJuOmFwcDo3ZTBkMTg4OTgyMjY0MzczYTVmMGQ0MTVlYTBkMjZlMCIsIm9iaiI6W1t7ImhlaWdodCI6Ijw9NjIwIiwicGF0aCI6IlwvZlwvYmU3MTg2MDUtZWFjOS00MGE3LWJjY2QtZGVhMDU1MjU2Zjc4XC9kNWQyN2piLWY4ODQzNDY0LTNjZTItNDQxOS1iZTNkLTRiMTIxMGNhNTJhNC5qcGciLCJ3aWR0aCI6Ijw9ODc3In1dXSwiYXVkIjpbInVybjpzZXJ2aWNlOmltYWdlLm9wZXJhdGlvbnMiXX0.6U--8zmMblPQSkaSs_gy1ATKl6euB83wHSn--e_36os"),
-                                        contentDescription = null,
-                                        contentScale = ContentScale.Crop,
+                                    Card(
                                         modifier = Modifier
-                                            .size(75.dp)
-                                            .clip(CircleShape)
-                                            .border(5.dp, Color.White, CircleShape)
-                                    )
-
-                                    Text(
-                                        "Chris D'Entremont",
-                                        fontSize = 20.sp,
-                                        fontWeight = FontWeight.Normal,
-                                        textAlign = TextAlign.Center,
-                                        modifier = Modifier.padding(start = 10.dp)
-                                    )
-                                }
-
-                                Column(
-                                    Modifier
-                                        .border(
-                                            2.dp,
-                                            SolidColor(Color.Black),
-                                            shape = RoundedCornerShape(5.dp)
-                                        )
-                                        .padding(8.dp)
-                                ) {
-                                    Row(
-                                        Modifier.fillMaxWidth(),
-                                        horizontalArrangement = Arrangement.Start
+                                            .fillMaxWidth()
+                                            .clickable { /*TODO Open Profile Page*/ },
+                                        colors = CardDefaults.cardColors(Color.Transparent)
                                     ) {
-                                        Text(
-                                            text = "I read about Paris, France!",
-                                            fontWeight = FontWeight.Bold,
-                                            fontSize = 16.sp,
-                                            modifier = Modifier.padding(start = 10.dp)
-                                        )
-                                    }
-                                    Row(
-                                        Modifier
-                                            .fillMaxWidth(),
-                                        horizontalArrangement = Arrangement.Start,
-                                    ) {
-                                        Text(
-                                            text = "Paris is a European city located in France...",
-                                            modifier = Modifier.padding(
-                                                start = 10.dp,
-                                                bottom = 15.dp
-                                            ),
-                                        )
+                                        Row(
+                                            verticalAlignment = Alignment.CenterVertically,
+                                            horizontalArrangement = Arrangement.Start,
+                                            modifier = Modifier
+                                                .fillMaxWidth()
+                                        ) {
+                                            Image(
+                                                painter = rememberAsyncImagePainter(
+                                                    model =
+                                                    ImageRequest.Builder(LocalContext.current)
+                                                        .data(tempProfileImage.value)
+                                                        .size(Size.ORIGINAL)
+                                                        .build()
+                                                ),
+                                                contentDescription = null,
+                                                contentScale = ContentScale.Crop,
+                                                modifier = Modifier
+                                                    .size(90.dp)
+                                                    .clip(CircleShape)
+                                            )
+
+                                            Text(
+                                                "" + friend.value.info?.userName,
+                                                fontSize = 38.sp,
+                                                fontWeight = FontWeight.Normal,
+                                                textAlign = TextAlign.Center,
+                                                modifier = Modifier.padding(start = 15.dp)
+                                            )
+                                        }
                                     }
                                 }
+
+                                Divider(
+                                    modifier = Modifier.padding(vertical = 40.dp, horizontal = 70.dp),
+                                    color = Color.Gray,
+                                    thickness = 1.dp
+                                )
                             }
                         }
                     }
                 }
             }
-        }
+        )
     }
 }
 
@@ -337,5 +350,10 @@ fun addFriendDialog() {
             }
         }
     )
+}
+
+@Composable
+fun displayFriendProfile(){
+    //TODO Display profile
 }
 

@@ -42,7 +42,7 @@ import java.io.File
 val openCancelRequestDialog = mutableStateOf(false)
 val openAcceptRequestDialog = mutableStateOf(false)
 val openRejectRequestDialog = mutableStateOf(false)
-private val currentFriend = mutableStateOf("")
+private val currentFriendID = mutableStateOf("")
 
 @SuppressLint("UnusedMaterialScaffoldPaddingParameter")
 @Composable
@@ -209,7 +209,7 @@ fun IncomingRequestsScreen() {
                                             modifier = Modifier.padding(end = 15.dp),
                                             onClick = {
                                                 openAcceptRequestDialog.value = true
-                                                currentFriend.value = incomingUser
+                                                currentFriendID.value = incomingUser
                                             },
                                         ) {
                                             Icon(
@@ -222,7 +222,7 @@ fun IncomingRequestsScreen() {
                                             modifier = Modifier.padding(end = 10.dp),
                                             onClick = {
                                                 openRejectRequestDialog.value = true
-                                                currentFriend.value = incomingUser
+                                                currentFriendID.value = incomingUser
                                             },
                                         ) {
                                             Icon(
@@ -343,7 +343,7 @@ fun OutgoingRequestsScreen() {
                                             modifier = Modifier.padding(end = 9.dp),
                                             onClick = {
                                                 openCancelRequestDialog.value = true
-                                                currentFriend.value = outgoingUser
+                                                currentFriendID.value = outgoingUser
                                             },
                                         ) {
                                             Icon(
@@ -396,7 +396,7 @@ fun acceptFriendRequest(){
 
 
                 val friendDocumentReference =
-                    db.collection("users").document(currentFriend.value)
+                    db.collection("users").document(currentFriendID.value)
                 var friendAccount = mutableStateOf(TravelyzeUser(null, null, null))
 
                 friendDocumentReference.get().addOnSuccessListener { documentSnapshot ->
@@ -404,13 +404,13 @@ fun acceptFriendRequest(){
 
 
                     if (currentUser.value.requests?.incomingFriendRequests?.contains(
-                            currentFriend.value) == true &&
+                            currentFriendID.value) == true &&
                         friendAccount.value.requests?.outgoingFriendRequests?.contains(
                             userID) == true
                     ) {
                         //Add friend to friends list
-                        currentUser.value.requests?.incomingFriendRequests?.remove(currentFriend.value)
-                        currentUser.value.data?.friendsList?.add( currentFriend.value )
+                        currentUser.value.requests?.incomingFriendRequests?.remove(currentFriendID.value)
+                        currentUser.value.data?.friendsList?.add( currentFriendID.value )
 
                         friendAccount.value.requests?.outgoingFriendRequests?.remove(userID)
                         friendAccount.value.data?.friendsList?.add( userID )
@@ -485,7 +485,7 @@ fun cancelFriendRequest(){
 
 
                 val friendDocumentReference =
-                    db.collection("users").document(currentFriend.value)
+                    db.collection("users").document(currentFriendID.value)
                 var friendAccount = mutableStateOf(TravelyzeUser(null, null, null))
 
                 friendDocumentReference.get().addOnSuccessListener { documentSnapshot ->
@@ -493,12 +493,12 @@ fun cancelFriendRequest(){
 
 
                     if (currentUser.value.requests?.outgoingFriendRequests?.contains(
-                            currentFriend.value) == true &&
+                            currentFriendID.value) == true &&
                         friendAccount.value.requests?.incomingFriendRequests?.contains(
                             userID) == true
                     ) {
                         //Remove request from users respective lists
-                        currentUser.value.requests?.outgoingFriendRequests?.remove(currentFriend.value)
+                        currentUser.value.requests?.outgoingFriendRequests?.remove(currentFriendID.value)
 
                         friendAccount.value.requests?.incomingFriendRequests?.remove(userID)
 
@@ -566,14 +566,13 @@ fun rejectFriendRequest(){
         },
         confirmButton = {
             TextButton(onClick = {
-                //TODO Remove friend request from both users lists
                 val userID = Firebase.auth.currentUser?.uid.toString()
                 val currUserDocumentReference =
                     db.collection("users").document(userID)
 
 
                 val friendDocumentReference =
-                    db.collection("users").document(currentFriend.value)
+                    db.collection("users").document(currentFriendID.value)
                 var friendAccount = mutableStateOf(TravelyzeUser(null, null, null))
 
                 friendDocumentReference.get().addOnSuccessListener { documentSnapshot ->
@@ -581,12 +580,12 @@ fun rejectFriendRequest(){
 
 
                     if (currentUser.value.requests?.incomingFriendRequests?.contains(
-                            currentFriend.value) == true &&
+                            currentFriendID.value) == true &&
                         friendAccount.value.requests?.outgoingFriendRequests?.contains(
                             userID) == true
                     ) {
                         //Add friend to friends list
-                        currentUser.value.requests?.incomingFriendRequests?.remove(currentFriend.value)
+                        currentUser.value.requests?.incomingFriendRequests?.remove(currentFriendID.value)
 
                         friendAccount.value.requests?.outgoingFriendRequests?.remove(userID)
 

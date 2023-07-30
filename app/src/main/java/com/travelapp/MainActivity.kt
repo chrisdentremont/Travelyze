@@ -55,7 +55,6 @@ import kotlinx.coroutines.launch
 import kotlinx.coroutines.tasks.await
 import java.io.File
 
-//TODO Change to
 val isLoggedIn = mutableStateOf(Firebase.auth.currentUser != null)
 
 var locationList = mutableListOf<LocationObject>()
