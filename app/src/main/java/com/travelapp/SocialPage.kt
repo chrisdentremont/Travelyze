@@ -7,12 +7,15 @@ import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
 import androidx.compose.foundation.clickable
+import androidx.compose.foundation.horizontalScroll
 import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.lazy.LazyColumn
@@ -26,10 +29,13 @@ import androidx.compose.material.Icon
 import androidx.compose.material.IconButton
 import androidx.compose.material.Scaffold
 import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.AddAPhoto
 import androidx.compose.material.icons.filled.Check
 import androidx.compose.material.icons.filled.Close
 import androidx.compose.material.icons.filled.Person2
 import androidx.compose.material.icons.filled.PersonAdd
+import androidx.compose.material.icons.filled.PersonRemove
+import androidx.compose.material.icons.filled.Settings
 import androidx.compose.material3.AlertDialog
 import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
@@ -46,6 +52,7 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.graphics.FilterQuality
 import androidx.compose.ui.graphics.SolidColor
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.platform.LocalContext
@@ -56,7 +63,11 @@ import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import androidx.compose.ui.window.Dialog
+import androidx.compose.ui.window.DialogProperties
+import coil.compose.AsyncImage
 import coil.compose.rememberAsyncImagePainter
+import coil.decode.SvgDecoder
 import coil.request.ImageRequest
 import coil.size.Size
 import com.travelapp.composable.TravelyzeUser
@@ -70,17 +81,29 @@ import com.travelapp.composable.TopBar
 import com.travelapp.ui.theme.Alabaster
 import com.travelapp.ui.theme.BackgroundColor
 import com.travelapp.ui.theme.TextButtonColor
+import com.travelapp.ui.theme.halcomFamily
 import com.travelapp.ui.theme.robotoFamily
 import java.io.File
 
 val openAddFriendDialog = mutableStateOf(false)
 val isAddingFriend = mutableStateOf(false)
-private val currentFriendPage = mutableStateOf("")
+val openFriendProfile = mutableStateOf(false)
+val openRemoveFriendDialog = mutableStateOf(false)
 
+private val currentFriendID = mutableStateOf("")
+private val currentFriendPage = mutableStateOf(TravelyzeUser(null, null, null))
+private val displayedFriendFile = mutableStateOf<File>(File(""))
 @SuppressLint("UnusedMaterialScaffoldPaddingParameter")
 @Composable
 fun Social() {
-    //TODO Improve the friend page UI and display information in a better way
+    if(openFriendProfile.value){
+        displayFriendProfile()
+    }
+
+    if(openRemoveFriendDialog.value){
+        removeFriendDialog()
+    }
+
     Column(
         modifier = Modifier
             .fillMaxHeight()
@@ -143,7 +166,12 @@ fun Social() {
                                     Card(
                                         modifier = Modifier
                                             .fillMaxWidth()
-                                            .clickable { /*TODO Open Profile Page*/ },
+                                            .clickable {
+                                                openFriendProfile.value = true
+                                                currentFriendID.value = addedFriend
+                                                currentFriendPage.value = friend.value
+                                                displayedFriendFile.value = displayedFriend.value
+                                            },
                                         colors = CardDefaults.cardColors(Color.Transparent)
                                     ) {
                                         Row(
@@ -354,7 +382,233 @@ fun addFriendDialog() {
 }
 
 @Composable
+fun removeFriendDialog(){
+    val contextForToast = LocalContext.current.applicationContext
+    val db = Firebase.firestore
+
+    AlertDialog(
+        onDismissRequest = {
+            openRemoveFriendDialog.value = false
+        },
+        title = {
+            Text(
+                text = "Remove Friend",
+                style = MaterialTheme.typography.bodyLarge,
+                fontFamily = robotoFamily,
+                color = Color.Black
+            )
+        },
+        text = {
+            Text(
+                text = "Are you sure you want to remove this friend?",
+                style = MaterialTheme.typography.bodyMedium,
+                fontFamily = robotoFamily,
+                color = Color.Black
+            )
+        },
+        confirmButton = {
+            TextButton(onClick = {
+                val userID = Firebase.auth.currentUser?.uid.toString()
+                val currUserDocumentReference =
+                    db.collection("users").document(userID)
+
+
+                val friendDocumentReference =
+                    db.collection("users").document(currentFriendID.value)
+
+
+                friendDocumentReference.get().addOnSuccessListener { documentSnapshot ->
+                    currentFriendPage.value = documentSnapshot.toObject<TravelyzeUser>()!!
+
+
+                    if (currentUser.value.data?.friendsList?.contains(
+                            currentFriendID.value) == true &&
+                        currentFriendPage.value.data?.friendsList?.contains(
+                            userID) == true
+                    ) {
+                        //Remove request from users respective lists
+                        currentUser.value.data?.friendsList?.remove(currentFriendID.value)
+
+                        currentFriendPage.value.data?.friendsList?.remove(userID)
+
+                        //Update accounts
+                        currUserDocumentReference.set(currentUser.value)
+                        friendDocumentReference.set(currentFriendPage.value)
+
+                        openRemoveFriendDialog.value = false
+                        openFriendProfile.value = false
+                        Toast.makeText(
+                            contextForToast,
+                            "You are no longer friends",
+                            Toast.LENGTH_SHORT
+                        ).show()
+                    }
+                }
+            }) {
+                Text(
+                    text = "REMOVE",
+                    fontFamily = robotoFamily,
+                    color = Color.Red,
+                )
+            }
+        },
+        dismissButton = {
+            TextButton(onClick = {
+                openRemoveFriendDialog.value = false
+            }) {
+                Text(
+                    text = "CANCEL",
+                    fontFamily = robotoFamily,
+                    color = TextButtonColor,
+                )
+            }
+        },
+        properties = DialogProperties(
+            dismissOnClickOutside = true
+        )
+    )
+}
+@SuppressLint("UnusedMaterialScaffoldPaddingParameter")
+@Composable
 fun displayFriendProfile(){
-    //TODO Display profile
+    Dialog(
+        onDismissRequest = {
+            openFriendProfile.value = false
+        }
+    ){
+        Scaffold(
+            modifier = Modifier
+                .padding(50.dp)
+                .clip(shape = RoundedCornerShape(20.dp))
+                .fillMaxHeight(0.9f),
+            topBar = {
+                     TopBar(
+                         buttonIcon = Icons.Filled.PersonRemove,
+                         onButtonClicked = {
+                             openRemoveFriendDialog.value = true
+                         }
+                     )
+            },
+            content = {
+                Column(
+                    Modifier
+                        .fillMaxSize()
+                        .verticalScroll(rememberScrollState())
+                        .background(color = BackgroundColor)
+                ) {
+                    Row(
+                        modifier = Modifier
+                            .padding(horizontal = 30.dp, vertical = 50.dp)
+                            .background(color = BackgroundColor),
+                        verticalAlignment = Alignment.CenterVertically,
+                    ) {
+                        Box {
+                            Image(
+                                painter = rememberAsyncImagePainter(
+                                    model =
+                                    ImageRequest.Builder(LocalContext.current)
+                                        .data(displayedFriendFile.value)
+                                        .size(Size.ORIGINAL)
+                                        .build()
+                                ),
+                                contentDescription = null,
+                                contentScale = ContentScale.Crop,
+                                modifier = Modifier
+                                    .size(90.dp)
+                                    .clip(CircleShape)
+                            )
+                        }
+                        Column(
+                            modifier = Modifier.padding(start = 20.dp)
+                        ) {
+                            Text(
+                                text = "${currentFriendPage.value.info?.firstName} ${currentFriendPage.value.info?.lastName}",
+                                style = MaterialTheme.typography.headlineMedium,
+                                fontFamily = halcomFamily,
+                                fontWeight = FontWeight.Normal,
+                                color = Color.Black
+                            )
+                            Text(
+                                text = "@${currentFriendPage.value.info?.userName}",
+                                style = MaterialTheme.typography.bodyLarge,
+                                fontFamily = halcomFamily,
+                                fontWeight = FontWeight.Light,
+                                color = Color.Black
+                            )
+                        }
+                    }
+
+                    Row( modifier = Modifier
+                        .padding(start = 30.dp, bottom = 10.dp)
+                        .background(color = BackgroundColor)){
+                        Text(
+                            text = "Favorite Locations",
+                            style = MaterialTheme.typography.headlineMedium,
+                            fontFamily = halcomFamily,
+                            fontWeight = FontWeight.Normal,
+                            color = Color.Black
+                        )
+                    }
+
+                    Row(
+                        modifier = Modifier
+                            .padding(start = 20.dp, end = 20.dp)
+                            .horizontalScroll(rememberScrollState())
+                            .fillMaxHeight()
+                    ){
+                        if(!currentFriendPage.value.data?.favoriteLocations.isNullOrEmpty()){
+                            currentFriendPage.value.data?.favoriteLocations?.forEach { name ->
+                                var location = locationList.find { it.Name.equals(name) }
+                                androidx.compose.material.Card(
+                                    modifier = Modifier
+                                        .size(width = 250.dp, height = 150.dp)
+                                        .padding(10.dp)
+                                        .clickable {
+                                            profileSelectedName.value = name
+                                            profileLocationSelected.value = true
+                                        },
+                                    shape = RoundedCornerShape(15.dp),
+                                    elevation = 5.dp
+                                ) {
+                                    Column() {
+                                        Row(
+                                            verticalAlignment = Alignment.CenterVertically,
+                                            horizontalArrangement = Arrangement.Start,
+                                            modifier = Modifier
+                                                .fillMaxWidth()
+                                        ) {
+                                            AsyncImage(
+                                                model =
+                                                ImageRequest.Builder(LocalContext.current)
+                                                    .decoderFactory(SvgDecoder.Factory())
+                                                    .data(location?.Flag)
+                                                    .build(),
+                                                filterQuality = FilterQuality.None,
+                                                contentScale = ContentScale.FillBounds,
+                                                contentDescription = null,
+                                            )
+                                        }
+                                    }
+                                }
+                            }
+                        }else{
+                            Row( modifier = Modifier
+                                .padding(start = 10.dp, bottom = 10.dp)
+                                .background(color = BackgroundColor)){
+                                Text(
+                                    text = "This user doesn't have any favorite locations.",
+                                    style = MaterialTheme.typography.bodyLarge,
+                                    fontFamily = halcomFamily,
+                                    fontWeight = FontWeight.Normal,
+                                    color = Color.Black
+                                )
+                            }
+                        }
+                    }
+
+                }
+            }
+        )
+    }
 }
 
