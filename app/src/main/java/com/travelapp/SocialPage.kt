@@ -116,16 +116,17 @@ fun Social() {
                         }
                     } else {
                         for (addedFriend in currentUser.value.data?.friendsList!!) {
-                            val tempProfileImage = mutableStateOf<File>(File(""))
+                            val tempProfileImage = mutableStateOf<File>(File.createTempFile("$addedFriend", ".jpg"))
                             val friendDocumentReference =
                                 db.collection("users").document(addedFriend)
                             var friend = mutableStateOf(TravelyzeUser(null, null, null))
+                            var displayedFriend = mutableStateOf<File>(File(""))
 
                             var profileImage =
                                 Firebase.storage.reference.child("users/${addedFriend}/profile_picture.jpg")
 
-                            profileImage.getFile(profileImageFile.value).addOnCompleteListener {
-                                tempProfileImage.value = profileImageFile.value
+                            profileImage.getFile(tempProfileImage.value).addOnCompleteListener {
+                                displayedFriend.value = tempProfileImage.value
                             }
 
                             friendDocumentReference.get().addOnSuccessListener { documentSnapshot ->
@@ -155,7 +156,7 @@ fun Social() {
                                                 painter = rememberAsyncImagePainter(
                                                     model =
                                                     ImageRequest.Builder(LocalContext.current)
-                                                        .data(tempProfileImage.value)
+                                                        .data(displayedFriend.value)
                                                         .size(Size.ORIGINAL)
                                                         .build()
                                                 ),
