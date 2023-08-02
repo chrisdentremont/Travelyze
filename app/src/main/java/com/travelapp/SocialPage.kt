@@ -499,7 +499,7 @@ fun displayFriendProfile(){
     ){
         Scaffold(
             modifier = Modifier
-                .padding(20.dp)
+                .padding(vertical = 20.dp)
                 .clip(shape = RoundedCornerShape(20.dp))
                 .fillMaxSize(),
             topBar = {

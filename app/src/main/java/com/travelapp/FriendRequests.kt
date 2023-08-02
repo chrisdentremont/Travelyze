@@ -435,7 +435,7 @@ fun acceptFriendRequest(){
                 Text(
                     text = "ACCEPT",
                     fontFamily = robotoFamily,
-                    color = Color.Red,
+                    color = TextButtonColor,
                 )
             }
         },
