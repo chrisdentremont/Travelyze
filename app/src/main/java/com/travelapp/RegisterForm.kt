@@ -73,8 +73,8 @@ fun RegisterForm() {
     var validateConfirmPassword by rememberSaveable { mutableStateOf(true) }
     var validateUserName by rememberSaveable { mutableStateOf(true) }
     var validateArePasswordsEqual by rememberSaveable { mutableStateOf(true) }
-    var isPasswordVisible by rememberSaveable() { mutableStateOf(true) }
-    var isConfirmPasswordVisible by rememberSaveable() { mutableStateOf(true) }
+    var isPasswordVisible by rememberSaveable() { mutableStateOf(false) }
+    var isConfirmPasswordVisible by rememberSaveable() { mutableStateOf(false) }
 
     val validateFirstNameError = "Please input a valid first name"
     val validateLastNameError = "Please input a valid last name"

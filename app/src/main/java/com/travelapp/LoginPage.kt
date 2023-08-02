@@ -2,15 +2,14 @@ package com.travelapp
 
 import android.util.Patterns
 import android.widget.Toast
+import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.text.KeyboardActions
 import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.material.*
 import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.AlternateEmail
-import androidx.compose.material.icons.filled.Visibility
-import androidx.compose.material.icons.filled.VisibilityOff
+import androidx.compose.material.icons.filled.*
 import androidx.compose.runtime.*
 import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.ui.Alignment
@@ -19,6 +18,7 @@ import androidx.compose.ui.focus.FocusDirection
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.LocalFocusManager
+import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.font.FontStyle
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.input.ImeAction
@@ -83,13 +83,27 @@ fun Login(auth: FirebaseAuth, nav: NavController) {
         horizontalAlignment = Alignment.CenterHorizontally,
         verticalArrangement = Arrangement.Center
     ) {
+
+        Row(
+            Modifier
+                .fillMaxWidth()
+                .padding(start = 15.dp),
+            horizontalArrangement = Arrangement.Center
+        ) {
+            Image(
+                painter = painterResource(id = R.drawable.logo),
+                contentDescription = null,
+                modifier = Modifier.size(150.dp, 150.dp)
+            )
+        }
+
         //
         // Welcome Message
         //
         Row(Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.Center) {
             Text(
                 modifier = Modifier
-                    .padding(30.dp)
+                    .padding(20.dp)
                     .width(500.dp),
                 fontFamily = robotoFamily,
                 fontWeight = FontWeight.Light,
@@ -115,9 +129,17 @@ fun Login(auth: FirebaseAuth, nav: NavController) {
             keyboardActions = KeyboardActions(
                 onNext = { focusManager.moveFocus(FocusDirection.Down) }
             ),
+            leadingIcon = {
+                Icon(
+                    imageVector = Icons.Filled.Email,
+                    contentDescription = "")
+            },
+            colors = TextFieldDefaults.outlinedTextFieldColors(
+                focusedBorderColor = TextButtonColor,
+                cursorColor = TextButtonColor,
+                focusedLabelColor = TextButtonColor),
             modifier = Modifier
                 .fillMaxWidth(.6f)
-                .padding(bottom = 15.dp)
         )
 
         //
@@ -128,28 +150,49 @@ fun Login(auth: FirebaseAuth, nav: NavController) {
             onValueChange = { password = it },
             label = "Password",
             modifier = Modifier
-                .fillMaxWidth(.6f)
-                .padding(top = 15.dp),
+                .fillMaxWidth(.6f),
             keyboardOptions = KeyboardOptions(
                 keyboardType = KeyboardType.Password,
                 imeAction = ImeAction.Done
             ),
             keyboardActions = KeyboardActions(
-                onNext = { focusManager.clearFocus() }
+                onNext = { focusManager.clearFocus() },
+                onDone = {
+                    auth.signInWithEmailAndPassword(email, password)
+                        .addOnCompleteListener {
+                            if (it.isSuccessful) {
+                                val fireStore = FirebaseFirestore.getInstance()
+
+                                val userID = Firebase.auth.currentUser?.uid.toString()
+                                val documentReference = fireStore.collection("users").document(userID)
+
+                                documentReference.get().addOnSuccessListener { documentSnapshot ->
+                                    currentUser.value = documentSnapshot.toObject<TravelyzeUser>()!!
+                                }
+
+                                isLoggedIn.value = true
+                                isPasswordValid = true
+                                loginErrorMessage = ""
+                            } else {
+                                isPasswordValid = false
+                                loginErrorMessage = "Invalid login credentials."
+                            }
+                        }
+                }
             ),
             showError = !isPasswordValid,
             errorMessage = loginErrorMessage,
             isPasswordField = true,
+            isPasswordVisible = isPasswordVisible,
+            onVisibilityChange = { isPasswordVisible = it },
 
-            leadingIconImageVector = if (isPasswordVisible)
-                Icons.Filled.Visibility
-            else Icons.Filled.VisibilityOff,
+            leadingIconImageVector = Icons.Filled.Password,
             leadingIconDescription = if (isPasswordVisible) "Hide password" else "Show password"
         )
 
         Row(
             modifier = Modifier
-                .padding(vertical = 30.dp)
+                .padding(top = 30.dp)
                 .fillMaxWidth(),
             horizontalArrangement = Arrangement.Center
         ) {

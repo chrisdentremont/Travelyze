@@ -45,6 +45,7 @@ import com.travelapp.locationSelected
 import com.travelapp.selectedName
 import com.travelapp.ui.theme.BackgroundAccentColor
 import com.travelapp.ui.theme.BackgroundColor
+import com.travelapp.ui.theme.TextButtonColor
 import com.travelapp.ui.theme.robotoFamily
 
 @Composable
@@ -102,7 +103,11 @@ fun CustomOutlinedTextField(
             },
             keyboardOptions = keyboardOptions,
             keyboardActions = keyboardActions,
-            singleLine = true
+            singleLine = true,
+            colors = TextFieldDefaults.outlinedTextFieldColors(
+                focusedBorderColor = TextButtonColor,
+                cursorColor = TextButtonColor,
+                focusedLabelColor = TextButtonColor),
         )
 
         if (showError) {
@@ -142,8 +147,7 @@ fun TopBar(title: String = "", buttonIcon: ImageVector, onButtonClicked: () -> U
                 )
             }
         },
-        backgroundColor = BackgroundAccentColor,
-        modifier = Modifier.padding(bottom = 10.dp)
+        backgroundColor = BackgroundAccentColor
     )
 }
 

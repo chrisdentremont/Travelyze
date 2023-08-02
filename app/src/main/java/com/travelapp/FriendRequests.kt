@@ -19,8 +19,10 @@ import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.platform.LocalLayoutDirection
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
+import androidx.compose.ui.unit.LayoutDirection
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.compose.ui.window.DialogProperties
@@ -32,6 +34,7 @@ import com.google.firebase.firestore.ktx.firestore
 import com.google.firebase.firestore.ktx.toObject
 import com.google.firebase.ktx.Firebase
 import com.google.firebase.storage.ktx.storage
+import com.travelapp.composable.TopBar
 import com.travelapp.composable.TravelyzeUser
 import com.travelapp.ui.theme.Alabaster
 import com.travelapp.ui.theme.BackgroundColor
@@ -70,34 +73,51 @@ fun FriendRequests() {
     ) {
         Scaffold(
             topBar = {
-                TabRow(selectedTabIndex = tabIndex) {
-                    tabs.forEachIndexed { index, title ->
-                        Tab(text = { Text(title) },
-                            selected = tabIndex == index,
-                            onClick = { tabIndex = index },
-                            modifier = Modifier.background(color = Color.DarkGray),
-                            icon = {
-                                when (index) {
-                                    0 -> Icon(Icons.Filled.Inbox, "")
-                                    1 -> Icon(Icons.Filled.ForwardToInbox, "")
+                Column(){
+                    Row(){
+                        TopAppBar(
+                            title = {
+                                Text(
+                                    text = "",
+                                    fontSize = 25.sp,
+                                    fontFamily = robotoFamily,
+                                    fontWeight = FontWeight.Normal,
+                                    color = Color.Black
+                                )
+                            },
+                            navigationIcon = {
+                                IconButton(
+                                    onClick = { isAddingFriend.value = false },
+                                ) {
+                                    Icon(
+                                        imageVector = Icons.Filled.ArrowBack,
+                                        contentDescription = "",
+                                        modifier = Modifier.size(size = 40.dp)
+                                    )
                                 }
-                            }
+                            },
+                            backgroundColor = BackgroundAccentColor
                         )
+                    }
+
+                    Row(){
+                        TabRow(selectedTabIndex = tabIndex) {
+                            tabs.forEachIndexed { index, title ->
+                                Tab(text = { Text(title) },
+                                    selected = tabIndex == index,
+                                    onClick = { tabIndex = index },
+                                    modifier = Modifier.background(color = Color.DarkGray),
+                                    icon = {
+                                        when (index) {
+                                            0 -> Icon(Icons.Filled.Inbox, "")
+                                            1 -> Icon(Icons.Filled.ForwardToInbox, "")
+                                        }
+                                    }
+                                )
+                            }
+                        }
                     }
                 }
-            },
-            floatingActionButton = {
-                FloatingActionButton(
-                    onClick = { openAddFriendDialog.value = true },
-                    backgroundColor = TuftsBlue,
-                    content = {
-                        Icon(
-                            imageVector = Icons.Filled.Add,
-                            contentDescription = null,
-                            tint = Color.White
-                        )
-                    }
-                )
             },
             content = {
                 when (tabIndex) {
@@ -120,11 +140,17 @@ fun IncomingRequestsScreen() {
     ) {
         if (currentUser.value.requests?.incomingFriendRequests.isNullOrEmpty()) {
             item {
+                Icon(
+                    imageVector = Icons.Filled.Inbox,
+                    contentDescription = "",
+                    tint = Color.LightGray
+                )
                 Text(
                     text = "Incoming Requests",
                     textAlign = TextAlign.Center,
                     fontSize = 20.sp,
-                    fontWeight = FontWeight.Bold
+                    fontWeight = FontWeight.Normal,
+                    color = Color.LightGray
                 )
             }
         } else {
@@ -146,91 +172,76 @@ fun IncomingRequestsScreen() {
                 }
 
                 item {
-                    Row(
-                        Modifier
-                            .fillMaxWidth()
-                            .padding(15.dp)
-                    ) {
+                    Row() {
                         androidx.compose.material3.Card(
                             modifier = Modifier
                                 .fillMaxWidth()
                                 .padding(15.dp),
-                            elevation = CardDefaults.cardElevation(10.dp),
                             colors = CardDefaults.cardColors(Alabaster)
                         ) {
                             Row(
                                 verticalAlignment = Alignment.CenterVertically,
-                                horizontalArrangement = Arrangement.Start,
+                                horizontalArrangement = Arrangement.SpaceBetween,
                                 modifier = Modifier
                                     .fillMaxWidth()
-                                    .padding(12.dp)
+                                    .padding(10.dp)
                             ) {
-                                Column(
-                                    Modifier.fillMaxWidth(0.78f)
-                                ) {
-                                    Row(
-                                        Modifier.fillMaxWidth(),
-                                        verticalAlignment = Alignment.CenterVertically,
-                                    ) {
-                                        //TODO Get individual pfps working
-                                        Image(
-                                            painter = rememberAsyncImagePainter(
-                                                model =
-                                                ImageRequest.Builder(LocalContext.current)
-                                                    .data(tempProfileImage.value)
-                                                    .size(Size.ORIGINAL)
-                                                    .build()
-                                            ),
-                                            contentDescription = null,
-                                            contentScale = ContentScale.Crop,
-                                            modifier = Modifier
-                                                .size(75.dp)
-                                                .clip(CircleShape)
-                                        )
+                                //TODO Get individual pfps working
+                                Image(
+                                    painter = rememberAsyncImagePainter(
+                                        model =
+                                        ImageRequest.Builder(LocalContext.current)
+                                            .data(tempProfileImage.value)
+                                            .size(Size.ORIGINAL)
+                                            .build()
+                                    ),
+                                    contentDescription = null,
+                                    contentScale = ContentScale.Crop,
+                                    modifier = Modifier
+                                        .size(75.dp)
+                                        .clip(CircleShape)
+                                )
 
-                                        Text(
-                                            "" + friend.value.info?.userName,
-                                            fontSize = 26.sp,
-                                            fontWeight = FontWeight.Normal,
-                                            textAlign = TextAlign.Center,
-                                            modifier = Modifier.padding(start = 10.dp)
-                                        )
-                                    }
+                                Column() {
+                                    Text(
+                                        "${friend.value.info?.firstName} ${friend.value.info?.lastName}",
+                                        fontSize = 20.sp,
+                                        fontWeight = FontWeight.Normal,
+                                        textAlign = TextAlign.Center,
+                                    )
+                                    Text(
+                                        "@${friend.value.info?.userName}",
+                                        fontSize = 16.sp,
+                                        fontWeight = FontWeight.Normal,
+                                        textAlign = TextAlign.Center,
+                                        color = Color.Gray,
+                                    )
                                 }
 
-                                Column(
-                                    Modifier.fillMaxWidth()
-                                ) {
-                                    Row(
-                                        Modifier.fillMaxWidth(),
-                                        verticalAlignment = Alignment.CenterVertically,
+                                Column() {
+                                    IconButton(
+                                        onClick = {
+                                            openAcceptRequestDialog.value = true
+                                            currentFriendID.value = incomingUser
+                                        },
                                     ) {
-                                        IconButton(
-                                            modifier = Modifier.padding(end = 15.dp),
-                                            onClick = {
-                                                openAcceptRequestDialog.value = true
-                                                currentFriendID.value = incomingUser
-                                            },
-                                        ) {
-                                            Icon(
-                                                Icons.Filled.Check,
-                                                contentDescription = "",
-                                                modifier = Modifier.size(size = 40.dp)
-                                            )
-                                        }
-                                        IconButton(
-                                            modifier = Modifier.padding(end = 10.dp),
-                                            onClick = {
-                                                openRejectRequestDialog.value = true
-                                                currentFriendID.value = incomingUser
-                                            },
-                                        ) {
-                                            Icon(
-                                                Icons.Default.Close,
-                                                contentDescription = "",
-                                                modifier = Modifier.size(size = 40.dp)
-                                            )
-                                        }
+                                        Icon(
+                                            Icons.Filled.Check,
+                                            contentDescription = "",
+                                            modifier = Modifier.size(size = 40.dp)
+                                        )
+                                    }
+                                    IconButton(
+                                        onClick = {
+                                            openRejectRequestDialog.value = true
+                                            currentFriendID.value = incomingUser
+                                        },
+                                    ) {
+                                        Icon(
+                                            Icons.Default.Close,
+                                            contentDescription = "",
+                                            modifier = Modifier.size(size = 40.dp)
+                                        )
                                     }
                                 }
                             }
@@ -252,11 +263,18 @@ fun OutgoingRequestsScreen() {
     ) {
         if (currentUser.value.requests?.outgoingFriendRequests.isNullOrEmpty()) {
             item {
+                Icon(
+                    imageVector = Icons.Filled.ForwardToInbox,
+                    contentDescription = "",
+                    tint = Color.LightGray
+                )
+
                 Text(
                     text = "Outgoing Requests",
                     textAlign = TextAlign.Center,
                     fontSize = 20.sp,
-                    fontWeight = FontWeight.Bold
+                    fontWeight = FontWeight.Normal,
+                    color = Color.LightGray
                 )
             }
 
@@ -280,78 +298,64 @@ fun OutgoingRequestsScreen() {
                 }
 
                 item {
-                    Row(
-                        Modifier
-                            .fillMaxWidth()
-                            .padding(15.dp)
-                    ) {
+                    Row() {
                         androidx.compose.material3.Card(
                             modifier = Modifier
                                 .fillMaxWidth()
                                 .padding(15.dp),
-                            elevation = CardDefaults.cardElevation(10.dp),
                             colors = CardDefaults.cardColors(Alabaster)
                         ) {
                             Row(
                                 verticalAlignment = Alignment.CenterVertically,
-                                horizontalArrangement = Arrangement.Start,
+                                horizontalArrangement = Arrangement.SpaceBetween,
                                 modifier = Modifier
                                     .fillMaxWidth()
-                                    .padding(12.dp)
+                                    .padding(10.dp)
                             ) {
-                                Column(
-                                    Modifier.fillMaxWidth(0.9f)
-                                ) {
-                                    Row(
-                                        Modifier.fillMaxWidth(),
-                                        verticalAlignment = Alignment.CenterVertically,
-                                    ) {
-                                        //TODO Get individual pfps working
-                                        Image(
-                                            painter = rememberAsyncImagePainter(
-                                                model =
-                                                ImageRequest.Builder(LocalContext.current)
-                                                    .data(tempProfileImage.value)
-                                                    .size(Size.ORIGINAL)
-                                                    .build()
-                                            ),
-                                            contentDescription = null,
-                                            contentScale = ContentScale.Crop,
-                                            modifier = Modifier
-                                                .size(75.dp)
-                                                .clip(CircleShape)
-                                        )
+                                //TODO Get individual pfps working
+                                Image(
+                                    painter = rememberAsyncImagePainter(
+                                        model =
+                                        ImageRequest.Builder(LocalContext.current)
+                                            .data(tempProfileImage.value)
+                                            .size(Size.ORIGINAL)
+                                            .build()
+                                    ),
+                                    contentDescription = null,
+                                    contentScale = ContentScale.Crop,
+                                    modifier = Modifier
+                                        .size(75.dp)
+                                        .clip(CircleShape)
+                                )
 
-                                        Text(
-                                            "" + friend.value.info?.userName,
-                                            fontSize = 26.sp,
-                                            fontWeight = FontWeight.Normal,
-                                            textAlign = TextAlign.Center,
-                                            modifier = Modifier.padding(start = 10.dp)
-                                        )
-                                    }
+                                Column() {
+                                    Text(
+                                        "${friend.value.info?.firstName} ${friend.value.info?.lastName}",
+                                        fontSize = 20.sp,
+                                        fontWeight = FontWeight.Normal,
+                                        textAlign = TextAlign.Center,
+                                    )
+                                    Text(
+                                        "@${friend.value.info?.userName}",
+                                        fontSize = 16.sp,
+                                        fontWeight = FontWeight.Normal,
+                                        textAlign = TextAlign.Center,
+                                        color = Color.Gray,
+                                    )
                                 }
 
-                                Column(
-                                    Modifier.fillMaxWidth()
-                                ) {
-                                    Row(
-                                        Modifier.fillMaxWidth(),
-                                        verticalAlignment = Alignment.CenterVertically,
+                                Column() {
+                                    IconButton(
+                                        onClick = {
+                                            openRejectRequestDialog.value = true
+                                            currentFriendID.value = outgoingUser
+                                        },
                                     ) {
-                                        IconButton(
-                                            modifier = Modifier.padding(end = 9.dp),
-                                            onClick = {
-                                                openCancelRequestDialog.value = true
-                                                currentFriendID.value = outgoingUser
-                                            },
-                                        ) {
-                                            Icon(
-                                                Icons.Default.Close,
-                                                contentDescription = "",
-                                                modifier = Modifier.size(size = 40.dp)
-                                            )
-                                        }
+                                        Icon(
+                                            Icons.Default.Close,
+                                            contentDescription = "",
+                                            modifier = Modifier.size(size = 40.dp)
+                                        )
                                     }
                                 }
                             }

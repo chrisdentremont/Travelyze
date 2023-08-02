@@ -657,20 +657,30 @@ fun SignOutDialog(fireBaseAuth: FirebaseAuth) {
             openDeleteDialog.value = false
         },
         title = {
-            Text(
-                text = "Are you sure you want to sign out?",
-                style = MaterialTheme.typography.bodyLarge,
-                fontFamily = robotoFamily,
-                color = Color.Black
-            )
+            Row(
+                modifier = Modifier.fillMaxWidth(),
+                horizontalArrangement = Arrangement.Center
+            ){
+                Text(
+                    text = "Sign Out",
+                    style = MaterialTheme.typography.headlineSmall,
+                    fontFamily = robotoFamily,
+                    fontWeight = FontWeight.Normal,
+                    color = Color.Black,
+                    textAlign = TextAlign.Center
+                )
+            }
         },
         text = {
-            Text(
-                text = "You will have to log back in to use some features.",
-                style = MaterialTheme.typography.bodyMedium,
-                fontFamily = robotoFamily,
-                color = Color.Black
-            )
+            Row {
+                Text(
+                    text = "Are you sure you want to sign out?",
+                    style = MaterialTheme.typography.bodyMedium,
+                    fontFamily = robotoFamily,
+                    textAlign = TextAlign.Center,
+                    color = Color.Black
+                )
+            }
         },
         confirmButton = {
             TextButton(onClick = {
@@ -725,11 +735,19 @@ fun DeleteAccountDialog(fireBaseAuth: FirebaseAuth) {
             openDeleteDialog.value = false
         },
         title = {
-            Text(
-                text = "Delete Account",
-                fontFamily = robotoFamily,
-                color = Color.Black
-            )
+            Row(
+                modifier = Modifier.fillMaxWidth(),
+                horizontalArrangement = Arrangement.Center
+            ){
+                Text(
+                    text = "Delete Account",
+                    style = MaterialTheme.typography.headlineSmall,
+                    fontFamily = robotoFamily,
+                    fontWeight = FontWeight.Normal,
+                    color = Color.Black,
+                    textAlign = TextAlign.Center
+                )
+            }
         },
         text = {
             Column {
@@ -737,6 +755,7 @@ fun DeleteAccountDialog(fireBaseAuth: FirebaseAuth) {
                     Text(
                         text = "Are you sure you wish to PERMANENTLY delete your account? This cannot be undone.",
                         fontFamily = robotoFamily,
+                        textAlign = TextAlign.Center,
                         color = Color.Black
                     )
                 }
@@ -744,7 +763,7 @@ fun DeleteAccountDialog(fireBaseAuth: FirebaseAuth) {
                     CustomOutlinedTextField(
                         value = username,
                         onValueChange = { username = it },
-                        label = "Please enter your username",
+                        label = "Enter your username",
                         showError = !validateUsernameError,
                         errorMessage = usernameError,
                         leadingIconImageVector = Icons.Default.ManageAccounts,
@@ -821,12 +840,19 @@ fun EditUsernameDialog() {
             openEditDialog.value = false
         },
         title = {
-            Text(
-                text = "Enter a new username:",
-                fontFamily = robotoFamily,
-                style = MaterialTheme.typography.bodyLarge,
-                color = Color.Black
-            )
+            Row(
+                modifier = Modifier.fillMaxWidth(),
+                horizontalArrangement = Arrangement.Center
+            ){
+                Text(
+                    text = "Edit Username",
+                    style = MaterialTheme.typography.headlineSmall,
+                    fontFamily = robotoFamily,
+                    fontWeight = FontWeight.Normal,
+                    color = Color.Black,
+                    textAlign = TextAlign.Center
+                )
+            }
         },
         text = {
             Column {
@@ -839,6 +865,7 @@ fun EditUsernameDialog() {
                             keyboardType = KeyboardType.Text,
                             imeAction = ImeAction.Done
                         ),
+                        label = "Enter new username",
                         keyboardActions = KeyboardActions(
                             onDone = { focusManager.clearFocus() }
                         ),
@@ -892,7 +919,7 @@ fun EditUsernameDialog() {
                 Text(
                     text = "CONFIRM",
                     fontFamily = robotoFamily,
-                    color = Color.Red,
+                    color = TextButtonColor,
                 )
             }
         },

@@ -1,15 +1,17 @@
 package com.travelapp
 
-import androidx.compose.foundation.background
-import androidx.compose.foundation.clickable
+import androidx.compose.foundation.*
 import androidx.compose.foundation.layout.*
-import androidx.compose.foundation.rememberScrollState
-import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.Card
 import androidx.compose.material.Text
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.graphics.RectangleShape
+import androidx.compose.ui.graphics.SolidColor
+import androidx.compose.ui.layout.ContentScale
+import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.input.TextFieldValue
 import androidx.compose.ui.text.style.TextAlign
@@ -34,21 +36,37 @@ fun Home(auth: FirebaseAuth, nav: NavController) {
         Modifier
             .fillMaxSize()
             .background(color = BackgroundColor)
+            .verticalScroll(rememberScrollState())
     ) {
-        Row(
-            Modifier.fillMaxWidth(),
-            horizontalArrangement = Arrangement.Center
-        ) {
-            Text(
-                modifier = Modifier
-                    .padding(top = 30.dp, bottom = 30.dp)
-                    .width(200.dp),
-                fontSize = 30.sp,
-                fontWeight = FontWeight.Normal,
-                textAlign = TextAlign.Center,
-                fontFamily = marsFamily,
-                text = "Travelyze"
-            )
+        Column(){
+            Row(
+                Modifier
+                    .fillMaxWidth()
+                    .padding(top = 50.dp, start = 15.dp),
+                horizontalArrangement = Arrangement.Center
+            ) {
+                Image(
+                    painter = painterResource(id = R.drawable.logo),
+                    contentDescription = null,
+                    modifier = Modifier.size(150.dp, 150.dp)
+                )
+            }
+
+            Row(
+                Modifier.fillMaxWidth(),
+                horizontalArrangement = Arrangement.Center
+            ) {
+                Text(
+                    modifier = Modifier
+                        .padding(bottom = 30.dp)
+                        .width(200.dp),
+                    fontSize = 30.sp,
+                    fontWeight = FontWeight.Normal,
+                    textAlign = TextAlign.Center,
+                    fontFamily = marsFamily,
+                    text = "Travelyze"
+                )
+            }
         }
 
         Row(
@@ -98,7 +116,6 @@ fun Home(auth: FirebaseAuth, nav: NavController) {
                     .fillMaxHeight()
                     .fillMaxWidth()
                     .padding(start = 20.dp, end = 20.dp, top = 10.dp, bottom = 60.dp)
-                    .verticalScroll(rememberScrollState())
             ) {
 
                 Card(
@@ -166,7 +183,7 @@ fun Home(auth: FirebaseAuth, nav: NavController) {
                                 .fillMaxWidth()
                                 .padding(15.dp)
                         ) {
-                            Text(text = "Las Vegas, Nevada")
+                            Text(text = "United States")
                         }
                     }
                 }

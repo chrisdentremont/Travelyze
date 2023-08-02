@@ -25,17 +25,9 @@ import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.text.KeyboardActions
 import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.foundation.verticalScroll
-import androidx.compose.material.Icon
-import androidx.compose.material.IconButton
-import androidx.compose.material.Scaffold
+import androidx.compose.material.*
 import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.AddAPhoto
-import androidx.compose.material.icons.filled.Check
-import androidx.compose.material.icons.filled.Close
-import androidx.compose.material.icons.filled.Person2
-import androidx.compose.material.icons.filled.PersonAdd
-import androidx.compose.material.icons.filled.PersonRemove
-import androidx.compose.material.icons.filled.Settings
+import androidx.compose.material.icons.filled.*
 import androidx.compose.material3.AlertDialog
 import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
@@ -78,11 +70,7 @@ import com.google.firebase.ktx.Firebase
 import com.google.firebase.storage.ktx.storage
 import com.travelapp.composable.CustomOutlinedTextField
 import com.travelapp.composable.TopBar
-import com.travelapp.ui.theme.Alabaster
-import com.travelapp.ui.theme.BackgroundColor
-import com.travelapp.ui.theme.TextButtonColor
-import com.travelapp.ui.theme.halcomFamily
-import com.travelapp.ui.theme.robotoFamily
+import com.travelapp.ui.theme.*
 import java.io.File
 
 val openAddFriendDialog = mutableStateOf(false)
@@ -112,12 +100,39 @@ fun Social() {
     ) {
         Scaffold(
             topBar = {
-                TopBar(
-                    title = "Friends",
-                    buttonIcon = Icons.Filled.PersonAdd,
-                    onButtonClicked = {
-                        isAddingFriend.value = true
-                    }
+                TopAppBar(
+                    title = {
+                        androidx.compose.material.Text(
+                            text = "Friends",
+                            fontSize = 25.sp,
+                            fontFamily = robotoFamily,
+                            fontWeight = FontWeight.Normal,
+                            color = Color.Black
+                        )
+                    },
+                    actions = {
+                        IconButton(
+                            onClick = { openAddFriendDialog.value = true },
+                            modifier = Modifier.padding(end = 10.dp)
+                        ) {
+                            Icon(
+                                Icons.Filled.PersonAdd,
+                                contentDescription = "",
+                                modifier = Modifier.size(size = 40.dp)
+                            )
+                        }
+
+                        IconButton(
+                            onClick = { isAddingFriend.value = true },
+                        ) {
+                            Icon(
+                                Icons.Filled.Inbox,
+                                contentDescription = "",
+                                modifier = Modifier.size(size = 40.dp)
+                            )
+                        }
+                    },
+                    backgroundColor = BackgroundAccentColor
                 )
             },
             content = {
@@ -127,14 +142,23 @@ fun Social() {
                         .fillMaxSize()
                         .padding(top = 25.dp),
                     horizontalAlignment = Alignment.CenterHorizontally,
+                    verticalArrangement = Arrangement.Center
                 ) {
                     if (currentUser.value.data?.friendsList.isNullOrEmpty()) {
                         item {
+                            Icon(
+                                imageVector = Icons.Filled.Group,
+                                contentDescription = "",
+                                tint = Color.LightGray,
+                                modifier = Modifier.size(50.dp)
+                            )
+
                             Text(
                                 text = "No friends yet, add some!",
                                 textAlign = TextAlign.Center,
                                 fontSize = 20.sp,
-                                fontWeight = FontWeight.Bold
+                                fontWeight = FontWeight.Bold,
+                                color = Color.LightGray
                             )
                         }
                     } else {
@@ -235,28 +259,27 @@ fun addFriendDialog() {
             openAddFriendDialog.value = false
         },
         title = {
-            Text(
-                text = "Add a New Friend",
-                fontFamily = robotoFamily,
-                style = MaterialTheme.typography.bodyLarge,
-                color = Color.Black
-            )
+            Row(
+                modifier = Modifier.fillMaxWidth(),
+                horizontalArrangement = Arrangement.Center
+            ){
+                Text(
+                    text = "Add Friend",
+                    style = MaterialTheme.typography.headlineSmall,
+                    fontFamily = robotoFamily,
+                    fontWeight = FontWeight.Normal,
+                    color = Color.Black,
+                    textAlign = TextAlign.Center
+                )
+            }
         },
         text = {
             Column() {
                 Row() {
-                    Text(
-                        text = "Enter another username exactly as it appears to send a friend request:",
-                        fontFamily = robotoFamily,
-                        style = MaterialTheme.typography.bodyMedium,
-                        color = Color.Black
-                    )
-                }
-                Row() {
                     CustomOutlinedTextField(
                         value = username,
                         onValueChange = { username = it },
-                        label = "Username",
+                        label = "Enter a username",
                         leadingIconImageVector = Icons.Filled.Person2,
                         keyboardOptions = KeyboardOptions(
                             keyboardType = KeyboardType.Text,
@@ -334,11 +357,9 @@ fun addFriendDialog() {
                                         }
 
                                     } else {
-                                        Log.d(MainActivity.TAG, "User Search - No user found")
-
                                         Toast.makeText(
                                             contextForToast,
-                                            "Please enter a valid username Make sure you enter it exactly!.",
+                                            "User not found with that username.",
                                             Toast.LENGTH_SHORT
                                         ).show()
                                     }
@@ -478,9 +499,9 @@ fun displayFriendProfile(){
     ){
         Scaffold(
             modifier = Modifier
-                .padding(50.dp)
+                .padding(20.dp)
                 .clip(shape = RoundedCornerShape(20.dp))
-                .fillMaxHeight(0.9f),
+                .fillMaxSize(),
             topBar = {
                      TopBar(
                          buttonIcon = Icons.Filled.PersonRemove,
@@ -539,7 +560,7 @@ fun displayFriendProfile(){
                     }
 
                     Row( modifier = Modifier
-                        .padding(start = 30.dp, bottom = 10.dp)
+                        .padding(start = 30.dp, bottom = 10.dp, end = 30.dp)
                         .background(color = BackgroundColor)){
                         Text(
                             text = "Favorite Locations",
