@@ -3,10 +3,7 @@ package com.travelapp
 import android.graphics.BlurMaskFilter
 import android.graphics.PorterDuff
 import android.graphics.PorterDuffXfermode
-import android.util.Log
-import android.widget.Toast
 import androidx.compose.foundation.*
-import androidx.compose.foundation.gestures.scrollable
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.Card
@@ -15,29 +12,27 @@ import androidx.compose.material.IconButton
 import androidx.compose.material.TopAppBar
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.ArrowBack
-import androidx.compose.material.icons.filled.BookmarkAdd
 import androidx.compose.material.icons.filled.Bookmarks
-import androidx.compose.material.icons.outlined.Bookmark
 import androidx.compose.material.icons.outlined.Bookmarks
+import androidx.compose.material3.AlertDialog
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
-import androidx.compose.material3.AlertDialog
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.drawWithContent
 import androidx.compose.ui.geometry.Offset
 import androidx.compose.ui.geometry.Rect
-import androidx.compose.ui.graphics.*
+import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.graphics.FilterQuality
+import androidx.compose.ui.graphics.Paint
 import androidx.compose.ui.graphics.drawscope.drawIntoCanvas
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.platform.LocalContext
-import androidx.compose.ui.platform.LocalLayoutDirection
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.Dp
-import androidx.compose.ui.unit.LayoutDirection
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.compose.ui.window.DialogProperties
@@ -49,7 +44,10 @@ import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.firestore.ktx.firestore
 import com.google.firebase.ktx.Firebase
 import com.travelapp.composable.LocationObject
-import com.travelapp.ui.theme.*
+import com.travelapp.ui.theme.BackgroundAccentColor
+import com.travelapp.ui.theme.BackgroundColor
+import com.travelapp.ui.theme.halcomFamily
+import com.travelapp.ui.theme.marsFamily
 
 var showCategoryDialog = mutableStateOf(false)
 var selectedCategory = mutableStateOf("")
@@ -314,14 +312,12 @@ fun CategoryDialog(
                         .clickable {
                             showCategoryDialog.value = false
                         },
-                    tint = Color.Black
                 )
                 Text(
                     text = category,
                     style = MaterialTheme.typography.headlineSmall,
                     fontFamily = halcomFamily,
                     fontWeight = FontWeight.Normal,
-                    color = Color.Black
                 )
             }
         },
@@ -334,7 +330,6 @@ fun CategoryDialog(
                         style = MaterialTheme.typography.bodyMedium,
                         fontFamily = halcomFamily,
                         fontWeight = FontWeight.Normal,
-                        color = Color.Black,
                         modifier = Modifier.padding(bottom = 20.dp)
                     )
 

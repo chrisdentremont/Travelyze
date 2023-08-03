@@ -18,10 +18,35 @@ import androidx.core.view.ViewCompat
 import com.travelapp.R
 
 private val DarkColorScheme = darkColorScheme(
-    primary = TextButtonColor,
-    secondary = TuftsBlue,
-    tertiary = Khaki,
-    background = BackgroundColor
+//    primary = Color.White,
+//    onPrimary = Color.White,
+//    primaryContainer = Color.White,
+//    onPrimaryContainer = Color.White,
+//    inversePrimary = Color.White,
+//    secondary = Color.White,
+//    onSecondary = Color.White,
+//    secondaryContainer = Color.White,
+//    onSecondaryContainer = Color.White,
+//    tertiary = Color.White,
+//    onTertiary = Color.White,
+//    tertiaryContainer = Color.White,
+//    onTertiaryContainer = Color.White,
+//    background = Color.White,
+//    onBackground = Color.White,
+//    surface = Color.White,
+//    onSurface = Color.White,
+//    surfaceVariant = Color.White,
+//    onSurfaceVariant = Color.White,
+//    surfaceTint = Color.White,
+//    inverseSurface = Color.White,
+//    inverseOnSurface = Color.White,
+//    error = Color.White,
+//    onError = Color.White,
+//    errorContainer = Color.White,
+//    onErrorContainer = Color.White,
+//    outline = Color.White,
+//    outlineVariant = Color.White,
+//    scrim = Color.White,
 )
 
 private val LightColorScheme = lightColorScheme(
@@ -35,15 +60,6 @@ private val LightColorScheme = lightColorScheme(
     onSecondary = BackgroundColor,
     onTertiary = BackgroundColor,
     onSurface = BackgroundColor,
-
-    /* Other default colors to override
-    surface = Color(0xFFFFFBFE),
-    onPrimary = Color.White,
-    onSecondary = Color.White,
-    onTertiary = Color.White,
-    onBackground = Color(0xFF1C1B1F),
-    onSurface = Color(0xFF1C1B1F),
-    */
 )
 
 val marsFamily = FontFamily(
@@ -81,7 +97,7 @@ val halcomFamily = FontFamily(
 fun TravelAppTheme(
     darkTheme: Boolean = isSystemInDarkTheme(),
     // Dynamic color is available on Android 12+
-    dynamicColor: Boolean = true,
+    dynamicColor: Boolean = false,
     content: @Composable () -> Unit
 ) {
     val colorScheme = when {

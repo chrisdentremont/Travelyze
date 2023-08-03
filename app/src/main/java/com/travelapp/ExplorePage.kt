@@ -2,29 +2,31 @@ package com.travelapp
 
 import androidx.compose.foundation.*
 import androidx.compose.foundation.layout.*
-import androidx.compose.material.Card
-import androidx.compose.material.Text
+import androidx.compose.foundation.text.KeyboardOptions
+import androidx.compose.material.*
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.outlined.Search
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.focus.onFocusChanged
 import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.graphics.RectangleShape
-import androidx.compose.ui.graphics.SolidColor
-import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.res.painterResource
+import androidx.compose.ui.text.TextRange
 import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.text.input.ImeAction
 import androidx.compose.ui.text.input.TextFieldValue
 import androidx.compose.ui.text.style.TextAlign
+import androidx.compose.ui.unit.DpOffset
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import androidx.compose.ui.window.PopupProperties
 import androidx.navigation.NavController
 import coil.compose.AsyncImage
 import com.google.firebase.auth.FirebaseAuth
-import com.travelapp.composable.TextFieldWithDropdown
 import com.travelapp.ui.theme.BackgroundColor
 import com.travelapp.ui.theme.halcomFamily
 import com.travelapp.ui.theme.marsFamily
-import com.travelapp.ui.theme.robotoFamily
 
 var locationSelected = mutableStateOf(false)
 var selectedName = mutableStateOf("")
@@ -89,14 +91,61 @@ fun Home(auth: FirebaseAuth, nav: NavController) {
                 }
             }
 
-            TextFieldWithDropdown(
-                value = textFieldValue,
-                setValue = ::onValueChanged,
-                onDismissRequest = { dropDownExpanded = false },
-                dropDownExpanded = dropDownExpanded,
-                list = searchedLocations,
-                nav = nav
-            )
+            Box(content = {
+                OutlinedTextField(
+                    modifier = Modifier
+                        .onFocusChanged { focusState ->
+                            if (!focusState.isFocused)
+                                dropDownExpanded = false
+                        },
+                    value = textFieldValue,
+                    onValueChange = ::onValueChanged,
+                    placeholder = { Text("Search for a place") },
+                    colors = TextFieldDefaults.textFieldColors(
+                        leadingIconColor = Color.Black,
+                        focusedIndicatorColor = Color.Black,
+                        backgroundColor = Color.White,
+                        cursorColor = Color.Black
+                    ),
+                    trailingIcon = {
+                        Icon(
+                            imageVector = Icons.Outlined.Search,
+                            contentDescription = "",
+                            modifier = Modifier.size(size = 25.dp)
+                        )
+                    },
+                    keyboardOptions = KeyboardOptions.Default.copy(imeAction = ImeAction.Search),
+                    maxLines = 1,
+                )
+
+                DropdownMenu(
+                    offset = DpOffset(0.dp, 0.dp),
+                    expanded = dropDownExpanded,
+                    properties = PopupProperties(
+                        focusable = false,
+                        dismissOnBackPress = true,
+                        dismissOnClickOutside = true
+                    ),
+                    onDismissRequest = { dropDownExpanded = false }
+                ) {
+                    searchedLocations.forEach { text ->
+                        DropdownMenuItem(onClick = {
+                            onValueChanged(
+                                TextFieldValue(
+                                    text,
+                                    TextRange(text.length)
+                                )
+                            )
+                            selectedName.value = text
+                            locationSelected.value = true
+                            nav.navigate("location")
+                            dropDownExpanded = false
+                        }) {
+                            Text(text = text)
+                        }
+                    }
+                }
+            })
         }
 
         Row(Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.Center) {

@@ -1,23 +1,10 @@
 package com.travelapp.composable
 
+import androidx.compose.foundation.isSystemInDarkTheme
 import androidx.compose.foundation.layout.*
-import androidx.compose.foundation.layout.Arrangement
-import androidx.compose.foundation.layout.Box
-import androidx.compose.foundation.layout.Column
-import androidx.compose.foundation.layout.fillMaxWidth
-import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.text.KeyboardActions
 import androidx.compose.foundation.text.KeyboardOptions
-import androidx.compose.material.DropdownMenu
-import androidx.compose.material.DropdownMenuItem
-import androidx.compose.material.Icon
-import androidx.compose.material.IconButton
-import androidx.compose.material.MaterialTheme
-import androidx.compose.material.OutlinedTextField
-import androidx.compose.material.Text
-import androidx.compose.material.TextFieldDefaults
-import androidx.compose.material.TopAppBar
+import androidx.compose.material.*
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Error
 import androidx.compose.material.icons.filled.Visibility
@@ -44,7 +31,6 @@ import androidx.navigation.NavController
 import com.travelapp.locationSelected
 import com.travelapp.selectedName
 import com.travelapp.ui.theme.BackgroundAccentColor
-import com.travelapp.ui.theme.BackgroundColor
 import com.travelapp.ui.theme.TextButtonColor
 import com.travelapp.ui.theme.robotoFamily
 
@@ -78,7 +64,7 @@ fun CustomOutlinedTextField(
                 Icon(
                     imageVector = leadingIconImageVector,
                     contentDescription = leadingIconDescription,
-                    tint = if (showError) MaterialTheme.colors.error else MaterialTheme.colors.onSurface
+                    tint = if (showError) MaterialTheme.colors.error else if (isSystemInDarkTheme()) Color.White else Color.Black,
                 )
             },
             isError = showError,
@@ -107,7 +93,12 @@ fun CustomOutlinedTextField(
             colors = TextFieldDefaults.outlinedTextFieldColors(
                 focusedBorderColor = TextButtonColor,
                 cursorColor = TextButtonColor,
-                focusedLabelColor = TextButtonColor),
+                focusedLabelColor = TextButtonColor,
+
+                unfocusedBorderColor = if (isSystemInDarkTheme()) Color.White else Color.Black,
+                textColor = if (isSystemInDarkTheme()) Color.White else Color.Black,
+                unfocusedLabelColor = if (isSystemInDarkTheme()) Color.White else Color.Black,
+                leadingIconColor = if (isSystemInDarkTheme()) Color.White else Color.Black),
         )
 
         if (showError) {
@@ -149,70 +140,4 @@ fun TopBar(title: String = "", buttonIcon: ImageVector, onButtonClicked: () -> U
         },
         backgroundColor = BackgroundAccentColor
     )
-}
-
-@Composable
-fun TextFieldWithDropdown(
-    value: TextFieldValue,
-    setValue: (TextFieldValue) -> Unit,
-    onDismissRequest: () -> Unit,
-    dropDownExpanded: Boolean,
-    list: List<String>,
-    nav: NavController
-) {
-    Box(content = {
-        OutlinedTextField(
-            modifier = Modifier
-                .onFocusChanged { focusState ->
-                    if (!focusState.isFocused)
-                        onDismissRequest()
-                },
-            value = value,
-            onValueChange = setValue,
-            placeholder = { Text("Search for a place") },
-            colors = TextFieldDefaults.textFieldColors(
-                leadingIconColor = Color.Black,
-                focusedIndicatorColor = Color.Black,
-                backgroundColor = Color.White,
-                cursorColor = Color.Black
-            ),
-            trailingIcon = {
-                Icon(
-                    imageVector = Icons.Outlined.Search,
-                    contentDescription = "",
-                    modifier = Modifier.size(size = 25.dp)
-                )
-            },
-            keyboardOptions = KeyboardOptions.Default.copy(imeAction = ImeAction.Search),
-            maxLines = 1,
-        )
-
-        DropdownMenu(
-            offset = DpOffset(0.dp, 0.dp),
-            expanded = dropDownExpanded,
-            properties = PopupProperties(
-                focusable = false,
-                dismissOnBackPress = true,
-                dismissOnClickOutside = true
-            ),
-            onDismissRequest = onDismissRequest
-        ) {
-            list.forEach { text ->
-                DropdownMenuItem(onClick = {
-                    setValue(
-                        TextFieldValue(
-                            text,
-                            TextRange(text.length)
-                        )
-                    )
-                    selectedName.value = text
-                    locationSelected.value = true
-                    nav.navigate("location")
-                    onDismissRequest()
-                }) {
-                    Text(text = text)
-                }
-            }
-        }
-    })
 }

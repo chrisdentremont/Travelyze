@@ -14,6 +14,7 @@ import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.text.KeyboardActions
 import androidx.compose.foundation.text.KeyboardOptions
+import androidx.compose.material.Card
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.*
 import androidx.compose.material3.*
@@ -29,7 +30,6 @@ import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.LocalFocusManager
 import androidx.compose.ui.platform.LocalLayoutDirection
-import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.input.ImeAction
 import androidx.compose.ui.text.input.KeyboardType
@@ -42,30 +42,29 @@ import androidx.core.content.ContextCompat
 import androidx.core.content.FileProvider
 import coil.compose.AsyncImage
 import coil.compose.rememberAsyncImagePainter
+import coil.compose.rememberImagePainter
 import coil.decode.SvgDecoder
 import coil.request.ImageRequest
 import coil.size.Size
-import com.travelapp.BuildConfig
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.auth.FirebaseUser
 import com.google.firebase.auth.UserInfo
 import com.google.firebase.auth.ktx.auth
 import com.google.firebase.firestore.FirebaseFirestore
-import com.google.firebase.firestore.ktx.toObject
+import com.google.firebase.firestore.ktx.firestore
 import com.google.firebase.ktx.Firebase
 import com.google.firebase.storage.ktx.storage
+import com.skydoves.landscapist.ImageOptions
+import com.skydoves.landscapist.coil.CoilImage
+import com.skydoves.landscapist.components.rememberImageComponent
+import com.skydoves.landscapist.placeholder.shimmer.ShimmerPlugin
 import com.travelapp.composable.CustomOutlinedTextField
 import com.travelapp.composable.TopBar
-import com.travelapp.composable.TravelyzeUser
 import com.travelapp.ui.theme.*
 import kotlinx.coroutines.launch
 import java.io.File
 import java.text.SimpleDateFormat
 import java.util.*
-import androidx.compose.material.Card
-import com.google.firebase.firestore.ktx.firestore
-import kotlinx.coroutines.tasks.await
-import okhttp3.internal.wait
 
 var openSignoutDialog = mutableStateOf(false)
 var openDeleteDialog = mutableStateOf(false)
@@ -78,7 +77,6 @@ val sendPasswordChangeEmail = mutableStateOf(false)
 
 var profileImageUri = mutableStateOf(Uri.EMPTY)
 var takenImageUri = mutableStateOf(Uri.EMPTY)
-var displayedPicture = mutableStateOf<File>(File(""))
 
 var profileLocationSelected = mutableStateOf(false)
 var profileSelectedName = mutableStateOf("")
@@ -123,13 +121,6 @@ fun Profile(auth: FirebaseAuth) {
     }
 
     CompositionLocalProvider(LocalLayoutDirection provides LayoutDirection.Rtl) {
-
-        var profileImage =
-            Firebase.storage.reference.child("users/${auth.currentUser?.uid}/profile_picture.jpg")
-
-        profileImage.getFile(profileImageFile.value).addOnCompleteListener {
-            displayedPicture.value = profileImageFile.value
-        }
 
         ModalNavigationDrawer(
             drawerState = drawerState,
@@ -234,16 +225,20 @@ fun Profile(auth: FirebaseAuth) {
                             verticalAlignment = Alignment.CenterVertically,
                         ) {
                             Box {
-                                Image(
-                                    painter = rememberAsyncImagePainter(
-                                        model =
-                                        ImageRequest.Builder(LocalContext.current)
-                                            .data(displayedPicture.value)
-                                            .size(Size.ORIGINAL)
-                                            .build()
+                                CoilImage(
+                                    imageModel = {displayedPicture.value},
+                                    component = rememberImageComponent {
+                                        +ShimmerPlugin(
+                                            baseColor = BackgroundColor,
+                                            highlightColor = Color.LightGray,
+                                            durationMillis = 350,
+                                            dropOff = 0.65f,
+                                            tilt = 20f
+                                        )
+                                    },
+                                    imageOptions = ImageOptions(
+                                        contentScale = ContentScale.Crop
                                     ),
-                                    contentDescription = null,
-                                    contentScale = ContentScale.Crop,
                                     modifier = Modifier
                                         .size(75.dp)
                                         .clip(CircleShape)
@@ -386,98 +381,95 @@ fun ProfilePicturePicker(auth: FirebaseAuth) {
         }
     }
 
-    AlertDialog(
-        onDismissRequest = {
-            openPicDialog.value = false
-        },
-        title = {
-            Row(
-                modifier = Modifier.fillMaxWidth(),
-                horizontalArrangement = Arrangement.Center
-            ) {
-                Text(
-                    text = "Change photo",
-                    style = MaterialTheme.typography.headlineSmall,
-                    fontFamily = robotoFamily,
-                    fontWeight = FontWeight.Normal,
-                    color = Color.Black,
-                    textAlign = TextAlign.Center
-                )
-            }
-        },
-        confirmButton = {
-            Column(
-                horizontalAlignment = Alignment.CenterHorizontally
-            ) {
-                Divider(thickness = 2.dp)
+    Surface(){
+        AlertDialog(
+            onDismissRequest = {
+                openPicDialog.value = false
+            },
+            title = {
                 Row(
                     modifier = Modifier.fillMaxWidth(),
                     horizontalArrangement = Arrangement.Center
                 ) {
-                    TextButton(onClick = {
-                        singlePhotoPickerLauncher.launch(
-                            PickVisualMediaRequest(ActivityResultContracts.PickVisualMedia.ImageOnly)
-                        )
-                    }) {
-                        Icon(
-                            imageVector = Icons.Filled.Folder,
-                            contentDescription = null,
-                            modifier = Modifier
-                                .size(size = 30.dp)
-                                .padding(end = 10.dp),
-                            tint = Color.Black
-                        )
-                        Text(
-                            text = "Upload from camera roll",
-                            style = MaterialTheme.typography.bodyLarge,
-                            fontFamily = robotoFamily,
-                            fontWeight = FontWeight.Bold,
-                            color = Color.Black
-                        )
-                    }
+                    Text(
+                        text = "Change photo",
+                        style = MaterialTheme.typography.headlineSmall,
+                        fontFamily = robotoFamily,
+                        fontWeight = FontWeight.Normal,
+                        textAlign = TextAlign.Center
+                    )
                 }
-                Divider(thickness = 2.dp)
-                Row(
-                    modifier = Modifier.fillMaxWidth(),
-                    horizontalArrangement = Arrangement.Center
+            },
+            confirmButton = {
+                Column(
+                    horizontalAlignment = Alignment.CenterHorizontally
                 ) {
-                    TextButton(onClick = {
-                        val permissionCheckResult =
-                            ContextCompat.checkSelfPermission(
-                                context,
-                                android.Manifest.permission.CAMERA
+                    Divider(thickness = 2.dp)
+                    Row(
+                        modifier = Modifier.fillMaxWidth(),
+                        horizontalArrangement = Arrangement.Center
+                    ) {
+                        TextButton(onClick = {
+                            singlePhotoPickerLauncher.launch(
+                                PickVisualMediaRequest(ActivityResultContracts.PickVisualMedia.ImageOnly)
                             )
-                        if (permissionCheckResult == PackageManager.PERMISSION_GRANTED) {
-                            cameraLauncher.launch(uri)
-                        } else {
-                            // Request a permission
-                            permissionLauncher.launch(android.Manifest.permission.CAMERA)
+                        }) {
+                            Icon(
+                                imageVector = Icons.Filled.Folder,
+                                contentDescription = null,
+                                modifier = Modifier
+                                    .size(size = 30.dp)
+                                    .padding(end = 10.dp),
+                            )
+                            Text(
+                                text = "Upload from camera roll",
+                                style = MaterialTheme.typography.bodyLarge,
+                                fontFamily = robotoFamily,
+                                fontWeight = FontWeight.Bold,
+                            )
                         }
-                    }) {
-                        Icon(
-                            imageVector = Icons.Filled.PhotoCamera,
-                            contentDescription = null,
-                            modifier = Modifier
-                                .size(size = 30.dp)
-                                .padding(end = 10.dp),
-                            tint = Color.Black
-                        )
-                        Text(
-                            text = "Take a new picture",
-                            style = MaterialTheme.typography.bodyLarge,
-                            fontFamily = robotoFamily,
-                            fontWeight = FontWeight.Bold,
-                            color = Color.Black
-                        )
                     }
+                    Divider(thickness = 2.dp)
+                    Row(
+                        modifier = Modifier.fillMaxWidth(),
+                        horizontalArrangement = Arrangement.Center
+                    ) {
+                        TextButton(onClick = {
+                            val permissionCheckResult =
+                                ContextCompat.checkSelfPermission(
+                                    context,
+                                    android.Manifest.permission.CAMERA
+                                )
+                            if (permissionCheckResult == PackageManager.PERMISSION_GRANTED) {
+                                cameraLauncher.launch(uri)
+                            } else {
+                                // Request a permission
+                                permissionLauncher.launch(android.Manifest.permission.CAMERA)
+                            }
+                        }) {
+                            Icon(
+                                imageVector = Icons.Filled.PhotoCamera,
+                                contentDescription = null,
+                                modifier = Modifier
+                                    .size(size = 30.dp)
+                                    .padding(end = 10.dp),
+                            )
+                            Text(
+                                text = "Take a new picture",
+                                style = MaterialTheme.typography.bodyLarge,
+                                fontFamily = robotoFamily,
+                                fontWeight = FontWeight.Bold,
+                            )
+                        }
+                    }
+                    Divider(thickness = 2.dp)
                 }
-                Divider(thickness = 2.dp)
-            }
-        },
-        properties = DialogProperties(
-            dismissOnClickOutside = true
+            },
+            properties = DialogProperties(
+                dismissOnClickOutside = true
+            )
         )
-    )
+    }
 }
 
 @Composable
@@ -496,7 +488,6 @@ fun ProfilePicSelect(auth: FirebaseAuth) {
                 style = MaterialTheme.typography.bodyLarge,
                 fontFamily = robotoFamily,
                 fontWeight = FontWeight.Bold,
-                color = Color.Black
             )
         },
         text = {
@@ -539,6 +530,14 @@ fun ProfilePicSelect(auth: FirebaseAuth) {
                     ).show()
 
                     profileImageUri.value = Uri.EMPTY
+
+                    var profileImage =
+                        Firebase.storage.reference.child("users/${auth.currentUser?.uid}/profile_picture.jpg")
+
+                    profileImage.getFile(profileImageFile.value).addOnCompleteListener {
+                        displayedPicture.value = profileImageFile.value
+                    }
+
                     openPicSelectDialog.value = false
                 }.addOnFailureListener() {
                     Toast.makeText(
@@ -579,7 +578,6 @@ fun ProfilePicTaken(auth: FirebaseAuth) {
                 style = MaterialTheme.typography.bodyLarge,
                 fontFamily = robotoFamily,
                 fontWeight = FontWeight.Bold,
-                color = Color.Black
             )
         },
         text = {
@@ -624,6 +622,14 @@ fun ProfilePicTaken(auth: FirebaseAuth) {
                     ).show()
 
                     takenImageUri.value = Uri.EMPTY
+
+                    var profileImage =
+                        Firebase.storage.reference.child("users/${auth.currentUser?.uid}/profile_picture.jpg")
+
+                    profileImage.getFile(profileImageFile.value).addOnCompleteListener {
+                        displayedPicture.value = profileImageFile.value
+                    }
+
                     openPicTakenDialog.value = false
                 }.addOnFailureListener() {
                     Toast.makeText(
@@ -666,7 +672,6 @@ fun SignOutDialog(fireBaseAuth: FirebaseAuth) {
                     style = MaterialTheme.typography.headlineSmall,
                     fontFamily = robotoFamily,
                     fontWeight = FontWeight.Normal,
-                    color = Color.Black,
                     textAlign = TextAlign.Center
                 )
             }
@@ -678,7 +683,6 @@ fun SignOutDialog(fireBaseAuth: FirebaseAuth) {
                     style = MaterialTheme.typography.bodyMedium,
                     fontFamily = robotoFamily,
                     textAlign = TextAlign.Center,
-                    color = Color.Black
                 )
             }
         },
@@ -744,7 +748,6 @@ fun DeleteAccountDialog(fireBaseAuth: FirebaseAuth) {
                     style = MaterialTheme.typography.headlineSmall,
                     fontFamily = robotoFamily,
                     fontWeight = FontWeight.Normal,
-                    color = Color.Black,
                     textAlign = TextAlign.Center
                 )
             }
@@ -756,7 +759,6 @@ fun DeleteAccountDialog(fireBaseAuth: FirebaseAuth) {
                         text = "Are you sure you wish to PERMANENTLY delete your account? This cannot be undone.",
                         fontFamily = robotoFamily,
                         textAlign = TextAlign.Center,
-                        color = Color.Black
                     )
                 }
                 Row {
@@ -849,7 +851,6 @@ fun EditUsernameDialog() {
                     style = MaterialTheme.typography.headlineSmall,
                     fontFamily = robotoFamily,
                     fontWeight = FontWeight.Normal,
-                    color = Color.Black,
                     textAlign = TextAlign.Center
                 )
             }
