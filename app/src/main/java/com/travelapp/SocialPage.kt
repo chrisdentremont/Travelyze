@@ -5,7 +5,6 @@ import android.util.Log
 import android.widget.Toast
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
-import androidx.compose.foundation.border
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.horizontalScroll
 import androidx.compose.foundation.layout.Arrangement
@@ -15,7 +14,6 @@ import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
-import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.lazy.LazyColumn
@@ -45,7 +43,6 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.FilterQuality
-import androidx.compose.ui.graphics.SolidColor
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.LocalFocusManager
@@ -73,23 +70,36 @@ import com.travelapp.composable.TopBar
 import com.travelapp.ui.theme.*
 import java.io.File
 
+//Variable responsible for opening the add friend dialog
 val openAddFriendDialog = mutableStateOf(false)
+//Variable responsible for opening the friend requests page
 val isAddingFriend = mutableStateOf(false)
+//Variable responsible for opening a friend's profile
 val openFriendProfile = mutableStateOf(false)
+//Variable responsible for opening the remove friend dialog
 val openRemoveFriendDialog = mutableStateOf(false)
 
+//The id of the friend card that was clicked on (this is set when a profile is clicked on)
 private val currentFriendID = mutableStateOf("")
+//The TravelyzeUser object of the friend from the card that was clicked (this is set when a profile is clicked on)
 private val currentFriendPage = mutableStateOf(TravelyzeUser(null, null, null))
+//The profile picture file of the friend from the card that was clicked (this is set when a profile is clicked on)
 private val displayedFriendFile = mutableStateOf<File>(File(""))
+
+/**
+ * The main method for creating the SocialPage UI
+ *
+ * @suppress UnusedMaterialScaffoldPaddingParameter
+ */
 @SuppressLint("UnusedMaterialScaffoldPaddingParameter")
 @Composable
 fun Social() {
     if(openFriendProfile.value){
-        displayFriendProfile()
+        DisplayFriendProfile()
     }
 
     if(openRemoveFriendDialog.value){
-        removeFriendDialog()
+        RemoveFriendDialog()
     }
 
     Column(
@@ -163,13 +173,14 @@ fun Social() {
                         }
                     } else {
                         for (addedFriend in currentUser.value.data?.friendsList!!) {
-                            val tempProfileImage = mutableStateOf<File>(File.createTempFile("$addedFriend", ".jpg"))
+                            val tempProfileImage = mutableStateOf<File>(File.createTempFile(
+                                addedFriend, ".jpg"))
                             val friendDocumentReference =
                                 db.collection("users").document(addedFriend)
-                            var friend = mutableStateOf(TravelyzeUser(null, null, null))
-                            var displayedFriend = mutableStateOf<File>(File(""))
+                            val friend = mutableStateOf(TravelyzeUser(null, null, null))
+                            val displayedFriend = mutableStateOf<File>(File(""))
 
-                            var profileImage =
+                            val profileImage =
                                 Firebase.storage.reference.child("users/${addedFriend}/profile_picture.jpg")
 
                             profileImage.getFile(tempProfileImage.value).addOnCompleteListener {
@@ -180,6 +191,9 @@ fun Social() {
                                 friend.value = documentSnapshot.toObject<TravelyzeUser>()!!
                             }
 
+                            /**
+                             * Friend Card
+                             */
                             item {
                                 Row(
                                     horizontalArrangement = Arrangement.SpaceBetween,
@@ -244,8 +258,11 @@ fun Social() {
     }
 }
 
+/**
+ * The method for creating the addFriend dialog and then sending a friend request to another user
+ */
 @Composable
-fun addFriendDialog() {
+fun AddFriendDialog() {
     val contextForToast = LocalContext.current.applicationContext
     val focusManager = LocalFocusManager.current
     val db = Firebase.firestore
@@ -306,13 +323,13 @@ fun addFriendDialog() {
                             ).show()
                         } else {
                             //Send user a friend request
-                            val docRef = db.collection("users")
+                            db.collection("users")
                                 .whereEqualTo("info.userName", username)
                                 .get()
                                 .addOnSuccessListener { documents ->
                                     if (documents.size() > 0) {
                                         val friend = documents.elementAt(0)
-                                        var friendAccount = friend.toObject<TravelyzeUser>()
+                                        val friendAccount = friend.toObject<TravelyzeUser>()
 
                                         val userID = Firebase.auth.currentUser?.uid.toString()
                                         val currUserDocumentReference =
@@ -331,7 +348,7 @@ fun addFriendDialog() {
                                             currentUser.value.requests?.outgoingFriendRequests?.add(
                                                 friend.id
                                             )
-                                            friendAccount?.requests?.incomingFriendRequests?.add(
+                                            friendAccount.requests?.incomingFriendRequests?.add(
                                                 userID
                                             )
 
@@ -402,8 +419,11 @@ fun addFriendDialog() {
     )
 }
 
+/**
+ * The method for removing a friend from the user's friend list and the other user's friend list
+ */
 @Composable
-fun removeFriendDialog(){
+fun RemoveFriendDialog(){
     val contextForToast = LocalContext.current.applicationContext
     val db = Firebase.firestore
 
@@ -489,9 +509,15 @@ fun removeFriendDialog(){
         )
     )
 }
+
+/**
+ * The method for displaying another user's profile in a card
+ *
+ * @suppress UnusedMaterialScaffoldPaddingParameter
+ */
 @SuppressLint("UnusedMaterialScaffoldPaddingParameter")
 @Composable
-fun displayFriendProfile(){
+fun DisplayFriendProfile(){
     Dialog(
         onDismissRequest = {
             openFriendProfile.value = false
@@ -579,8 +605,8 @@ fun displayFriendProfile(){
                     ){
                         if(!currentFriendPage.value.data?.favoriteLocations.isNullOrEmpty()){
                             currentFriendPage.value.data?.favoriteLocations?.forEach { name ->
-                                var location = locationList.find { it.Name.equals(name) }
-                                androidx.compose.material.Card(
+                                val location = locationList.find { it.Name.equals(name) }
+                                Card(
                                     modifier = Modifier
                                         .size(width = 250.dp, height = 150.dp)
                                         .padding(10.dp)

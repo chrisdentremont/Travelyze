@@ -1,6 +1,5 @@
 package com.travelapp.composable
 
-import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -44,10 +43,26 @@ import androidx.navigation.NavController
 import com.travelapp.locationSelected
 import com.travelapp.selectedName
 import com.travelapp.ui.theme.BackgroundAccentColor
-import com.travelapp.ui.theme.BackgroundColor
 import com.travelapp.ui.theme.TextButtonColor
 import com.travelapp.ui.theme.robotoFamily
 
+/**
+ * A custom [OutlinedTextField] which allows for more flexible in different scenarios
+ *
+ * @param value The default value of the [OutlinedTextField]
+ * @param onValueChange The action that occurs when the value within the [OutlinedTextField] changes
+ * @param label The default label that displays when nothing is typed in
+ * @param leadingIconImageVector The icon that appears on the left side of the [OutlinedTextField]
+ * @param leadingIconDescription A description of the [leadingIconImageVector]
+ * @param isPasswordField A boolean for whether the [OutlinedTextField] will be used for entering a password or not
+ * @param isPasswordVisible A boolean for if the password should be displayed by default
+ * @param onVisibilityChange The actions that occurs when [isPasswordVisible] is changed
+ * @param keyboardOptions keyboard options for the [OutlinedTextField]
+ * @param keyboardActions keyboard actions for the [OutlinedTextField]
+ * @param showError A boolean for if an error message should be displayed on the [OutlinedTextField]
+ * @param errorMessage The message that displays in red under the [OutlinedTextField] when [showError] is true
+ * @param modifier Visual modifiers for the [OutlinedTextField]
+ */
 @Composable
 fun CustomOutlinedTextField(
     value: String,
@@ -124,6 +139,14 @@ fun CustomOutlinedTextField(
     }
 }
 
+/**
+ * The bar that appears at the top of a page, created to keep them uniform
+ * in appearance but flexible in content
+ *
+ * @param title The title of the page that appears on the left side of the bar
+ * @param buttonIcon The icon for the button that appears on the right side of the bar
+ * @param onButtonClicked The action the button triggers when it is clicked
+ */
 @Composable
 fun TopBar(title: String = "", buttonIcon: ImageVector, onButtonClicked: () -> Unit) {
     TopAppBar(

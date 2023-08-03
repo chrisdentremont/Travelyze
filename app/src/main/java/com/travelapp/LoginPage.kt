@@ -38,13 +38,19 @@ import com.travelapp.ui.theme.BackgroundColor
 import com.travelapp.ui.theme.TextButtonColor
 import com.travelapp.ui.theme.robotoFamily
 
-val isRegistering = mutableStateOf(false)
+//Variable responsible for opening the password reset dialog
 val openPasswordResetDialog = mutableStateOf(false)
 
+/**
+ * The main method for creating the Login page UI
+ *
+ * @param auth A firebase object that allows access to firebase
+ * @param nav The [NavController] responsible for switching screens
+ */
 @Composable
 fun Login(auth: FirebaseAuth, nav: NavController) {
 
-    var focusManager = LocalFocusManager.current
+    val focusManager = LocalFocusManager.current
 
 
     var email by remember {
@@ -72,8 +78,9 @@ fun Login(auth: FirebaseAuth, nav: NavController) {
     var isPasswordVisible by rememberSaveable { mutableStateOf(false) }
 
 
+    //Opens the passwordReset dialog
     if (openPasswordResetDialog.value) {
-        resetPasswordDialog(auth)
+        ResetPasswordDialog(auth)
     }
 
     Column(
@@ -97,9 +104,9 @@ fun Login(auth: FirebaseAuth, nav: NavController) {
             )
         }
 
-        //
-        // Welcome Message
-        //
+        /**
+         * Login Label
+         */
         Row(Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.Center) {
             Text(
                 modifier = Modifier
@@ -113,9 +120,9 @@ fun Login(auth: FirebaseAuth, nav: NavController) {
             )
         }
 
-        //
-        // Email TextField
-        //
+        /**
+         * Email TextField
+         */
         OutlinedTextField(
             value = email,
             onValueChange = { email = it },
@@ -142,9 +149,9 @@ fun Login(auth: FirebaseAuth, nav: NavController) {
                 .fillMaxWidth(.6f)
         )
 
-        //
-        // Password TextField
-        //
+        /**
+         * Password TextField
+         */
         CustomOutlinedTextField(
             value = password,
             onValueChange = { password = it },
@@ -196,9 +203,9 @@ fun Login(auth: FirebaseAuth, nav: NavController) {
                 .fillMaxWidth(),
             horizontalArrangement = Arrangement.Center
         ) {
-            //
-            // Login Button
-            //
+            /**
+             * Login Button
+             */
             Button(
                 onClick = {
                     auth.signInWithEmailAndPassword(email, password)
@@ -236,6 +243,9 @@ fun Login(auth: FirebaseAuth, nav: NavController) {
                 )
             }
 
+            /**
+             * Register Button
+             */
             Button(
                 onClick = {
                     nav.navigate(Screen.Register.route) {
@@ -260,6 +270,9 @@ fun Login(auth: FirebaseAuth, nav: NavController) {
             }
         }
 
+        /**
+         * Reset Password Button
+         */
         TextButton(
             onClick = {
                 openPasswordResetDialog.value = true
@@ -278,8 +291,14 @@ fun Login(auth: FirebaseAuth, nav: NavController) {
     }
 }
 
+/**
+ * Method for creating the resetPassword dialog
+ * Sends a reset email to the accounts saved email
+ *
+ * @param auth A firebase object that allows access to firebase
+ */
 @Composable
-fun resetPasswordDialog(auth: FirebaseAuth) {
+fun ResetPasswordDialog(auth: FirebaseAuth) {
     val contextForToast = LocalContext.current.applicationContext
 
     var email by remember {
@@ -322,7 +341,7 @@ fun resetPasswordDialog(auth: FirebaseAuth) {
                             imeAction = ImeAction.Done
                         ),
                         keyboardActions = KeyboardActions(
-                            onDone = { /*TODO focusmanager not working? */ }
+                            onDone = { /* focusManager not working? */ }
                         ),
                         modifier = Modifier.fillMaxWidth()
                     )

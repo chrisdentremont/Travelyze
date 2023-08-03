@@ -19,10 +19,8 @@ import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.platform.LocalContext
-import androidx.compose.ui.platform.LocalLayoutDirection
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
-import androidx.compose.ui.unit.LayoutDirection
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.compose.ui.window.DialogProperties
@@ -34,19 +32,26 @@ import com.google.firebase.firestore.ktx.firestore
 import com.google.firebase.firestore.ktx.toObject
 import com.google.firebase.ktx.Firebase
 import com.google.firebase.storage.ktx.storage
-import com.travelapp.composable.TopBar
 import com.travelapp.composable.TravelyzeUser
 import com.travelapp.ui.theme.Alabaster
 import com.travelapp.ui.theme.BackgroundColor
-import com.travelapp.ui.theme.TuftsBlue
 import com.travelapp.ui.theme.*
 import java.io.File
 
+//Variable responsible for opening the cancel friend request dialog
 val openCancelRequestDialog = mutableStateOf(false)
+//Variable responsible for opening the accept friend request dialog
 val openAcceptRequestDialog = mutableStateOf(false)
+//Variable responsible for opening the reject friend request dialog
 val openRejectRequestDialog = mutableStateOf(false)
+//Variable that saves the friend id for each request card (gets set when one of the cards are clicked)
 private val currentFriendID = mutableStateOf("")
 
+/**
+ * The main method for creating the FriendRequests UI
+ *
+ * @suppress UnusedMaterialScaffoldPaddingParameter
+ */
 @SuppressLint("UnusedMaterialScaffoldPaddingParameter")
 @Composable
 fun FriendRequests() {
@@ -54,16 +59,19 @@ fun FriendRequests() {
 
     val tabs = listOf("Incoming", "Outgoing")
 
+    //Opens the cancelFriendRequest dialog
     if(openCancelRequestDialog.value){
-        cancelFriendRequest()
+        CancelFriendRequest()
     }
 
+    //Opens the acceptFriendRequest dialog
     if(openAcceptRequestDialog.value){
-        acceptFriendRequest()
+        AcceptFriendRequest()
     }
 
+    //Opens the rejectFriendRequest dialog
     if(openRejectRequestDialog.value){
-        rejectFriendRequest()
+        RejectFriendRequest()
     }
 
     Column(
@@ -75,6 +83,7 @@ fun FriendRequests() {
             topBar = {
                 Column(){
                     Row(){
+                        //TopAppBar was used here instead of TopBar because this required two buttons on the bar instead of 1
                         TopAppBar(
                             title = {
                                 Text(
@@ -129,6 +138,13 @@ fun FriendRequests() {
     }
 }
 
+/**
+ * The method for creating the Incoming Friend Requests screen
+ * This method creates and populates the incoming requests screen
+ *
+ * When switching onto the page it checks the user's incoming requests and
+ * adds a card for each user in the requests list
+ */
 @Composable
 fun IncomingRequestsScreen() {
     val db = Firebase.firestore
@@ -158,9 +174,9 @@ fun IncomingRequestsScreen() {
                 val tempProfileImage = mutableStateOf<File>(File(""))
                 val friendDocumentReference =
                     db.collection("users").document(incomingUser)
-                var friend = mutableStateOf(TravelyzeUser(null, null, null))
+                val friend = mutableStateOf(TravelyzeUser(null, null, null))
 
-                var profileImage =
+                val profileImage =
                     Firebase.storage.reference.child("users/${incomingUser}/profile_picture.jpg")
 
                 profileImage.getFile(profileImageFile.value).addOnCompleteListener {
@@ -253,6 +269,13 @@ fun IncomingRequestsScreen() {
     }
 }
 
+/**
+ * The method for creating the Outgoing Friend Requests screen
+ * This method creates and populates the outgoing requests screen
+ *
+ * When switching onto the page it checks the user's outgoing requests and
+ * adds a card for each user in the requests list
+ */
 @Composable
 fun OutgoingRequestsScreen() {
     LazyColumn(
@@ -284,9 +307,9 @@ fun OutgoingRequestsScreen() {
                 val db = Firebase.firestore
                 val friendDocumentReference =
                     db.collection("users").document(outgoingUser)
-                var friend = mutableStateOf(TravelyzeUser(null, null, null))
+                val friend = mutableStateOf(TravelyzeUser(null, null, null))
 
-                var profileImage =
+                val profileImage =
                     Firebase.storage.reference.child("users/${outgoingUser}/profile_picture.jpg")
 
                 profileImage.getFile(profileImageFile.value).addOnCompleteListener {
@@ -367,8 +390,12 @@ fun OutgoingRequestsScreen() {
     }
 }
 
+/**
+ * This method is responsible for confirming the user wishes to accept an incoming friend request
+ * and if so, adds that user to their friends list in the database
+ */
 @Composable
-fun acceptFriendRequest(){
+fun AcceptFriendRequest(){
     val contextForToast = LocalContext.current.applicationContext
     val db = Firebase.firestore
 
@@ -401,7 +428,7 @@ fun acceptFriendRequest(){
 
                 val friendDocumentReference =
                     db.collection("users").document(currentFriendID.value)
-                var friendAccount = mutableStateOf(TravelyzeUser(null, null, null))
+                val friendAccount = mutableStateOf(TravelyzeUser(null, null, null))
 
                 friendDocumentReference.get().addOnSuccessListener { documentSnapshot ->
                     friendAccount.value = documentSnapshot.toObject<TravelyzeUser>()!!
@@ -456,8 +483,13 @@ fun acceptFriendRequest(){
     )
 }
 
+/**
+ * This method is responsible for canceling an outgoing friend request if the user does not want to add another
+ * specific user anymore, they can cancel the friend request and it is removed from both their outgoing requests list and the other user's
+ * incoming requests list.
+ */
 @Composable
-fun cancelFriendRequest(){
+fun CancelFriendRequest(){
     val contextForToast = LocalContext.current.applicationContext
     val db = Firebase.firestore
 
@@ -490,7 +522,7 @@ fun cancelFriendRequest(){
 
                 val friendDocumentReference =
                     db.collection("users").document(currentFriendID.value)
-                var friendAccount = mutableStateOf(TravelyzeUser(null, null, null))
+                val friendAccount = mutableStateOf(TravelyzeUser(null, null, null))
 
                 friendDocumentReference.get().addOnSuccessListener { documentSnapshot ->
                     friendAccount.value = documentSnapshot.toObject<TravelyzeUser>()!!
@@ -543,8 +575,13 @@ fun cancelFriendRequest(){
     )
 }
 
+/**
+ * This method is responsible for rejecting an incoming friend request if the user does not want to add another
+ * specific user, they can reject the friend request and it is removed from both their incoming requests list and the other user's
+ * outgoing requests list.
+ */
 @Composable
-fun rejectFriendRequest(){
+fun RejectFriendRequest(){
     val contextForToast = LocalContext.current.applicationContext
     val db = Firebase.firestore
 
@@ -577,7 +614,7 @@ fun rejectFriendRequest(){
 
                 val friendDocumentReference =
                     db.collection("users").document(currentFriendID.value)
-                var friendAccount = mutableStateOf(TravelyzeUser(null, null, null))
+                val friendAccount = mutableStateOf(TravelyzeUser(null, null, null))
 
                 friendDocumentReference.get().addOnSuccessListener { documentSnapshot ->
                     friendAccount.value = documentSnapshot.toObject<TravelyzeUser>()!!

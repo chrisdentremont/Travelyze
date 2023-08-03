@@ -1,6 +1,5 @@
 package com.travelapp
 
-
 import android.net.Uri
 import android.util.Patterns
 import android.widget.Toast
@@ -34,7 +33,6 @@ import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
-import com.travelapp.R
 import com.google.firebase.auth.ktx.auth
 import com.google.firebase.auth.ktx.userProfileChangeRequest
 import com.google.firebase.firestore.FirebaseFirestore
@@ -45,20 +43,20 @@ import com.travelapp.ui.theme.BackgroundColor
 import com.travelapp.ui.theme.TextButtonColor
 import com.travelapp.ui.theme.robotoFamily
 
-val showNavBar = mutableStateOf(true)
-
+/**
+ * The main method for creating the register form when creating a new account
+ */
 @Composable
 fun RegisterForm() {
     val auth by lazy {
         Firebase.auth
     }
 
-    showNavBar.value = false
-
     val context = LocalContext.current
     val focusManager = LocalFocusManager.current
     val scrollState = rememberScrollState()
 
+    //Info variables
     var firstname by remember { mutableStateOf("") }
     var lastname by remember { mutableStateOf("") }
     var email by remember { mutableStateOf("") }
@@ -66,6 +64,7 @@ fun RegisterForm() {
     var password by remember { mutableStateOf("") }
     var confirmPassword by remember { mutableStateOf("") }
 
+    //Variables to ensure the info variables are formatted properly
     var validateFirstName by rememberSaveable { mutableStateOf(true) }
     var validateLastName by rememberSaveable { mutableStateOf(true) }
     var validateEmail by rememberSaveable { mutableStateOf(true) }
@@ -76,14 +75,26 @@ fun RegisterForm() {
     var isPasswordVisible by rememberSaveable() { mutableStateOf(false) }
     var isConfirmPasswordVisible by rememberSaveable() { mutableStateOf(false) }
 
+    //Error messages
     val validateFirstNameError = "Please input a valid first name"
     val validateLastNameError = "Please input a valid last name"
     val validateEmailError = "Please input a valid email"
     val validateUserNameError = "Please input an appropriate username"
-    val validatePasswordError =
-        "Password must mix capital and non-capital letters, a number, special character, and a minimum length of 8"
+    val validatePasswordError = "Password must mix capital and non-capital letters, a number, special character, and a minimum length of 8"
     val validateEqualPasswordError = "Passwords must be equal"
 
+    /**
+     * Method for validating the entered data and ensuring it fits a format or that something was entered
+     *
+     * @param firstname The user's first name
+     * @param lastname The user's last name
+     * @param email The user's email
+     * @param username The user's username
+     * @param password The user's password (this is not saved anywhere else)
+     * @param confirmPassword The user's password again, ensuring it was entered correctly
+     *
+     * @return Returns whether all the data is satisfactory or not
+     */
     fun validateData(
         firstname: String,
         lastname: String,
@@ -105,6 +116,17 @@ fun RegisterForm() {
         return validateFirstName && validateLastName && validateEmail && validatePassword && validateConfirmPassword && validateArePasswordsEqual
     }
 
+    /**
+     * The method that creates a user's account once the information they entered is valid and they
+     * push the register button
+     *
+     * @param firstName The user's first name
+     * @param lastName The user's last name
+     * @param email The user's email
+     * @param userName The user's username
+     * @param password The user's password (this is not saved anywhere else)
+     * @param confirmPassword The user's password again, ensuring it was entered correctly
+     */
     fun register(
         firstName: String,
         lastName: String,
@@ -121,21 +143,21 @@ fun RegisterForm() {
                 .addOnCompleteListener() { task ->
                     if (task.isSuccessful) {
 
-                        var newUser = task.result.user
+                        val newUser = task.result.user
                         newUser!!.updateProfile(userProfileChangeRequest {
                             displayName = userName
                             photoUri =
                                 Uri.parse("android.resource://com.travelapp/" + R.drawable.default_profile_picture)
                         })
 
-                        var defaultPic =
+                        val defaultPic =
                             Uri.parse("android.resource://com.travelapp/" + R.drawable.default_profile_picture.toString())
                         val profilePicRef =
                             storage.reference.child("users/${newUser.uid}/profile_picture.jpg")
                         profilePicRef.putFile(defaultPic)
 
 
-                        var user = TravelyzeUser(
+                        val user = TravelyzeUser(
                             AccountInfo(
                                 firstName,
                                 lastName,
@@ -154,12 +176,11 @@ fun RegisterForm() {
                             )
                         )
 
-                        var userID = auth.currentUser?.uid.toString()
-                        var documentReference = fireStore.collection("users").document(userID)
+                        val userID = auth.currentUser?.uid.toString()
+                        val documentReference = fireStore.collection("users").document(userID)
 
                         documentReference.set(user)
 
-                        isRegistering.value = false
                         Toast.makeText(context, "Account Successfully Created!", Toast.LENGTH_SHORT)
                             .show()
                     } else {
@@ -196,9 +217,9 @@ fun RegisterForm() {
             textAlign = TextAlign.Center
         )
 
-        //
-        // First Name
-        //
+        /**
+         * First Name Text Field
+         */
         CustomOutlinedTextField(
             value = firstname,
             onValueChange = { firstname = it },
@@ -220,9 +241,9 @@ fun RegisterForm() {
                 .padding(bottom = 10.dp)
         )
 
-        //
-        // Last Name
-        //
+        /**
+         * Last Name Text Field
+         */
         CustomOutlinedTextField(
             value = lastname,
             onValueChange = { lastname = it },
@@ -242,9 +263,9 @@ fun RegisterForm() {
                 .padding(bottom = 10.dp)
         )
 
-        //
-        // Email Address
-        //
+        /**
+         * Email Text Field
+         */
         CustomOutlinedTextField(
             value = email,
             onValueChange = { email = it },
@@ -264,9 +285,9 @@ fun RegisterForm() {
                 .padding(bottom = 10.dp)
         )
 
-        //
-        // Username
-        //
+        /**
+         * Username Text Field
+         */
         CustomOutlinedTextField(
             value = username,
             onValueChange = { username = it },
@@ -286,9 +307,9 @@ fun RegisterForm() {
                 .padding(bottom = 10.dp)
         )
 
-        //
-        // Password
-        //
+        /**
+         * Password Text Field
+         */
         CustomOutlinedTextField(
             value = password,
             onValueChange = { password = it },
@@ -311,9 +332,9 @@ fun RegisterForm() {
                 .padding(bottom = 10.dp)
         )
 
-        //
-        // Confirm Password
-        //
+        /**
+         * Confirm Password Text Field
+         */
         CustomOutlinedTextField(
             value = confirmPassword,
             onValueChange = { confirmPassword = it },
@@ -336,6 +357,9 @@ fun RegisterForm() {
                 .padding(bottom = 10.dp)
         )
 
+        /**
+         * Register Button
+         */
         Row(
             modifier = Modifier
                 .fillMaxWidth()
