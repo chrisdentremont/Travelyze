@@ -72,14 +72,14 @@ class MainActivity : ComponentActivity() {
     override fun onStop() {
         super.onStop()
 
-        var deleted = profileImageFile.value.delete()
+        profileImageFile.value.delete()
     }
 
     override fun onResume() {
         super.onResume()
 
         if (isLoggedIn.value) {
-            var profileImage =
+            val profileImage =
                 Firebase.storage.reference.child("users/${auth.currentUser?.uid}/profile_picture.jpg")
 
             profileImage.getFile(profileImageFile.value).addOnCompleteListener {
@@ -92,10 +92,10 @@ class MainActivity : ComponentActivity() {
         super.onCreate(savedInstanceState)
 
         GlobalScope.launch {
-            var getLocationsFromDb = getLocationsAsync().await().await()
+            val getLocationsFromDb = getLocationsAsync().await().await()
 
             for (document in getLocationsFromDb.documents) {
-                var current = document.toObject<LocationObject>()
+                val current = document.toObject<LocationObject>()
                 if (current != null) {
                     locationList.add(current)
                     current.Name?.let { locationNames.add(it) }
@@ -157,7 +157,7 @@ class MainActivity : ComponentActivity() {
                         }
 
                         if (openAddFriendDialog.value) {
-                            addFriendDialog()
+                            AddFriendDialog()
                         }
 
                         //If added here the navbar goes away??
@@ -288,8 +288,8 @@ class MainActivity : ComponentActivity() {
     }
 
     private fun getLocationsAsync() = GlobalScope.async {
-        var fireStore = FirebaseFirestore.getInstance()
-        var locationCollection = fireStore.collection("countries")
+        val fireStore = FirebaseFirestore.getInstance()
+        val locationCollection = fireStore.collection("countries")
         locationCollection.get().addOnFailureListener { exception ->
             Log.w("Exception", exception)
         }
