@@ -31,8 +31,14 @@ import com.travelapp.ui.theme.marsFamily
 var locationSelected = mutableStateOf(false)
 var selectedName = mutableStateOf("")
 
+/**
+ * Displays the main search page and its contents.
+ *
+ * @param auth The [FirebaseAuth] instance used to get information about the current user state
+ * @param nav The [NavController] used to navigate to other pages
+ */
 @Composable
-fun Home(auth: FirebaseAuth, nav: NavController) {
+fun Explore(auth: FirebaseAuth, nav: NavController) {
 
     Column(
         Modifier

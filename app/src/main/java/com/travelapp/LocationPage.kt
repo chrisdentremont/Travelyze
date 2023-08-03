@@ -52,6 +52,13 @@ import com.travelapp.ui.theme.marsFamily
 var showCategoryDialog = mutableStateOf(false)
 var selectedCategory = mutableStateOf("")
 
+/**
+ * Displays information about a [LocationObject] retrieved using the supplied [name].
+ *
+ * @param name The name of a location in which a [LocationObject] is linked to it in [locationList]
+ * @param nav The [NavController] instance used to switch to other pages
+ * @param auth The [FirebaseAuth] instance used to provide location favouring functionality
+ */
 @Composable
 fun LocationPage(
     name: String,
@@ -291,10 +298,17 @@ fun LocationPage(
     }
 }
 
+/**
+ * An [AlertDialog] used to present information from a [com.travelapp.composable.Category]
+ * that is specified using a given [categoryName].
+ *
+ * @param location A [LocationObject] used to find the specified [com.travelapp.composable.Category]
+ * @param categoryName The name of the category to display information about
+ */
 @Composable
 fun CategoryDialog(
     location: LocationObject?,
-    category: String
+    categoryName: String
 ){
     AlertDialog(
         modifier = Modifier.fillMaxWidth(),
@@ -314,7 +328,7 @@ fun CategoryDialog(
                         },
                 )
                 Text(
-                    text = category,
+                    text = categoryName,
                     style = MaterialTheme.typography.headlineSmall,
                     fontFamily = halcomFamily,
                     fontWeight = FontWeight.Normal,
@@ -326,14 +340,14 @@ fun CategoryDialog(
                 modifier = Modifier.verticalScroll(rememberScrollState())
             ){
                     Text(
-                        text = location?.Categories?.get(category)?.text!!,
+                        text = location?.Categories?.get(categoryName)?.text!!,
                         style = MaterialTheme.typography.bodyMedium,
                         fontFamily = halcomFamily,
                         fontWeight = FontWeight.Normal,
                         modifier = Modifier.padding(bottom = 20.dp)
                     )
 
-                var images = location?.Categories?.get(category)?.images
+                var images = location?.Categories?.get(categoryName)?.images
                 if(!images.isNullOrEmpty()){
                     images.forEach {
                         AsyncImage(
@@ -371,6 +385,9 @@ fun CategoryDialog(
     )
 }
 
+/**
+ * Renders a shadow for the category cards displayed in [LocationPage].
+ */
 fun Modifier.categoryShadow(
     color: Color = Color.Black,
     cornersRadius: Dp = 0.dp,

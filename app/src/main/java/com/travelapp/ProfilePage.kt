@@ -42,10 +42,8 @@ import androidx.core.content.ContextCompat
 import androidx.core.content.FileProvider
 import coil.compose.AsyncImage
 import coil.compose.rememberAsyncImagePainter
-import coil.compose.rememberImagePainter
 import coil.decode.SvgDecoder
 import coil.request.ImageRequest
-import coil.size.Size
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.auth.FirebaseUser
 import com.google.firebase.auth.UserInfo
@@ -81,6 +79,11 @@ var takenImageUri = mutableStateOf(Uri.EMPTY)
 var profileLocationSelected = mutableStateOf(false)
 var profileSelectedName = mutableStateOf("")
 
+/**
+ * Displays the logged in user's profile.
+ *
+ * @param auth The [FirebaseAuth] instance used to get information about the current user state
+ */
 @Composable
 fun Profile(auth: FirebaseAuth) {
 
@@ -120,6 +123,7 @@ fun Profile(auth: FirebaseAuth) {
         openPicTakenDialog.value = true
     }
 
+    /** Used to display the settings drawer on the right side of the screen */
     CompositionLocalProvider(LocalLayoutDirection provides LayoutDirection.Rtl) {
 
         ModalNavigationDrawer(
@@ -203,6 +207,7 @@ fun Profile(auth: FirebaseAuth) {
                 }
             }
         ) {
+            /** Switch back to regular display orientation (left to right) */
             CompositionLocalProvider(LocalLayoutDirection provides LayoutDirection.Ltr) {
                 Column(
                     Modifier
@@ -347,9 +352,14 @@ fun Profile(auth: FirebaseAuth) {
     }
 }
 
+/**
+ * An [AlertDialog] used to prompt the user for a new profile picture. Can select picture
+ * from camera roll using [PickVisualMediaRequest] or take a picture from camera using
+ * [ActivityResultContracts.TakePicture]
+ */
 @SuppressLint("SimpleDateFormat")
 @Composable
-fun ProfilePicturePicker(auth: FirebaseAuth) {
+fun ProfilePicturePicker() {
     LocalContext.current.applicationContext
 
     val singlePhotoPickerLauncher = rememberLauncherForActivityResult(
@@ -472,6 +482,11 @@ fun ProfilePicturePicker(auth: FirebaseAuth) {
     }
 }
 
+/**
+ * An [AlertDialog] used to confirm camera roll photo selection.
+ *
+ * @param auth The [FirebaseAuth] instance used to update the user's profile image
+ */
 @Composable
 fun ProfilePicSelect(auth: FirebaseAuth) {
     val contextForToast = LocalContext.current.applicationContext
@@ -562,6 +577,11 @@ fun ProfilePicSelect(auth: FirebaseAuth) {
     )
 }
 
+/**
+ * An [AlertDialog] used to confirm photo selection from camera.
+ *
+ * @param auth The [FirebaseAuth] instance used to update the user's profile image
+ */
 @Composable
 fun ProfilePicTaken(auth: FirebaseAuth) {
     val contextForToast = LocalContext.current.applicationContext
@@ -654,8 +674,14 @@ fun ProfilePicTaken(auth: FirebaseAuth) {
     )
 }
 
+/**
+ * An [AlertDialog] used to prompt the user to sign out.
+ *
+ * @param auth The [FirebaseAuth] instance used to sign the user out
+ * of the application
+ */
 @Composable
-fun SignOutDialog(fireBaseAuth: FirebaseAuth) {
+fun SignOutDialog(auth: FirebaseAuth) {
     val contextForToast = LocalContext.current.applicationContext
 
     AlertDialog(
@@ -688,7 +714,7 @@ fun SignOutDialog(fireBaseAuth: FirebaseAuth) {
         },
         confirmButton = {
             TextButton(onClick = {
-                fireBaseAuth.signOut()
+                auth.signOut()
                 isLoggedIn.value = Firebase.auth.currentUser != null
                 openSignoutDialog.value = false
                 Toast.makeText(
@@ -721,8 +747,14 @@ fun SignOutDialog(fireBaseAuth: FirebaseAuth) {
     )
 }
 
+/**
+ * An [AlertDialog] used to prompt the user to delete their account. This is
+ * an irreversible action that WILL permanently delete all of the user's data.
+ *
+ * @param auth The [FirebaseAuth] instance used to delete the user's account
+ */
 @Composable
-fun DeleteAccountDialog(fireBaseAuth: FirebaseAuth) {
+fun DeleteAccountDialog(auth: FirebaseAuth) {
     val contextForToast = LocalContext.current.applicationContext
     val focusManager = LocalFocusManager.current
 
@@ -790,7 +822,7 @@ fun DeleteAccountDialog(fireBaseAuth: FirebaseAuth) {
                 val documentReference = fireStore.collection("users").document(userID)
 
                 if (username == currentUser.value.info?.userName) {
-                    fireBaseAuth.currentUser?.delete()
+                    auth.currentUser?.delete()
                     documentReference.delete()
 
                     openDeleteDialog.value = false
@@ -828,6 +860,9 @@ fun DeleteAccountDialog(fireBaseAuth: FirebaseAuth) {
     )
 }
 
+/**
+ * An [AlertDialog] that prompts the user to change their username.
+ */
 @Composable
 fun EditUsernameDialog() {
     val contextForToast = LocalContext.current.applicationContext
@@ -941,6 +976,12 @@ fun EditUsernameDialog() {
     )
 }
 
+/**
+ * Sends the user an email to reset their password.
+ * Displays a [Toast] with a resulting message.
+ *
+ * @param user The [FirebaseUser] object that contains the recipient email
+ */
 @Composable
 fun SendEmailToExistingUser(user: FirebaseUser?) {
     val contextForToast = LocalContext.current.applicationContext

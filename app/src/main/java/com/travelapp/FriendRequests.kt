@@ -33,8 +33,6 @@ import com.google.firebase.firestore.ktx.toObject
 import com.google.firebase.ktx.Firebase
 import com.google.firebase.storage.ktx.storage
 import com.travelapp.composable.TravelyzeUser
-import com.travelapp.ui.theme.Alabaster
-import com.travelapp.ui.theme.BackgroundColor
 import com.travelapp.ui.theme.*
 import java.io.File
 

@@ -45,14 +45,37 @@ import kotlinx.coroutines.launch
 import kotlinx.coroutines.tasks.await
 import java.io.File
 
+/**
+ * Whether there is a currently signed in user in the application.
+ */
 val isLoggedIn = mutableStateOf(Firebase.auth.currentUser != null)
 
+/**
+ * A master list of [LocationObject]s retrieved from [FirebaseFirestore].
+ */
 var locationList = mutableListOf<LocationObject>()
+
+/**
+ * The list of string representations of [LocationObject] names.
+ */
 var locationNames = mutableListOf<String>()
 
+/**
+ * The [File] used to store the user's profile image. It is created as an
+ * empty temporary file that eventually contains the image.
+ */
 val profileImageFile = mutableStateOf<File>(File.createTempFile("image", ".jpg"))
+
+/**
+ * The [File] used to monitor the profile image retrieval state and is the image
+ * displayed in [Profile]
+ */
 var displayedPicture = mutableStateOf<File>(File(""))
 
+/**
+ * The [TravelyzeUser] containing information about the currently logged in user.
+ * Contains null values if there is no logged in user.
+ */
 var currentUser = mutableStateOf(TravelyzeUser(null, null, null))
 
 class MainActivity : ComponentActivity() {
@@ -72,12 +95,20 @@ class MainActivity : ComponentActivity() {
     override fun onStop() {
         super.onStop()
 
+        /**
+         * Deletes the locally stored user profile image when the app
+         * is exited. This is to prevent image file duplication every
+         * time the app is opened.
+         */
         profileImageFile.value.delete()
     }
 
     override fun onResume() {
         super.onResume()
 
+        /**
+         * Retrieves the user's profile image when the app is resumed.
+         */
         if (isLoggedIn.value) {
             val profileImage =
                 Firebase.storage.reference.child("users/${auth.currentUser?.uid}/profile_picture.jpg")
@@ -132,6 +163,11 @@ class MainActivity : ComponentActivity() {
 
                         NavBar()
 
+                        /**
+                         * Open or close dialogs based on reactive values
+                         * set within their respective pages.
+                         */
+
                         if (openSignoutDialog.value) {
                             SignOutDialog(auth)
                         }
@@ -145,7 +181,7 @@ class MainActivity : ComponentActivity() {
                         }
 
                         if (openPicDialog.value) {
-                            ProfilePicturePicker(auth)
+                            ProfilePicturePicker()
                         }
 
                         if (openPicSelectDialog.value) {
@@ -159,11 +195,6 @@ class MainActivity : ComponentActivity() {
                         if (openAddFriendDialog.value) {
                             AddFriendDialog()
                         }
-
-                        //If added here the navbar goes away??
-//                        if(isAddingFriend.value){
-//                            FriendRequests()
-//                        }
                     }
                 }
             }
@@ -250,7 +281,7 @@ class MainActivity : ComponentActivity() {
                         if (locationSelected.value) {
                             LocationPage(selectedName.value, navController, auth)
                         } else {
-                            Home(auth, navController)
+                            Explore(auth, navController)
                         }
                     }
 
@@ -298,7 +329,7 @@ class MainActivity : ComponentActivity() {
 
 /**
  * The class that contains information about every existing page
- * within the application.
+ * within the application and their respective routes.
  */
 sealed class Screen(val route: String, @StringRes val resourceId: Int) {
     object Explore : Screen("explore", R.string.explore_name)
