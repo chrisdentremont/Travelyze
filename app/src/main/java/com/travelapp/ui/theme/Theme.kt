@@ -54,11 +54,6 @@ private val LightColorScheme = lightColorScheme(
     tertiary = Khaki,
     background = BackgroundColor,
     surface = BackgroundColor,
-    onBackground = BackgroundColor,
-    onPrimary = BackgroundColor,
-    onSecondary = BackgroundColor,
-    onTertiary = BackgroundColor,
-    onSurface = BackgroundColor,
 )
 
 val marsFamily = FontFamily(

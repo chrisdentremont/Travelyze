@@ -58,12 +58,14 @@ var selectedCategory = mutableStateOf("")
  * @param name The name of a location in which a [LocationObject] is linked to it in [locationList]
  * @param nav The [NavController] instance used to switch to other pages
  * @param auth The [FirebaseAuth] instance used to provide location favouring functionality
+ * @param sourcePage The page that the user is viewing from.
  */
 @Composable
 fun LocationPage(
     name: String,
     nav: NavController,
-    auth: FirebaseAuth
+    auth: FirebaseAuth,
+    sourcePage: String,
 ) {
 
     var userID = auth.currentUser?.uid.toString()
@@ -99,12 +101,15 @@ fun LocationPage(
                 navigationIcon = {
                     IconButton(
                         onClick = {
-                            if(locationSelected.value){
-                                locationSelected.value = false
+                            if(sourcePage == "Explore"){
+                                exploreLocationSelected.value = false
                                 nav.navigate("explore")
-                            }else{
+                            }else if (sourcePage == "Profile"){
                                 profileLocationSelected.value = false
                                 nav.navigate("profile")
+                            }else if (sourcePage == "Friends") {
+                                friendLocationSelected.value = false
+                                nav.navigate("friends")
                             }
                         },
                     ) {
@@ -337,7 +342,8 @@ fun CategoryDialog(
         },
         text = {
             Column(
-                modifier = Modifier.verticalScroll(rememberScrollState())
+                modifier = Modifier.verticalScroll(rememberScrollState()),
+                horizontalAlignment = Alignment.CenterHorizontally
             ){
                     Text(
                         text = location?.Categories?.get(categoryName)?.text!!,
@@ -357,7 +363,7 @@ fun CategoryDialog(
                                 .build(),
                             filterQuality = FilterQuality.None,
                             contentDescription = null,
-                            modifier = Modifier.size(width = 300.dp, height = 150.dp)
+                            modifier = Modifier.size(width = 300.dp, height = 150.dp).padding(bottom = 5.dp)
                         )
                         Text(
                             text = it.value,

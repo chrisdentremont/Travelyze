@@ -28,7 +28,7 @@ import com.travelapp.ui.theme.BackgroundColor
 import com.travelapp.ui.theme.halcomFamily
 import com.travelapp.ui.theme.marsFamily
 
-var locationSelected = mutableStateOf(false)
+var exploreLocationSelected = mutableStateOf(false)
 var selectedName = mutableStateOf("")
 
 /**
@@ -87,7 +87,7 @@ fun Explore(auth: FirebaseAuth, nav: NavController) {
             var searchedLocations by remember { mutableStateOf(listOf<String>()) }
 
             fun onValueChanged(value: TextFieldValue) {
-                if (!locationSelected.value) {
+                if (!exploreLocationSelected.value) {
                     dropDownExpanded = value.text.isNotEmpty()
                     textFieldValue = value
                     searchedLocations = locationNames.filter {
@@ -143,7 +143,7 @@ fun Explore(auth: FirebaseAuth, nav: NavController) {
                                 )
                             )
                             selectedName.value = text
-                            locationSelected.value = true
+                            exploreLocationSelected.value = true
                             nav.navigate("location")
                             dropDownExpanded = false
                         }) {
@@ -179,7 +179,7 @@ fun Explore(auth: FirebaseAuth, nav: NavController) {
                         .padding(15.dp)
                         .clickable {
                             selectedName.value = "France"
-                            locationSelected.value = true
+                            exploreLocationSelected.value = true
                         },
                     elevation = 10.dp,
                 ) {
@@ -214,7 +214,7 @@ fun Explore(auth: FirebaseAuth, nav: NavController) {
                         .padding(15.dp)
                         .clickable {
                             selectedName.value = "United States"
-                            locationSelected.value = true
+                            exploreLocationSelected.value = true
                         },
                     elevation = 10.dp,
                 ) {

@@ -72,6 +72,9 @@ private val currentFriendPage = mutableStateOf(TravelyzeUser(null, null, null))
 //The profile picture file of the friend from the card that was clicked (this is set when a profile is clicked on)
 private val displayedFriendFile = mutableStateOf<File>(File(""))
 
+var friendLocationSelected = mutableStateOf(false)
+var friendSelectedName = mutableStateOf("")
+
 /**
  * The main method for creating the SocialPage UI
  *
@@ -639,8 +642,8 @@ fun DisplayFriendProfile(){
                                             .size(width = 250.dp, height = 150.dp)
                                             .padding(10.dp)
                                             .clickable {
-                                                profileSelectedName.value = name
-                                                profileLocationSelected.value = true
+                                                friendSelectedName.value = name
+                                                friendLocationSelected.value = true
                                             },
                                         shape = RoundedCornerShape(15.dp),
                                         elevation = 5.dp

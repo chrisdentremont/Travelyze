@@ -264,11 +264,15 @@ class MainActivity : ComponentActivity() {
                 ) {
                     composable(Screen.Friends.route) {
                         if (isLoggedIn.value) {
-                            isDrawerOpen.value = false
-                            Social()
+                            if(friendLocationSelected.value){
+                                LocationPage(friendSelectedName.value, navController, auth, "Friends")
+                            }else{
+                                isDrawerOpen.value = false
+                                Social()
 
-                            if (isAddingFriend.value) {
-                                FriendRequests()
+                                if (isAddingFriend.value) {
+                                    FriendRequests()
+                                }
                             }
                         } else {
                             isDrawerOpen.value = false
@@ -278,24 +282,18 @@ class MainActivity : ComponentActivity() {
                     composable(Screen.Explore.route) {
                         isDrawerOpen.value = false
                         isAddingFriend.value = false
-                        if (locationSelected.value) {
-                            LocationPage(selectedName.value, navController, auth)
+                        if (exploreLocationSelected.value) {
+                            LocalFocusManager.current.clearFocus()
+                            LocationPage(selectedName.value, navController, auth, "Explore")
                         } else {
                             Explore(auth, navController)
-                        }
-                    }
-
-                    composable(Screen.Location.route) {
-                        if (locationSelected.value) {
-                            LocalFocusManager.current.clearFocus()
-                            LocationPage(selectedName.value, navController, auth)
                         }
                     }
 
                     composable(Screen.Profile.route) {
                         if (isLoggedIn.value) {
                             if(profileLocationSelected.value){
-                                LocationPage(profileSelectedName.value, navController, auth)
+                                LocationPage(profileSelectedName.value, navController, auth, "Profile")
                             }else{
                                 isAddingFriend.value = false
                                 Profile(auth)

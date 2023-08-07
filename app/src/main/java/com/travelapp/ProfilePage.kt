@@ -391,95 +391,95 @@ fun ProfilePicturePicker() {
         }
     }
 
-    Surface(){
-        AlertDialog(
-            onDismissRequest = {
-                openPicDialog.value = false
-            },
-            title = {
+    AlertDialog(
+        onDismissRequest = {
+            openPicDialog.value = false
+        },
+        title = {
+            Row(
+                modifier = Modifier.fillMaxWidth(),
+                horizontalArrangement = Arrangement.Center
+            ) {
+                Text(
+                    text = "Change photo",
+                    style = MaterialTheme.typography.headlineSmall,
+                    fontFamily = robotoFamily,
+                    fontWeight = FontWeight.Normal,
+                    textAlign = TextAlign.Center
+                )
+            }
+        },
+        confirmButton = {
+            Column(
+                horizontalAlignment = Alignment.CenterHorizontally
+            ) {
+                Divider(thickness = 2.dp)
                 Row(
                     modifier = Modifier.fillMaxWidth(),
                     horizontalArrangement = Arrangement.Center
                 ) {
-                    Text(
-                        text = "Change photo",
-                        style = MaterialTheme.typography.headlineSmall,
-                        fontFamily = robotoFamily,
-                        fontWeight = FontWeight.Normal,
-                        textAlign = TextAlign.Center
-                    )
+                    TextButton(onClick = {
+                        singlePhotoPickerLauncher.launch(
+                            PickVisualMediaRequest(ActivityResultContracts.PickVisualMedia.ImageOnly)
+                        )
+                    },
+                    colors = ButtonDefaults.textButtonColors(contentColor = MaterialTheme.colorScheme.onSurface)) {
+                        Icon(
+                            imageVector = Icons.Filled.Folder,
+                            contentDescription = null,
+                            modifier = Modifier
+                                .size(size = 30.dp)
+                                .padding(end = 10.dp),
+                        )
+                        Text(
+                            text = "Upload from camera roll",
+                            style = MaterialTheme.typography.bodyLarge,
+                            fontFamily = robotoFamily,
+                            fontWeight = FontWeight.Bold,
+                        )
+                    }
                 }
-            },
-            confirmButton = {
-                Column(
-                    horizontalAlignment = Alignment.CenterHorizontally
+                Divider(thickness = 2.dp)
+                Row(
+                    modifier = Modifier.fillMaxWidth(),
+                    horizontalArrangement = Arrangement.Center
                 ) {
-                    Divider(thickness = 2.dp)
-                    Row(
-                        modifier = Modifier.fillMaxWidth(),
-                        horizontalArrangement = Arrangement.Center
-                    ) {
-                        TextButton(onClick = {
-                            singlePhotoPickerLauncher.launch(
-                                PickVisualMediaRequest(ActivityResultContracts.PickVisualMedia.ImageOnly)
+                    TextButton(onClick = {
+                        val permissionCheckResult =
+                            ContextCompat.checkSelfPermission(
+                                context,
+                                android.Manifest.permission.CAMERA
                             )
-                        }) {
-                            Icon(
-                                imageVector = Icons.Filled.Folder,
-                                contentDescription = null,
-                                modifier = Modifier
-                                    .size(size = 30.dp)
-                                    .padding(end = 10.dp),
-                            )
-                            Text(
-                                text = "Upload from camera roll",
-                                style = MaterialTheme.typography.bodyLarge,
-                                fontFamily = robotoFamily,
-                                fontWeight = FontWeight.Bold,
-                            )
+                        if (permissionCheckResult == PackageManager.PERMISSION_GRANTED) {
+                            cameraLauncher.launch(uri)
+                        } else {
+                            // Request a permission
+                            permissionLauncher.launch(android.Manifest.permission.CAMERA)
                         }
+                    },
+                        colors = ButtonDefaults.textButtonColors(contentColor = MaterialTheme.colorScheme.onSurface)) {
+                        Icon(
+                            imageVector = Icons.Filled.PhotoCamera,
+                            contentDescription = null,
+                            modifier = Modifier
+                                .size(size = 30.dp)
+                                .padding(end = 10.dp),
+                        )
+                        Text(
+                            text = "Take a new picture",
+                            style = MaterialTheme.typography.bodyLarge,
+                            fontFamily = robotoFamily,
+                            fontWeight = FontWeight.Bold,
+                        )
                     }
-                    Divider(thickness = 2.dp)
-                    Row(
-                        modifier = Modifier.fillMaxWidth(),
-                        horizontalArrangement = Arrangement.Center
-                    ) {
-                        TextButton(onClick = {
-                            val permissionCheckResult =
-                                ContextCompat.checkSelfPermission(
-                                    context,
-                                    android.Manifest.permission.CAMERA
-                                )
-                            if (permissionCheckResult == PackageManager.PERMISSION_GRANTED) {
-                                cameraLauncher.launch(uri)
-                            } else {
-                                // Request a permission
-                                permissionLauncher.launch(android.Manifest.permission.CAMERA)
-                            }
-                        }) {
-                            Icon(
-                                imageVector = Icons.Filled.PhotoCamera,
-                                contentDescription = null,
-                                modifier = Modifier
-                                    .size(size = 30.dp)
-                                    .padding(end = 10.dp),
-                            )
-                            Text(
-                                text = "Take a new picture",
-                                style = MaterialTheme.typography.bodyLarge,
-                                fontFamily = robotoFamily,
-                                fontWeight = FontWeight.Bold,
-                            )
-                        }
-                    }
-                    Divider(thickness = 2.dp)
                 }
-            },
-            properties = DialogProperties(
-                dismissOnClickOutside = true
-            )
+                Divider(thickness = 2.dp)
+            }
+        },
+        properties = DialogProperties(
+            dismissOnClickOutside = true
         )
-    }
+    )
 }
 
 /**
