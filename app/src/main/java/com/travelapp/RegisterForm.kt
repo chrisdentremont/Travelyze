@@ -238,7 +238,8 @@ fun RegisterForm() {
             ),
             modifier = Modifier
                 .fillMaxWidth(.95f)
-                .padding(bottom = 10.dp)
+                .padding(bottom = 10.dp),
+            isDialog = false
         )
 
         /**
@@ -260,7 +261,8 @@ fun RegisterForm() {
             ),
             modifier = Modifier
                 .fillMaxWidth(.95f)
-                .padding(bottom = 10.dp)
+                .padding(bottom = 10.dp),
+            isDialog = false
         )
 
         /**
@@ -282,7 +284,8 @@ fun RegisterForm() {
             ),
             modifier = Modifier
                 .fillMaxWidth(.95f)
-                .padding(bottom = 10.dp)
+                .padding(bottom = 10.dp),
+            isDialog = false
         )
 
         /**
@@ -304,7 +307,8 @@ fun RegisterForm() {
             ),
             modifier = Modifier
                 .fillMaxWidth(.95f)
-                .padding(bottom = 10.dp)
+                .padding(bottom = 10.dp),
+            isDialog = false
         )
 
         /**
@@ -329,7 +333,8 @@ fun RegisterForm() {
             ),
             modifier = Modifier
                 .fillMaxWidth(.95f)
-                .padding(bottom = 10.dp)
+                .padding(bottom = 10.dp),
+            isDialog = false
         )
 
         /**
@@ -354,7 +359,8 @@ fun RegisterForm() {
             ),
             modifier = Modifier
                 .fillMaxWidth(.95f)
-                .padding(bottom = 10.dp)
+                .padding(bottom = 10.dp),
+            isDialog = false
         )
 
         /**

@@ -160,6 +160,7 @@ fun Login(auth: FirebaseAuth, nav: NavController) {
             label = "Password",
             modifier = Modifier
                 .fillMaxWidth(.6f),
+            isDialog = false,
             keyboardOptions = KeyboardOptions(
                 keyboardType = KeyboardType.Password,
                 imeAction = ImeAction.Done
@@ -345,7 +346,8 @@ fun ResetPasswordDialog(auth: FirebaseAuth) {
                         keyboardActions = KeyboardActions(
                             onDone = { /* focusManager not working? */ }
                         ),
-                        modifier = Modifier.fillMaxWidth()
+                        modifier = Modifier.fillMaxWidth(),
+                        isDialog = true
                     )
                 }
             }

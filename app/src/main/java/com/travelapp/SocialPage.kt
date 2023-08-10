@@ -310,7 +310,8 @@ fun AddFriendDialog() {
                             onDone = { focusManager.clearFocus() }
                         ),
                         modifier = Modifier
-                            .fillMaxWidth()
+                            .fillMaxWidth(),
+                        isDialog = true
                     )
                 }
             }

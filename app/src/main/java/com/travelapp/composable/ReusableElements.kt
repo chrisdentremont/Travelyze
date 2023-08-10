@@ -55,7 +55,8 @@ fun CustomOutlinedTextField(
     keyboardActions: KeyboardActions = KeyboardActions.Default,
     showError: Boolean = false,
     errorMessage: String = "",
-    modifier: Modifier
+    modifier: Modifier,
+    isDialog: Boolean,
 ) {
     Column(
         modifier = Modifier.fillMaxWidth(),
@@ -71,7 +72,7 @@ fun CustomOutlinedTextField(
                 Icon(
                     imageVector = leadingIconImageVector,
                     contentDescription = leadingIconDescription,
-                    tint = if (showError) MaterialTheme.colors.error else if (isSystemInDarkTheme()) Color.White else Color.Black,
+                    tint = if (showError) MaterialTheme.colors.error else if (isDialog && isSystemInDarkTheme()) Color.White else Color.Unspecified,
                 )
             },
             isError = showError,
@@ -102,10 +103,10 @@ fun CustomOutlinedTextField(
                 cursorColor = TextButtonColor,
                 focusedLabelColor = TextButtonColor,
 
-                unfocusedBorderColor = if (isSystemInDarkTheme()) Color.White else Color.Black,
-                textColor = if (isSystemInDarkTheme()) Color.White else Color.Black,
-                unfocusedLabelColor = if (isSystemInDarkTheme()) Color.White else Color.Black,
-                leadingIconColor = if (isSystemInDarkTheme()) Color.White else Color.Black),
+                unfocusedBorderColor = if (isDialog && isSystemInDarkTheme()) Color.White else Color.Black,
+                textColor = if (isDialog && isSystemInDarkTheme()) Color.White else Color.Black,
+                unfocusedLabelColor = if (isDialog && isSystemInDarkTheme()) Color.White else Color.Black,
+                leadingIconColor = if (isDialog && isSystemInDarkTheme()) Color.White else Color.Black),
         )
 
         if (showError) {

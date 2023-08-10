@@ -144,7 +144,6 @@ fun Explore(auth: FirebaseAuth, nav: NavController) {
                             )
                             selectedName.value = text
                             exploreLocationSelected.value = true
-                            nav.navigate("location")
                             dropDownExpanded = false
                         }) {
                             Text(text = text)

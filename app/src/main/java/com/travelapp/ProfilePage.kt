@@ -808,7 +808,8 @@ fun DeleteAccountDialog(auth: FirebaseAuth) {
                         keyboardActions = KeyboardActions(
                             onDone = { focusManager.clearFocus() }
                         ),
-                        modifier = Modifier.fillMaxWidth()
+                        modifier = Modifier.fillMaxWidth(),
+                        isDialog = true
                     )
                 }
             }
@@ -905,7 +906,8 @@ fun EditUsernameDialog() {
                         keyboardActions = KeyboardActions(
                             onDone = { focusManager.clearFocus() }
                         ),
-                        modifier = Modifier.fillMaxWidth()
+                        modifier = Modifier.fillMaxWidth(),
+                        isDialog = true
                     )
                 }
             }
