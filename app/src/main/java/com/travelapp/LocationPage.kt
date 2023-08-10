@@ -122,35 +122,37 @@ fun LocationPage(
                     }
                 },
                 actions = {
-                    if(locationSaved) {
-                        IconButton(
-                            onClick = {
-                                currentUser.value.data?.favoriteLocations?.remove(name)
-                                locationSaved = false
-                                documentReference.set(currentUser.value)
-                            },
-                        ) {
-                            Icon(
-                                Icons.Filled.Bookmarks,
-                                contentDescription = "",
-                                modifier = Modifier.size(size = 40.dp),
-                                tint = Color.Black
-                            )
-                        }
-                    }else {
-                        IconButton(
-                            onClick = {
-                                currentUser.value.data?.favoriteLocations?.add(name)
-                                locationSaved = true
-                                documentReference.set(currentUser.value)
-                            },
-                        ) {
-                            Icon(
-                                Icons.Outlined.Bookmarks,
-                                contentDescription = "",
-                                modifier = Modifier.size(size = 40.dp),
-                                tint = Color.Black
-                            )
+                    if(isLoggedIn.value){
+                        if(locationSaved) {
+                            IconButton(
+                                onClick = {
+                                    currentUser.value.data?.favoriteLocations?.remove(name)
+                                    locationSaved = false
+                                    documentReference.set(currentUser.value)
+                                },
+                            ) {
+                                Icon(
+                                    Icons.Filled.Bookmarks,
+                                    contentDescription = "",
+                                    modifier = Modifier.size(size = 40.dp),
+                                    tint = Color.Black
+                                )
+                            }
+                        }else {
+                            IconButton(
+                                onClick = {
+                                    currentUser.value.data?.favoriteLocations?.add(name)
+                                    locationSaved = true
+                                    documentReference.set(currentUser.value)
+                                },
+                            ) {
+                                Icon(
+                                    Icons.Outlined.Bookmarks,
+                                    contentDescription = "",
+                                    modifier = Modifier.size(size = 40.dp),
+                                    tint = Color.Black
+                                )
+                            }
                         }
                     }
                 },

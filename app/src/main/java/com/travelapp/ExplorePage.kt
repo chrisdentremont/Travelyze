@@ -11,6 +11,8 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.focus.onFocusChanged
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.graphics.FilterQuality
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.TextRange
 import androidx.compose.ui.text.font.FontWeight
@@ -23,6 +25,8 @@ import androidx.compose.ui.unit.sp
 import androidx.compose.ui.window.PopupProperties
 import androidx.navigation.NavController
 import coil.compose.AsyncImage
+import coil.decode.SvgDecoder
+import coil.request.ImageRequest
 import com.google.firebase.auth.FirebaseAuth
 import com.travelapp.ui.theme.BackgroundColor
 import com.travelapp.ui.theme.halcomFamily
@@ -155,9 +159,8 @@ fun Explore(auth: FirebaseAuth, nav: NavController) {
 
         Row(Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.Center) {
             Text(
-                text = "Recommended Places ",
+                text = "Find Somewhere New",
                 fontFamily = halcomFamily,
-                fontWeight = FontWeight.Light,
                 fontSize = 20.sp,
                 textAlign = TextAlign.Center,
                 modifier = Modifier.padding(top = 80.dp)
@@ -172,12 +175,13 @@ fun Explore(auth: FirebaseAuth, nav: NavController) {
                     .padding(start = 20.dp, end = 20.dp, top = 10.dp, bottom = 60.dp)
             ) {
 
+                var firstRandomLocation = locationList.random()
                 Card(
                     modifier = Modifier
                         .fillMaxWidth()
                         .padding(15.dp)
                         .clickable {
-                            selectedName.value = "France"
+                            selectedName.value = firstRandomLocation.Name!!
                             exploreLocationSelected.value = true
                         },
                     elevation = 10.dp,
@@ -190,9 +194,13 @@ fun Explore(auth: FirebaseAuth, nav: NavController) {
                                 .fillMaxWidth()
                         ) {
                             AsyncImage(
-                                model = "https://res.klook.com/image/upload/Mobile/City/swox6wjsl5ndvkv5jvum.jpg",
-                                contentDescription = "",
-                                modifier = Modifier.fillMaxSize()
+                                model =
+                                ImageRequest.Builder(LocalContext.current)
+                                    .decoderFactory(SvgDecoder.Factory())
+                                    .data(firstRandomLocation?.Flag)
+                                    .build(),
+                                filterQuality = FilterQuality.None,
+                                contentDescription = null,
                             )
                         }
                         Row(
@@ -202,17 +210,18 @@ fun Explore(auth: FirebaseAuth, nav: NavController) {
                                 .fillMaxWidth()
                                 .padding(15.dp)
                         ) {
-                            Text(text = "France")
+                            Text(text = firstRandomLocation.Name!!)
                         }
                     }
                 }
 
+                var secondRandomLocation = locationList.random()
                 Card(
                     modifier = Modifier
                         .fillMaxWidth()
                         .padding(15.dp)
                         .clickable {
-                            selectedName.value = "United States"
+                            selectedName.value = secondRandomLocation.Name!!
                             exploreLocationSelected.value = true
                         },
                     elevation = 10.dp,
@@ -225,9 +234,13 @@ fun Explore(auth: FirebaseAuth, nav: NavController) {
                                 .fillMaxWidth()
                         ) {
                             AsyncImage(
-                                model = "https://vegasexperience.com/wp-content/uploads/2023/01/Photo-of-Las-Vegas-Downtown-1920x1280.jpg",
-                                contentDescription = "",
-                                modifier = Modifier.fillMaxSize()
+                                model =
+                                ImageRequest.Builder(LocalContext.current)
+                                    .decoderFactory(SvgDecoder.Factory())
+                                    .data(secondRandomLocation?.Flag)
+                                    .build(),
+                                filterQuality = FilterQuality.None,
+                                contentDescription = null,
                             )
                         }
                         Row(
@@ -237,7 +250,7 @@ fun Explore(auth: FirebaseAuth, nav: NavController) {
                                 .fillMaxWidth()
                                 .padding(15.dp)
                         ) {
-                            Text(text = "United States")
+                            Text(text = secondRandomLocation.Name!!)
                         }
                     }
                 }
